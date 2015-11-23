@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cstrike2d", "cstrike2d\cstrike2d\cstrike2d.csproj", "{D92D0866-E82B-4DA1-8E4F-A057DF9D134B}"
+EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "cstrike2dContent", "cstrike2d\cstrike2dContent\cstrike2dContent.contentproj", "{F46D388C-0413-43D7-8E0D-17A51FF85160}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D92D0866-E82B-4DA1-8E4F-A057DF9D134B}.Debug|x86.ActiveCfg = Debug|x86
+		{D92D0866-E82B-4DA1-8E4F-A057DF9D134B}.Debug|x86.Build.0 = Debug|x86
+		{D92D0866-E82B-4DA1-8E4F-A057DF9D134B}.Release|x86.ActiveCfg = Release|x86
+		{D92D0866-E82B-4DA1-8E4F-A057DF9D134B}.Release|x86.Build.0 = Release|x86
+		{F46D388C-0413-43D7-8E0D-17A51FF85160}.Debug|x86.ActiveCfg = Debug|x86
+		{F46D388C-0413-43D7-8E0D-17A51FF85160}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
