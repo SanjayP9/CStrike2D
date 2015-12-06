@@ -77,9 +77,10 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssetLoader.cs" />
     <Compile Include="Camera2D.cs" />
     <Compile Include="EasingFunctions.cs" />
-    <Compile Include="GraphicsDriver.cs" />
+    <Compile Include="Entity.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MathOps.cs" />
@@ -87,6 +88,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="CStrike2D.cs" />
     <Compile Include="Tile.cs" />
+    <Compile Include="CStrikeRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
