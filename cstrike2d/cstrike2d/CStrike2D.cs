@@ -93,10 +93,10 @@ namespace cstrike2d
             camera.Position = new Vector2((newMap.TileMap.GetLength(0)/2)*64 + 32,
                 (newMap.TileMap.GetLength(1)/2)*64 + 32);
 
-            render = new RenderTarget2D(graphics.GraphicsDevice, 1920, 1080, false, 
+            render = new RenderTarget2D(graphics.GraphicsDevice, 1366, 768, false, 
                 SurfaceFormat.Rgba64, DepthFormat.Depth24, 24, RenderTargetUsage.DiscardContents);
 
-            finalRender = new RenderTarget2D(graphics.GraphicsDevice, 1920, 1080, false,
+            finalRender = new RenderTarget2D(graphics.GraphicsDevice, 1366, 768, false,
                 SurfaceFormat.Rgba64, DepthFormat.Depth24, 24, RenderTargetUsage.DiscardContents);
 
         }
