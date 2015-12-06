@@ -60,9 +60,6 @@
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Bass.Net">
-      <HintPath>F:\USB Backup\ICS3\Assignments\Programming\ISU\Uso\Uso\Bass.Net.dll</HintPath>
-    </Reference>
     <Reference Include="Lidgren.Network, Version=3.4.0.456, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\USB Backup\ICS3\Assignments\Programming\ISU\Uso\Uso\Lidgren.Network.dll</HintPath>
@@ -80,7 +77,6 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioEngine.cs" />
     <Compile Include="Camera2D.cs" />
     <Compile Include="EasingFunctions.cs" />
     <Compile Include="GraphicsDriver.cs" />
@@ -97,6 +93,7 @@
     <Content Include="GameThumbnail.png">
       <XnaPlatformSpecific>true</XnaPlatformSpecific>
     </Content>
+    <Content Include="Lidgren.Network.dll" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cstrike2dContent\cstrike2dContent.contentproj">
