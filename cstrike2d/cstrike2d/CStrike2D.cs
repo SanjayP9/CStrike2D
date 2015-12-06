@@ -98,7 +98,6 @@ namespace cstrike2d
 
             finalRender = new RenderTarget2D(graphics.GraphicsDevice, 1920, 1080, false,
                 SurfaceFormat.Rgba64, DepthFormat.Depth24, 24, RenderTargetUsage.DiscardContents);
-            GraphicsDevice.Viewport.s
 
         }
 
