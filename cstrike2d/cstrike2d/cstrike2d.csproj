@@ -87,6 +87,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="CStrike2D.cs" />
+    <Compile Include="RayCast.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="CStrikeRenderer.cs" />
   </ItemGroup>
