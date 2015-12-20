@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework;
 
 namespace cstrike2d
 {
+
     static class MathOps
     {
         private const float QUADRANT_ONE = (float)Math.PI/2f;
