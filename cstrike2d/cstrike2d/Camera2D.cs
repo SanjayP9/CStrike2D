@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace cstrike2d
+namespace CStrike2D
 {
     class Camera2D
     {

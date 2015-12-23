@@ -1,7 +1,7 @@
 ﻿
 using System.Windows.Forms.VisualStyles;
 
-namespace cstrike2d
+namespace CStrike2D
 {
     public class Map
     {

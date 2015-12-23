@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace cstrike2d
+namespace CStrike2D
 {
     /// <summary>
     /// This is the main type for your game
@@ -23,15 +23,9 @@ namespace cstrike2d
 
         private Camera2D camera;
 
-        // FPS
-        private int counter;
-        private float fps;
-        private float timer;
-
         private Texture2D pixelTexture;
         private Map newMap;
 
-        private Vector2 center;
 
         private float glowTimer = 0f;
         private bool fadeIn = true;
@@ -45,20 +39,50 @@ namespace cstrike2d
         private RenderTarget2D render;
         private RenderTarget2D finalRender;
 
+        // Model and View
+        CStrikeModel model;
+        CStrikeRenderer view;
+
+        // Game Properties (FPS, Resolution)
+
+        /// <summary>
+        /// The dimensions of the window
+        /// </summary>
+        public Vector2 Dimensions { get; }
+
+        /// <summary>
+        /// Returns the center coordinate of the window
+        /// </summary>
+        public Vector2 Center { get; }
+
+        /// <summary>
+        /// The number of screen updates in Frames Per Second
+        /// </summary>
+        public decimal FPS { get; private set; }
+
+        private int counter;       // Used to count how many times the screen is drawn
+        private decimal timer;     // Used to track 1 second intervals in walltime for counting FPS
+
         public CStrike2D()
         {
             graphics = new GraphicsDeviceManager(this);
+
+            // Default dimensions
             graphics.PreferredBackBufferHeight = 768;
             graphics.PreferredBackBufferWidth = 1366;
 
+            Dimensions = new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+            Center = new Vector2(Dimensions.X / 2, Dimensions.Y / 2);
 
-
-            center = new Vector2(graphics.PreferredBackBufferWidth/2f,
-                graphics.PreferredBackBufferHeight/2f);
-
+            // Disable VSync
             graphics.SynchronizeWithVerticalRetrace = false;
+
+            // Show the mouse
             IsMouseVisible = true;
+
+            // Prefer Multi-Sampling
             graphics.PreferMultiSampling = true;
+
             Content.RootDirectory = "Content";
         }
 
@@ -79,6 +103,10 @@ namespace cstrike2d
         /// </summary>
         protected override void LoadContent()
         {
+            // Initialize Model and View
+            model = new CStrikeModel();
+            view = new CStrikeRenderer(this);
+
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             defFont = Content.Load<SpriteFont>("font/defFont");
@@ -93,12 +121,6 @@ namespace cstrike2d
             camera.Position = new Vector2((newMap.TileMap.GetLength(0)/2)*64 + 32,
                 (newMap.TileMap.GetLength(1)/2)*64 + 32);
 
-            render = new RenderTarget2D(graphics.GraphicsDevice, 1366, 768, false, 
-                SurfaceFormat.Rgba64, DepthFormat.Depth24, 24, RenderTargetUsage.DiscardContents);
-
-            finalRender = new RenderTarget2D(graphics.GraphicsDevice, 1366, 768, false,
-                SurfaceFormat.Rgba64, DepthFormat.Depth24, 24, RenderTargetUsage.DiscardContents);
-
         }
 
         /// <summary>
@@ -107,6 +129,8 @@ namespace cstrike2d
         /// </summary>
         protected override void UnloadContent()
         {
+            // Unloads content from all pipelines
+            view.UnloadAll();
         }
 
         /// <summary>
@@ -116,9 +140,11 @@ namespace cstrike2d
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            timer += (float) gameTime.ElapsedGameTime.TotalMilliseconds;
-            counter++;
+            timer += (decimal)gameTime.ElapsedGameTime.TotalMilliseconds;
+            
             inputManager.Tick();
+
+            model.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds);
 
             if (fadeIn)
             {
@@ -139,10 +165,10 @@ namespace cstrike2d
                 }
             }
 
-            if (timer >= 100f)
+            if (timer >= 100m)
             {
                 timer = 0;
-                fps = counter*10f;
+                FPS = counter*10m;
                 counter = 0;
             }
 
@@ -186,9 +212,11 @@ namespace cstrike2d
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            
             GraphicsDevice.Clear(Color.Transparent);
-            GraphicsDevice.SetRenderTarget(render);
-            GraphicsDevice.Clear(Color.Transparent);
+
+            view.Draw(spriteBatch);
+
             spriteBatch.Begin(SpriteSortMode.Deferred,
                 BlendState.AlphaBlend, null, null, null, null,
                 camera.GetTransform(GraphicsDevice));
@@ -223,7 +251,7 @@ namespace cstrike2d
                 }
             }
 
-            // Camera center
+            // Camera Center
             spriteBatch.Draw(pixelTexture,
                 new Rectangle((int) (camera.Position.X - 5), (int) (camera.Position.Y - 5), 10, 10), Color.Red);
 
@@ -248,35 +276,35 @@ namespace cstrike2d
 
             spriteBatch.DrawString(defFont,
                 "Mouse (Local): " + inputManager.MousePosition + "\n" +
-                "Mouse (World): " + inputManager.ScreenToWorld(inputManager.MousePosition, camera, center) + "\n" +
+                "Mouse (World): " + inputManager.ScreenToWorld(inputManager.MousePosition, camera, Center) + "\n" +
                 "Camera (World): " + camera.Position + "\n" +
-                "Mouse (Row): " + inputManager.GetRow(camera, center) + "\n" +
-                "Mouse (Column): " + inputManager.GetColumn(camera, center) + "\n" +
+                "Mouse (Row): " + inputManager.GetRow(camera, Center) + "\n" +
+                "Mouse (Column): " + inputManager.GetColumn(camera, Center) + "\n" +
                 "Quadrant of Direction: " +
-                MathOps.ReturnQuadrant(MathOps.RealRadians(MathOps.Angle(inputManager.MousePosition, center))) + "\n" +
-                "Angle (Degrees): " + MathOps.ToDegrees(MathOps.Angle(inputManager.MousePosition, center)) + "\n" +
-                "Angle (Radians): " + MathOps.RealRadians(MathOps.Angle(inputManager.MousePosition, center)) + "\n" + 
+                MathOps.ReturnQuadrant(MathOps.RealRadians(MathOps.Angle(inputManager.MousePosition, Center))) + "\n" +
+                "Angle (Degrees): " + MathOps.ToDegrees(MathOps.Angle(inputManager.MousePosition, Center)) + "\n" +
+                "Angle (Radians): " + MathOps.RealRadians(MathOps.Angle(inputManager.MousePosition, Center)) + "\n" + 
                 "Location (Col, Row): " + (int)(camera.Position.X / 64) + ", " + (int)(camera.Position.Y / 64) + "\n" +
                 "Collidable Face Calculation Time: " + pathfindingTime + "ms" + "\n" +
                 "Check Angle: " + ((24 * (glowTimer / 1000f)) * (float)Math.PI) / 12f,
                 Vector2.Zero, Color.White);
 
             // Center
-            spriteBatch.Draw(pixelTexture, new Rectangle((int) center.X, (int) center.Y,
-                (int) (MathOps.Delta(inputManager.MousePosition, center).Length()),
-                2), null, Color.Red, (MathOps.Angle(inputManager.MousePosition, center)), Vector2.Zero,
+            spriteBatch.Draw(pixelTexture, new Rectangle((int) Center.X, (int) Center.Y,
+                (int) (MathOps.Delta(inputManager.MousePosition, Center).Length()),
+                2), null, Color.Red, (MathOps.Angle(inputManager.MousePosition, Center)), Vector2.Zero,
                 SpriteEffects.None, 0);
 
             // FPS
-            spriteBatch.DrawString(defFont, "FPS: " + fps, new Vector2(graphics.PreferredBackBufferWidth - (defFont.MeasureString("FPS: " + fps).X), 0), Color.White);
+            spriteBatch.DrawString(defFont, "FPS: " + FPS, new Vector2(graphics.PreferredBackBufferWidth - (defFont.MeasureString("FPS: " + FPS).X), 0), Color.White);
 
             // Ray
             for (int i = 0; i < 24; i++)
             {
                 spriteBatch.Draw(pixelTexture,
-                    new Rectangle((int) center.X, (int) center.Y,
+                    new Rectangle((int) Center.X, (int) Center.Y,
                         (int)
-                            MathOps.Delta(center, MathOps.AngleToVector(i * (float)Math.PI/12f))
+                            MathOps.Delta(Center, MathOps.AngleToVector(i * (float)Math.PI/12f))
                                 .Length(),
                         1), null, Color.Red,
                     (i * (float)Math.PI/12f), Vector2.Zero, SpriteEffects.None, 0);
@@ -289,19 +317,7 @@ namespace cstrike2d
                 Color.Green, 0, new Vector2(0.5f, 0.5f), SpriteEffects.None, 0);
 
             spriteBatch.End();
-
-            GraphicsDevice.SetRenderTarget(finalRender);
-            GraphicsDevice.Clear(Color.Transparent);
-
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Matrix.CreateScale(2f));
-            spriteBatch.Draw(render, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
-            spriteBatch.End();
-
-            GraphicsDevice.SetRenderTarget(null);
-
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Matrix.CreateScale(0.5f));
-            spriteBatch.Draw(finalRender, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
-            spriteBatch.End();
+            counter++;
             base.Draw(gameTime);
         }
 

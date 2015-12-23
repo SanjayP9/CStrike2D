@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 
-namespace cstrike2d
+namespace CStrike2D
 {
 
     static class MathOps

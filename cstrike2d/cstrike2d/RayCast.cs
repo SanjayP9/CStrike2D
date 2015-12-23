@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace cstrike2d
+namespace CStrike2D
 {
     class RayCast
     {

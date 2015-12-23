@@ -1,0 +1,32 @@
+﻿- Notes -
+- This text file can be used for pretty much anything.
+- It is recommended to state any important information regarding the implementation of your classes
+- For example, if someone wants to implement one of your abstract classes, the structure and guidelines should be listed here
+- Also general guidelines for View code as well as Model code should be noted here as well
+- Dec 23rd - Mark Voong
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+- General Guidelines for model/logic classes -
+-- When performing calculations that occur over a time span (Movement, velocity, etc),
+-- all calculations should be multiplied with the gameTime variable. Keep in mind at the driver model class (CStrikeModel.cs)
+-- the gameTime variable is divided by 1000 to convert the milliseconds into seconds. This will affect stuff like movement speed and other
+-- constants.
+
+- General Guidelines for view/draw classes -
+-- Draw order is important. As of now the only draw order implementation is per class. Drawing inside the class will be from top to bottom,
+-- however, that entire component may be drawn in a different order when the entire game is drawn.
+
+- General coding guidelines -
+-- Properties are preferred but not required. (Such as private fields)
+-- Documentation should be lighter than the last project unless it is a critical component (Collision Detection)
+
+- How to use the Assets and AssetLoader class -
+-- If you require content during one of your draw calls, the Assets class is passed as one of the parameters. This class contains all required
+-- assets such as fonts, textures, and sounds. Your view implementation SHOULD NOT have any fields regarding content, all content should be
+-- retrieved via public properties in the asset class. In order to load an asset to be usable, the following must happen
+
+-- There are three content pipelines you should be using
+-- 1. coreContentLoader - Contains assets such as fonts and UI elements. This is loaded immediately at the start and is never unloaded
+-- 2. mapContentLoader - Contains assets such as tilesets, minimap displays, and map sounds. This is loaded when the player connects
+-- 3. gameContentLoader - Contains assets such as weapons, playermodels, particles

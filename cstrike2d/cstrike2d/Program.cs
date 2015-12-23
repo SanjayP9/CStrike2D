@@ -1,6 +1,6 @@
 using System;
 
-namespace cstrike2d
+namespace CStrike2D
 {
 #if WINDOWS || XBOX
     static class Program

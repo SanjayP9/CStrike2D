@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace cstrike2d
+namespace CStrike2D
 {
     class AssetLoader
     {
