@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
 {
-    class AssetLoader
+    internal class AssetLoader
     {
         public Texture2D TileMap { get; private set; }
         private ContentManager content;

@@ -61,7 +61,7 @@ namespace CStrike2D
         }
     }
 
-    static class TileFunctions
+    internal static class TileFunctions
     {
         public static int ToTile(int col, int row, int maxCol)
         {

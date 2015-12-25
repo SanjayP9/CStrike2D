@@ -2,7 +2,7 @@
 // File Name: EasingFunctions.cs
 // Project Name: LightEngine
 // Creation Date: Feburary 10th, 2015
-// Modified Date: May 18th, 2015
+// Modified Date: Dec 23rd, 2015
 // Description: See Below.
 using System;
 
@@ -23,7 +23,7 @@ namespace LightEngine
     ///               All functions have an In, Out, and In/Out version.
     /// -------------------------------------------------------------------------------------------
     /// </summary>
-    static class EasingFunctions
+    public static class EasingFunctions
     {
         public enum AnimationType
         {
@@ -52,17 +52,18 @@ namespace LightEngine
         }
 
         /// <summary>
-        /// Returns the appropriate function given the
-        /// requested animation type
+        /// Returns the appropriate function given the requested animation type
         /// </summary>
-        /// <param name="time"></param>
-        /// <param name="startingPoint"></param>
-        /// <param name="change"></param>
-        /// <param name="animationTime"></param>
-        /// <param name="animType"></param>
+        /// <param name="time"> Current time in the animation</param>
+        /// <param name="startingPoint"> The starting vector of the animation</param>
+        /// <param name="endingPoint"> The ending vector of the animation</param>
+        /// <param name="animationTime"> Time it takes to complete the animation</param>
+        /// <param name="animType"> Type of animation</param>
         /// <returns></returns>
-        public static double Animate(double time, double startingPoint, double change, double animationTime, AnimationType animType)
+        public static double Animate(double time, double startingPoint, double endingPoint, double animationTime, AnimationType animType)
         {
+            double change = endingPoint - startingPoint;
+
             // If the animation is complete
             // Return the destination to avoid overshoot
             if (time > animationTime)

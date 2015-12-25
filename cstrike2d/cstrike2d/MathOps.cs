@@ -12,8 +12,7 @@ using Microsoft.Xna.Framework;
 
 namespace CStrike2D
 {
-
-    static class MathOps
+    internal static class MathOps
     {
         private const float QUADRANT_ONE = (float)Math.PI/2f;
         private const float QUADRANT_TWO = (float) Math.PI;

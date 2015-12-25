@@ -7,15 +7,16 @@
 
 using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace CStrike2D
 {
-    class InputManager
+    public class InputManager
     {
-        MouseState prevMouseState, mouseState;
-        KeyboardState prevKeyboardState, keyboardState;
+        private MouseState prevMouseState;
+        private MouseState mouseState;
+        private KeyboardState prevKeyboardState;
+        private KeyboardState keyboardState;
         private float prevMouseScroll;
 
         /// <summary>
@@ -82,6 +83,46 @@ namespace CStrike2D
         public bool ScrollDown()
         {
             return (mouseState.ScrollWheelValue < prevMouseScroll);
+        }
+
+        /// <summary>
+        /// Checks if the user clicked the left mouse button
+        /// </summary>
+        /// <returns></returns>
+        public bool LeftClick()
+        {
+            return prevMouseState.LeftButton == ButtonState.Pressed &&
+                   mouseState.LeftButton == ButtonState.Released;
+        }
+
+        /// <summary>
+        /// Checks if the user clicked the right mouse button
+        /// </summary>
+        /// <returns></returns>
+        public bool RightClick()
+        {
+            return prevMouseState.RightButton == ButtonState.Pressed &&
+                   mouseState.RightButton == ButtonState.Released;
+        }
+
+        /// <summary>
+        /// Checks if the user is holding the left mouse button
+        /// </summary>
+        /// <returns></returns>
+        public bool LeftHold()
+        {
+            return prevMouseState.LeftButton == ButtonState.Pressed &&
+                   mouseState.LeftButton == ButtonState.Pressed;
+        }
+
+        /// <summary>
+        /// Checks if the user is holding the right mouse button
+        /// </summary>
+        /// <returns></returns>
+        public bool RightHold()
+        {
+            return prevMouseState.RightButton == ButtonState.Pressed &&
+                   mouseState.RightButton == ButtonState.Pressed;
         }
 
         public float MouseRotation(Camera2D origin)

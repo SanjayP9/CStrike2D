@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CStrike2D
 {
-    class RayCast
+    internal class RayCast
     {
 
         public RayCast(Vector2 emitLocal, float angle)

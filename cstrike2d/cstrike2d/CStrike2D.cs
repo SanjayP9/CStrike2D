@@ -40,8 +40,8 @@ namespace CStrike2D
         private RenderTarget2D finalRender;
 
         // Model and View
-        CStrikeModel model;
-        CStrikeRenderer view;
+        private CStrikeModel model;
+        private CStrikeRenderer view;
 
         // Game Properties (FPS, Resolution)
 
@@ -141,66 +141,10 @@ namespace CStrike2D
         protected override void Update(GameTime gameTime)
         {
             timer += (decimal)gameTime.ElapsedGameTime.TotalMilliseconds;
-            
+
             inputManager.Tick();
 
-            model.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds);
-
-            if (fadeIn)
-            {
-                glowTimer += (float) gameTime.ElapsedGameTime.TotalMilliseconds;
-
-                if (glowTimer >= 1000f)
-                {
-                    fadeIn = !fadeIn;
-                }
-            }
-            else
-            {
-                glowTimer -= (float) gameTime.ElapsedGameTime.TotalMilliseconds;
-
-                if (glowTimer <= 0f)
-                {
-                    fadeIn = !fadeIn;
-                }
-            }
-
-            if (timer >= 100m)
-            {
-                timer = 0;
-                FPS = counter*10m;
-                counter = 0;
-            }
-
-            if (inputManager.Held(Keys.A))
-            {
-                camera.Position.X -= 5f;
-            }
-
-            if (inputManager.Held(Keys.D))
-            {
-                camera.Position.X += 5f;
-            }
-
-            if (inputManager.Held(Keys.W))
-            {
-                camera.Position.Y -= 5f;
-            }
-
-            if (inputManager.Held(Keys.S))
-            {
-                camera.Position.Y += 5f;
-            }
-
-            stopWatch.Start();
-            collidables = GetCollidableTiles(newMap.ToTile(camera.Col(), camera.Row()));
-            stopWatch.Stop();
-
-            raycastCollidables = GetWalls(newMap.ToTile(camera.Col(), camera.Row()), (24 * (glowTimer / 1000f)) * (float)Math.PI / 12f);
-
-            pathfindingTime = Math.Round((double)stopWatch.ElapsedMilliseconds, 10);
-
-            stopWatch.Reset();
+            model.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000f);
 
             inputManager.Tock();
             base.Update(gameTime);
@@ -215,106 +159,11 @@ namespace CStrike2D
             
             GraphicsDevice.Clear(Color.Transparent);
 
-            view.Draw(spriteBatch);
-
             spriteBatch.Begin(SpriteSortMode.Deferred,
                 BlendState.AlphaBlend, null, null, null, null,
                 camera.GetTransform(GraphicsDevice));
 
-            for (int col = 0; col < newMap.MaxCol; col++)
-            {
-                for (int row = 0; row < newMap.MaxRow; row++)
-                {
-                    Rectangle rect = new Rectangle(col*64, row*64, 64, 64);
-
-                        switch (newMap.TileMap[col, row].TileType)
-                        {
-                            case 1:
-                                if (raycastCollidables.Contains(newMap.ToTile(col, row)))
-                                {
-                                    spriteBatch.Draw(pixelTexture, rect, Color.Gray);
-                                    spriteBatch.Draw(pixelTexture, rect,
-                                    Color.Red * (0.6f * (glowTimer / 1000f)));
-                                }
-                                else
-                                {
-                                    spriteBatch.Draw(pixelTexture, rect, Color.Green);
-                                }
-                                
-                                break;
-                            case 0:
-                                spriteBatch.Draw(pixelTexture, rect, Color.Gold);
-                                break;
-                        }
-                    
-                    spriteBatch.DrawString(defFont, col + ", " + row + "\n" + ((row * newMap.MaxCol) + col), new Vector2(rect.Center.X - 15, rect.Center.Y - 15), Color.White);
-                }
-            }
-
-            // Camera Center
-            spriteBatch.Draw(pixelTexture,
-                new Rectangle((int) (camera.Position.X - 5), (int) (camera.Position.Y - 5), 10, 10), Color.Red);
-
-            spriteBatch.End();
-
-            spriteBatch.Begin(SpriteSortMode.Deferred,
-                BlendState.AlphaBlend, null, null, null, null,
-                camera.GetTransform(GraphicsDevice));
-
-            for (int x = 0; x <= newMap.TileMap.GetLength(0); x++)
-            {
-                for (int y = 0; y <= newMap.TileMap.GetLength(1); y++)
-                {
-                    spriteBatch.Draw(pixelTexture, new Rectangle(0, y * 64, 64 * x, 1), Color.Black);
-                    spriteBatch.Draw(pixelTexture, new Rectangle(x * 64, 0, 1, 64 * y), Color.Black);
-                }
-            }
-
-            spriteBatch.End();
-
-            spriteBatch.Begin();
-
-            spriteBatch.DrawString(defFont,
-                "Mouse (Local): " + inputManager.MousePosition + "\n" +
-                "Mouse (World): " + inputManager.ScreenToWorld(inputManager.MousePosition, camera, Center) + "\n" +
-                "Camera (World): " + camera.Position + "\n" +
-                "Mouse (Row): " + inputManager.GetRow(camera, Center) + "\n" +
-                "Mouse (Column): " + inputManager.GetColumn(camera, Center) + "\n" +
-                "Quadrant of Direction: " +
-                MathOps.ReturnQuadrant(MathOps.RealRadians(MathOps.Angle(inputManager.MousePosition, Center))) + "\n" +
-                "Angle (Degrees): " + MathOps.ToDegrees(MathOps.Angle(inputManager.MousePosition, Center)) + "\n" +
-                "Angle (Radians): " + MathOps.RealRadians(MathOps.Angle(inputManager.MousePosition, Center)) + "\n" + 
-                "Location (Col, Row): " + (int)(camera.Position.X / 64) + ", " + (int)(camera.Position.Y / 64) + "\n" +
-                "Collidable Face Calculation Time: " + pathfindingTime + "ms" + "\n" +
-                "Check Angle: " + ((24 * (glowTimer / 1000f)) * (float)Math.PI) / 12f,
-                Vector2.Zero, Color.White);
-
-            // Center
-            spriteBatch.Draw(pixelTexture, new Rectangle((int) Center.X, (int) Center.Y,
-                (int) (MathOps.Delta(inputManager.MousePosition, Center).Length()),
-                2), null, Color.Red, (MathOps.Angle(inputManager.MousePosition, Center)), Vector2.Zero,
-                SpriteEffects.None, 0);
-
-            // FPS
-            spriteBatch.DrawString(defFont, "FPS: " + FPS, new Vector2(graphics.PreferredBackBufferWidth - (defFont.MeasureString("FPS: " + FPS).X), 0), Color.White);
-
-            // Ray
-            for (int i = 0; i < 24; i++)
-            {
-                spriteBatch.Draw(pixelTexture,
-                    new Rectangle((int) Center.X, (int) Center.Y,
-                        (int)
-                            MathOps.Delta(Center, MathOps.AngleToVector(i * (float)Math.PI/12f))
-                                .Length(),
-                        1), null, Color.Red,
-                    (i * (float)Math.PI/12f), Vector2.Zero, SpriteEffects.None, 0);
-            }
-
-
-            // Mouse Point
-            spriteBatch.Draw(pixelTexture,
-                new Rectangle((int) inputManager.MousePosition.X, (int) inputManager.MousePosition.Y, 10, 10), null,
-                Color.Green, 0, new Vector2(0.5f, 0.5f), SpriteEffects.None, 0);
+            view.Draw(spriteBatch, model);
 
             spriteBatch.End();
             counter++;
