@@ -156,5 +156,4 @@ $RECYCLE.BIN/
 .DS_Store
 
 # Content
-cstrike2d/cstrike2DContent/*
 cstrike2d/cstrike2d/bin/*
