@@ -1,7 +1,9 @@
 ﻿
-using System.Windows.Forms.VisualStyles;
+using System;
+using System.IO;
+using CStrike2D;
 
-namespace CStrike2D
+namespace cstrike2d
 {
     public class Map
     {
@@ -9,6 +11,10 @@ namespace CStrike2D
         public int MaxTiles { get; private set; }
         public int MaxRow { get; private set; }
         public int MaxCol { get; private set; }
+
+        private byte[,] tiles;
+        private byte[,] tileProperties;
+        int tileSize;
 
         public Map(int[,] tileData)
         {
@@ -22,9 +28,77 @@ namespace CStrike2D
                 }
             }
 
-            MaxTiles = tileData.GetLength(0)*tileData.GetLength(1);
+            MaxTiles = tileData.GetLength(0) * tileData.GetLength(1);
             MaxRow = tileData.GetLength(1);
             MaxCol = tileData.GetLength(0);
+        }
+
+        public void SaveFile(string fileName)
+        {
+            StreamWriter outFile = File.CreateText(fileName);
+
+            //in the homework he had tile size we prob will max tile size a constant
+            outFile.WriteLine(tileSize);
+
+            outFile.WriteLine(MaxRow);
+            outFile.WriteLine(MaxCol);
+
+            for (int rows = 0; rows < MaxRow; rows++)
+            {
+                for (int cols = 0; cols < MaxCol; cols++)
+                {
+                    outFile.Write(tiles[rows, cols] + ",");
+                }
+                outFile.WriteLine();
+            }
+
+            for (int rows = 0; rows < MaxRow; rows++)
+            {
+                for (int cols = 0; cols < MaxCol; cols++)
+                {
+                    outFile.Write(tileProperties[rows, cols] + ",");
+                }
+                outFile.WriteLine();
+            }
+
+            outFile.Close();
+        }
+
+        public void LoadFile(string fileName)
+        {
+            StreamReader inFile = File.OpenText(fileName);
+
+            string[] rowData;
+
+            tileSize = Convert.ToInt32(inFile.ReadLine());
+            MaxRow = Convert.ToInt32(inFile.ReadLine());
+            MaxCol = Convert.ToInt32(inFile.ReadLine());
+
+            tiles = new byte[MaxRow, MaxCol];
+            tileProperties = new byte[MaxRow, MaxCol];
+
+            for (int rows = 0; rows < MaxRow; rows++)
+            {
+                rowData = inFile.ReadLine().Split(',');
+
+                for (int cols = 0; cols < MaxCol; cols++)
+                {
+                    tiles[rows, cols] = Convert.ToByte(rowData[cols]);
+                }
+            }
+
+            for (int rows = 0; rows < MaxRow; rows++)
+            {
+
+                rowData = inFile.ReadLine().Split(',');
+
+                for (int cols = 0; cols < MaxCol; cols++)
+                {
+                    tileProperties[rows, cols] = Convert.ToByte(rowData[cols]);
+                }
+            }
+
+            inFile.Close();
         }
 
         /// <summary>
@@ -34,7 +108,7 @@ namespace CStrike2D
         /// <returns></returns>
         public int TypeFromTileNumber(int tileNumber)
         {
-            int[] rowCol = { tileNumber % MaxCol, tileNumber / MaxCol};
+            int[] rowCol = { tileNumber % MaxCol, tileNumber / MaxCol };
 
             return TileMap[rowCol[0], rowCol[1]].TileType;
         }
@@ -61,7 +135,7 @@ namespace CStrike2D
         }
     }
 
-    internal static class TileFunctions
+    static class TileFunctions
     {
         public static int ToTile(int col, int row, int maxCol)
         {
