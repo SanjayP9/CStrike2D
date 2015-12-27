@@ -4,6 +4,8 @@
 // Date Created: Dec 6th 2015
 // Date Modified: Dec 23rd 2015
 // Description: Handles all graphical aspects of the game
+
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -73,6 +75,11 @@ namespace CStrike2D
         /// <param name="model"></param>
         public void Draw(SpriteBatch sb, CStrikeModel model)
         {
+
+            sb.Begin(SpriteSortMode.Deferred,
+    BlendState.AlphaBlend, null, null, null, null,
+    camera.GetTransform(model.DriverInstance.GraphicsDevice));
+
             for (int col = 0; col < newMap.MaxCol; col++)
             {
                 for (int row = 0; row < newMap.MaxRow; row++)
