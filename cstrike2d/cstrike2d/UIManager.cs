@@ -59,7 +59,10 @@ namespace cstrike2d
             GUIComponent component = guiComponents.Find(comp => comp.Identifier == identifier);
 
             // If the component is not null, show the component
-            component?.Show();
+            if (component != null)
+            {
+                component.Show();
+            }
         }
 
         /// <summary>
@@ -70,7 +73,11 @@ namespace cstrike2d
         {
             GUIComponent component = guiComponents.Find(comp => comp.Identifier == identifier);
 
-            component?.Hide();
+            // If the component is not null, show the component
+            if (component != null)
+            {
+                component.Hide();
+            }
         }
     }
 }

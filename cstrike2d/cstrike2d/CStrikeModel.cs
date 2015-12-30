@@ -21,25 +21,29 @@ namespace CStrike2D
     {
         public UIManager InterfaceManager { get; private set; }
 
-        private Camera2D camera;
+        public Camera2D Camera { get; private set; }
 
-        private Map newMap;
+        public Map NewMap { get; private set; }
         public InputManager Input { get; private set; }
 
 
-        private float glowTimer = 0f;
-        private bool fadeIn = true;
+        public float GlowTimer { get; private set; }
+        public bool FadeIn { get; private set; }
 
-        private int[] collidables;
-        private int[] raycastCollidables;
+        public int[] Collidables { get; private set; }
+        public int[] RaycastCollidables { get; private set; }
 
         private Stopwatch stopWatch = new Stopwatch();
-        private double pathfindingTime;
+        public double PathfindingTime { get; private set; }
 
         private int counter;       // Used to count how many times the screen is drawn
         private decimal timer;     // Used to track 1 second intervals in walltime for counting FPS
 
-        public Game DriverInstance { get; private set; }
+        public CStrike2D DriverInstance { get; private set; }
+
+        public Vector2 Center { get; private set; }
+
+        public Vector2 Dimensions { get; private set; }
 
         public enum State
         {
@@ -51,9 +55,11 @@ namespace CStrike2D
 
         public State CurState { get; private set; }
 
-        public CStrikeModel(Game driver)
+        public CStrikeModel(CStrike2D driver, Vector2 center, Vector2 dimensions)
         {
             DriverInstance = driver;
+            Center = center;
+            Dimensions = dimensions;
 
             CurState = State.Menu;
 
@@ -66,9 +72,16 @@ namespace CStrike2D
             InterfaceManager.Show("TestButton");
             Input = new InputManager();
 
-            camera = new Camera2D();
-            camera.Position = new Vector2((newMap.TileMap.GetLength(0) / 2) * 64 + 32,
-                (newMap.TileMap.GetLength(1) / 2) * 64 + 32);
+            FadeIn = true;
+
+            LoadMap("default");
+            WriteMap("bigmap");
+
+            Camera = new Camera2D();
+            Camera.Position = new Vector2((NewMap.TileMap.GetLength(0) / 2) * 64 + 32,
+                (NewMap.TileMap.GetLength(1) / 2) * 64 + 32);
+
+          
         }
 
         public void Update(float gameTime)
@@ -81,52 +94,52 @@ namespace CStrike2D
             {
                 case State.Menu:
 
-                    if (fadeIn)
+                    if (FadeIn)
                     {
-                        glowTimer += gameTime;
+                        GlowTimer += gameTime;
 
-                        if (glowTimer >= 1.0f)
+                        if (GlowTimer >= 1.0f)
                         {
-                            fadeIn = !fadeIn;
+                            FadeIn = !FadeIn;
                         }
                     }
                     else
                     {
-                        glowTimer -= gameTime;
+                        GlowTimer -= gameTime;
 
-                        if (glowTimer <= 1.0f)
+                        if (GlowTimer <= 1.0f)
                         {
-                            fadeIn = !fadeIn;
+                            FadeIn = !FadeIn;
                         }
                     }
 
                     if (Input.Held(Keys.A))
                     {
-                        camera.Position.X -= 5f;
+                        Camera.Position.X -= 5f;
                     }
 
                     if (Input.Held(Keys.D))
                     {
-                        camera.Position.X += 5f;
+                        Camera.Position.X += 5f;
                     }
 
                     if (Input.Held(Keys.W))
                     {
-                        camera.Position.Y -= 5f;
+                        Camera.Position.Y -= 5f;
                     }
 
                     if (Input.Held(Keys.S))
                     {
-                        camera.Position.Y += 5f;
+                        Camera.Position.Y += 5f;
                     }
 
                     stopWatch.Start();
-                    collidables = GetCollidableTiles(newMap.ToTile(camera.Col(), camera.Row()));
+                    Collidables = GetCollidableTiles(NewMap.ToTile(Camera.Col(), Camera.Row()));
                     stopWatch.Stop();
 
-                    raycastCollidables = GetWalls(newMap.ToTile(camera.Col(), camera.Row()), (24 * (glowTimer / 1000f)) * (float)Math.PI / 12f);
+                    RaycastCollidables = GetWalls(NewMap.ToTile(Camera.Col(), Camera.Row()), (24 * (GlowTimer / 1000f)) * (float)Math.PI / 12f);
 
-                    pathfindingTime = Math.Round((double)stopWatch.ElapsedMilliseconds, 10);
+                    PathfindingTime = Math.Round((double)stopWatch.ElapsedMilliseconds, 10);
 
                     stopWatch.Reset();
 
@@ -159,7 +172,7 @@ namespace CStrike2D
                         tiledata[x, y] = Convert.ToInt32(rowData[x]) - 48;
                     }
                 }
-                newMap = new Map(tiledata);
+                NewMap = new Map(tiledata);
             }
         }
 
@@ -226,7 +239,7 @@ namespace CStrike2D
                 case 0:
                     if ((origin - 1) > 0)
                     {
-                        if (newMap.TypeFromTileNumber(origin - 1) == 0)
+                        if (NewMap.TypeFromTileNumber(origin - 1) == 0)
                         {
                             return SearchTile(origin - 1, direction);
                         }
@@ -235,20 +248,20 @@ namespace CStrike2D
                     break;
                 // Down
                 case 1:
-                    if ((origin + newMap.MaxCol) < newMap.MaxTiles)
+                    if ((origin + NewMap.MaxCol) < NewMap.MaxTiles)
                     {
-                        if (newMap.TypeFromTileNumber(origin + newMap.MaxCol) == 0)
+                        if (NewMap.TypeFromTileNumber(origin + NewMap.MaxCol) == 0)
                         {
-                            return SearchTile(origin + newMap.MaxCol, direction);
+                            return SearchTile(origin + NewMap.MaxCol, direction);
                         }
-                        return (origin + newMap.MaxCol);
+                        return (origin + NewMap.MaxCol);
                     }
                     break;
                 // Right
                 case 2:
-                    if ((origin + 1) < newMap.MaxTiles)
+                    if ((origin + 1) < NewMap.MaxTiles)
                     {
-                        if (newMap.TypeFromTileNumber(origin + 1) == 0)
+                        if (NewMap.TypeFromTileNumber(origin + 1) == 0)
                         {
                             return SearchTile(origin + 1, direction);
                         }
@@ -257,57 +270,57 @@ namespace CStrike2D
                     break;
                 // Up
                 case 3:
-                    if ((origin - (newMap.MaxCol)) > 0)
+                    if ((origin - (NewMap.MaxCol)) > 0)
                     {
-                        if (newMap.TypeFromTileNumber(origin - newMap.MaxCol) == 0)
+                        if (NewMap.TypeFromTileNumber(origin - NewMap.MaxCol) == 0)
                         {
-                            return SearchTile(origin - newMap.MaxCol, direction);
+                            return SearchTile(origin - NewMap.MaxCol, direction);
                         }
-                        return (origin - (newMap.MaxCol));
+                        return (origin - (NewMap.MaxCol));
                     }
                     break;
                 // Top-Left
                 case 4:
-                    if ((origin - (newMap.MaxCol + 1)) >= 0)
+                    if ((origin - (NewMap.MaxCol + 1)) >= 0)
                     {
-                        if (newMap.TypeFromTileNumber(origin - (newMap.MaxCol + 1)) == 0)
+                        if (NewMap.TypeFromTileNumber(origin - (NewMap.MaxCol + 1)) == 0)
                         {
-                            return SearchTile(origin - (newMap.MaxCol + 1), direction);
+                            return SearchTile(origin - (NewMap.MaxCol + 1), direction);
                         }
-                        return (origin - (newMap.MaxCol + 1));
+                        return (origin - (NewMap.MaxCol + 1));
                     }
                     break;
                 // Top-Right
                 case 5:
-                    if (origin - (newMap.MaxCol - 1) > 0)
+                    if (origin - (NewMap.MaxCol - 1) > 0)
                     {
-                        if (newMap.TypeFromTileNumber(origin - (newMap.MaxCol - 1)) == 0)
+                        if (NewMap.TypeFromTileNumber(origin - (NewMap.MaxCol - 1)) == 0)
                         {
-                            return SearchTile(origin - (newMap.MaxCol - 1), direction);
+                            return SearchTile(origin - (NewMap.MaxCol - 1), direction);
                         }
-                        return (origin - (newMap.MaxCol - 1));
+                        return (origin - (NewMap.MaxCol - 1));
                     }
                     break;
                 // Bottom-Left
                 case 6:
-                    if (origin + (newMap.MaxCol - 1) < newMap.MaxTiles)
+                    if (origin + (NewMap.MaxCol - 1) < NewMap.MaxTiles)
                     {
-                        if (newMap.TypeFromTileNumber(origin + (newMap.MaxCol - 1)) == 0)
+                        if (NewMap.TypeFromTileNumber(origin + (NewMap.MaxCol - 1)) == 0)
                         {
-                            return SearchTile(origin + (newMap.MaxCol - 1), direction);
+                            return SearchTile(origin + (NewMap.MaxCol - 1), direction);
                         }
-                        return origin + (newMap.MaxCol - 1);
+                        return origin + (NewMap.MaxCol - 1);
                     }
                     break;
                 // Bottom-Right
                 case 7:
-                    if (origin + (newMap.MaxCol + 1) < newMap.MaxTiles)
+                    if (origin + (NewMap.MaxCol + 1) < NewMap.MaxTiles)
                     {
-                        if (newMap.TypeFromTileNumber(origin + (newMap.MaxCol + 1)) == 0)
+                        if (NewMap.TypeFromTileNumber(origin + (NewMap.MaxCol + 1)) == 0)
                         {
-                            return SearchTile(origin + (newMap.MaxCol + 1), direction);
+                            return SearchTile(origin + (NewMap.MaxCol + 1), direction);
                         }
-                        return origin + (newMap.MaxCol + 1);
+                        return origin + (NewMap.MaxCol + 1);
                     }
                     break;
                 default:
@@ -319,7 +332,7 @@ namespace CStrike2D
         public int[] GetWalls(int origin, float angle)
         {
             angle = MathHelper.Clamp(angle, 0, 6);
-            int[] rowCol = newMap.FromTile(origin);
+            int[] rowCol = NewMap.FromTile(origin);
             List<int> tiles = new List<int>();
 
             // 1 = Bottom-Right (PI / 2)
@@ -329,25 +342,25 @@ namespace CStrike2D
             switch (MathOps.ReturnQuadrant(angle))
             {
                 case 1:
-                    for (int row = rowCol[1]; row < newMap.MaxRow; row++)
+                    for (int row = rowCol[1]; row < NewMap.MaxRow; row++)
                     {
-                        for (int col = rowCol[0]; col < newMap.MaxCol; col++)
+                        for (int col = rowCol[0]; col < NewMap.MaxCol; col++)
                         {
-                            if (newMap.TileMap[col, row].TileType == 1)
+                            if (NewMap.TileMap[col, row].TileType == 1)
                             {
-                                tiles.Add(newMap.ToTile(col, row));
+                                tiles.Add(NewMap.ToTile(col, row));
                             }
                         }
                     }
                     break;
                 case 2:
-                    for (int row = rowCol[1]; row < newMap.MaxRow; row++)
+                    for (int row = rowCol[1]; row < NewMap.MaxRow; row++)
                     {
                         for (int col = 0; col <= rowCol[0]; col++)
                         {
-                            if (newMap.TileMap[col, row].TileType == 1)
+                            if (NewMap.TileMap[col, row].TileType == 1)
                             {
-                                tiles.Add(newMap.ToTile(col, row));
+                                tiles.Add(NewMap.ToTile(col, row));
                             }
                         }
                     }
@@ -357,9 +370,9 @@ namespace CStrike2D
                     {
                         for (int col = 0; col <= rowCol[0]; col++)
                         {
-                            if (newMap.TileMap[col, row].TileType == 1)
+                            if (NewMap.TileMap[col, row].TileType == 1)
                             {
-                                tiles.Add(newMap.ToTile(col, row));
+                                tiles.Add(NewMap.ToTile(col, row));
                             }
                         }
                     }
@@ -367,11 +380,11 @@ namespace CStrike2D
                 case 4:
                     for (int row = 0; row <= rowCol[1]; row++)
                     {
-                        for (int col = rowCol[0]; col < newMap.MaxCol; col++)
+                        for (int col = rowCol[0]; col < NewMap.MaxCol; col++)
                         {
-                            if (newMap.TileMap[col, row].TileType == 1)
+                            if (NewMap.TileMap[col, row].TileType == 1)
                             {
-                                tiles.Add(newMap.ToTile(col, row));
+                                tiles.Add(NewMap.ToTile(col, row));
                             }
                         }
                     }

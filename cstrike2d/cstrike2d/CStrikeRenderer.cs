@@ -6,6 +6,7 @@
 // Description: Handles all graphical aspects of the game
 
 using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -75,57 +76,56 @@ namespace CStrike2D
         /// <param name="model"></param>
         public void Draw(SpriteBatch sb, CStrikeModel model)
         {
-
             sb.Begin(SpriteSortMode.Deferred,
-    BlendState.AlphaBlend, null, null, null, null,
-    camera.GetTransform(model.DriverInstance.GraphicsDevice));
+                BlendState.AlphaBlend, null, null, null, null,
+                model.Camera.GetTransform(model.DriverInstance.GraphicsDevice));
 
-            for (int col = 0; col < newMap.MaxCol; col++)
+            for (int col = 0; col < model.NewMap.MaxCol; col++)
             {
-                for (int row = 0; row < newMap.MaxRow; row++)
+                for (int row = 0; row < model.NewMap.MaxRow; row++)
                 {
                     Rectangle rect = new Rectangle(col * 64, row * 64, 64, 64);
 
-                    switch (newMap.TileMap[col, row].TileType)
+                    switch (model.NewMap.TileMap[col, row].TileType)
                     {
                         case 1:
-                            if (raycastCollidables.Contains(newMap.ToTile(col, row)))
+                            if (model.RaycastCollidables.Contains(model.NewMap.ToTile(col, row)))
                             {
-                                spriteBatch.Draw(pixelTexture, rect, Color.Gray);
-                                sb.Draw(pixelTexture, rect,
-                                Color.Red * (0.6f * (glowTimer / 1000f)));
+                                sb.Draw(assets.PixelTexture, rect, Color.Gray);
+                                sb.Draw(assets.PixelTexture, rect,
+                                Color.Red * (0.6f * (model.GlowTimer / 1000f)));
                             }
                             else
                             {
-                                sb.Draw(pixelTexture, rect, Color.Green);
+                                sb.Draw(assets.PixelTexture, rect, Color.Green);
                             }
 
                             break;
                         case 0:
-                            sb.Draw(pixelTexture, rect, Color.Gold);
+                            sb.Draw(assets.PixelTexture, rect, Color.Gold);
                             break;
                     }
 
-                    sb.DrawString(defFont, col + ", " + row + "\n" + ((row * newMap.MaxCol) + col), new Vector2(rect.Center.X - 15, rect.Center.Y - 15), Color.White);
+                    sb.DrawString(assets.DefaultFont, col + ", " + row + "\n" + ((row * model.NewMap.MaxCol) + col), new Vector2(rect.Center.X - 15, rect.Center.Y - 15), Color.White);
                 }
             }
 
-            // Camera Center
-            sb.Draw(pixelTexture,
-                new Rectangle((int)(camera.Position.X - 5), (int)(camera.Position.Y - 5), 10, 10), Color.Red);
+            // model.Camera model.Center
+            sb.Draw(assets.PixelTexture,
+                new Rectangle((int)(model.Camera.Position.X - 5), (int)(model.Camera.Position.Y - 5), 10, 10), Color.Red);
 
             sb.End();
 
             sb.Begin(SpriteSortMode.Deferred,
                 BlendState.AlphaBlend, null, null, null, null,
-                camera.GetTransform(GraphicsDevice));
+                model.Camera.GetTransform(model.DriverInstance.GraphicsDevice));
 
-            for (int x = 0; x <= newMap.TileMap.GetLength(0); x++)
+            for (int x = 0; x <= model.NewMap.TileMap.GetLength(0); x++)
             {
-                for (int y = 0; y <= newMap.TileMap.GetLength(1); y++)
+                for (int y = 0; y <= model.NewMap.TileMap.GetLength(1); y++)
                 {
-                    sb.Draw(pixelTexture, new Rectangle(0, y * 64, 64 * x, 1), Color.Black);
-                    sb.Draw(pixelTexture, new Rectangle(x * 64, 0, 1, 64 * y), Color.Black);
+                    sb.Draw(assets.PixelTexture, new Rectangle(0, y * 64, 64 * x, 1), Color.Black);
+                    sb.Draw(assets.PixelTexture, new Rectangle(x * 64, 0, 1, 64 * y), Color.Black);
                 }
             }
 
@@ -133,37 +133,37 @@ namespace CStrike2D
 
             sb.Begin();
 
-            sb.DrawString(defFont,
-                "Mouse (Local): " + inputManager.MousePosition + "\n" +
-                "Mouse (World): " + inputManager.ScreenToWorld(inputManager.MousePosition, camera, Center) + "\n" +
-                "Camera (World): " + camera.Position + "\n" +
-                "Mouse (Row): " + inputManager.GetRow(camera, Center) + "\n" +
-                "Mouse (Column): " + inputManager.GetColumn(camera, Center) + "\n" +
+            sb.DrawString(assets.DefaultFont,
+                "Mouse (Local): " + model.Input.MousePosition + "\n" +
+                "Mouse (World): " + model.Input.ScreenToWorld(model.Input.MousePosition, model.Camera, model.Center) + "\n" +
+                "model.Camera (World): " + model.Camera.Position + "\n" +
+                "Mouse (Row): " + model.Input.GetRow(model.Camera, model.Center) + "\n" +
+                "Mouse (Column): " + model.Input.GetColumn(model.Camera, model.Center) + "\n" +
                 "Quadrant of Direction: " +
-                MathOps.ReturnQuadrant(MathOps.RealRadians(MathOps.Angle(inputManager.MousePosition, Center))) + "\n" +
-                "Angle (Degrees): " + MathOps.ToDegrees(MathOps.Angle(inputManager.MousePosition, Center)) + "\n" +
-                "Angle (Radians): " + MathOps.RealRadians(MathOps.Angle(inputManager.MousePosition, Center)) + "\n" +
-                "Location (Col, Row): " + (int)(camera.Position.X / 64) + ", " + (int)(camera.Position.Y / 64) + "\n" +
-                "Collidable Face Calculation Time: " + pathfindingTime + "ms" + "\n" +
-                "Check Angle: " + ((24 * (glowTimer / 1000f)) * (float)Math.PI) / 12f,
+                MathOps.ReturnQuadrant(MathOps.RealRadians(MathOps.Angle(model.Input.MousePosition, model.Center))) + "\n" +
+                "Angle (Degrees): " + MathOps.ToDegrees(MathOps.Angle(model.Input.MousePosition, model.Center)) + "\n" +
+                "Angle (Radians): " + MathOps.RealRadians(MathOps.Angle(model.Input.MousePosition, model.Center)) + "\n" +
+                "Location (Col, Row): " + (int)(model.Camera.Position.X / 64) + ", " + (int)(model.Camera.Position.Y / 64) + "\n" +
+                "Collidable Face Calculation Time: " + model.PathfindingTime + "ms" + "\n" +
+                "Check Angle: " + ((24 * (model.GlowTimer / 1000f)) * (float)Math.PI) / 12f,
                 Vector2.Zero, Color.White);
 
-            // Center
-            sb.Draw(pixelTexture, new Rectangle((int)Center.X, (int)Center.Y,
-                (int)(MathOps.Delta(inputManager.MousePosition, Center).Length()),
-                2), null, Color.Red, (MathOps.Angle(inputManager.MousePosition, Center)), Vector2.Zero,
+            // model.Center
+            sb.Draw(assets.PixelTexture, new Rectangle((int)model.Center.X, (int)model.Center.Y,
+                (int)(MathOps.Delta(model.Input.MousePosition, model.Center).Length()),
+                2), null, Color.Red, (MathOps.Angle(model.Input.MousePosition, model.Center)), Vector2.Zero,
                 SpriteEffects.None, 0);
 
             // FPS
-            sb.DrawString(defFont, "FPS: " + FPS, new Vector2(graphics.PreferredBackBufferWidth - (defFont.MeasureString("FPS: " + FPS).X), 0), Color.White);
+            sb.DrawString(assets.DefaultFont, "FPS: " + model.DriverInstance.FPS, new Vector2(model.Dimensions.X - (assets.DefaultFont.MeasureString("FPS: " + model.DriverInstance.FPS).X), 0), Color.White);
 
             // Ray
             for (int i = 0; i < 24; i++)
             {
-                sb.Draw(pixelTexture,
-                    new Rectangle((int)Center.X, (int)Center.Y,
+                sb.Draw(assets.PixelTexture,
+                    new Rectangle((int)model.Center.X, (int)model.Center.Y,
                         (int)
-                            MathOps.Delta(Center, MathOps.AngleToVector(i * (float)Math.PI / 12f))
+                            MathOps.Delta(model.Center, MathOps.AngleToVector(i * (float)Math.PI / 12f))
                                 .Length(),
                         1), null, Color.Red,
                     (i * (float)Math.PI / 12f), Vector2.Zero, SpriteEffects.None, 0);
@@ -171,10 +171,11 @@ namespace CStrike2D
 
 
             // Mouse Point
-            sb.Draw(pixelTexture,
-                new Rectangle((int)inputManager.MousePosition.X, (int)inputManager.MousePosition.Y, 10, 10), null,
+            sb.Draw(assets.PixelTexture,
+                new Rectangle((int)model.Input.MousePosition.X, (int)model.Input.MousePosition.Y, 10, 10), null,
                 Color.Green, 0, new Vector2(0.5f, 0.5f), SpriteEffects.None, 0);
 
+            sb.End();
         }
     }
 }

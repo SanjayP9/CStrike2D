@@ -31,12 +31,12 @@ namespace CStrike2D
         /// <summary>
         /// The dimensions of the window
         /// </summary>
-        public Vector2 Dimensions { get; private set; }
+        private Vector2 dimensions;
 
         /// <summary>
         /// Returns the center coordinate of the window
         /// </summary>
-        public Vector2 Center { get; private set; }
+        private Vector2 center;
 
         /// <summary>
         /// The number of screen updates in Frames Per Second
@@ -54,8 +54,8 @@ namespace CStrike2D
             graphics.PreferredBackBufferHeight = 768;
             graphics.PreferredBackBufferWidth = 1366;
 
-            Dimensions = new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
-            Center = new Vector2(Dimensions.X / 2, Dimensions.Y / 2);
+            dimensions = new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+            center = new Vector2(dimensions.X / 2, dimensions.Y / 2);
 
             // Disable VSync
             graphics.SynchronizeWithVerticalRetrace = false;
@@ -87,15 +87,14 @@ namespace CStrike2D
         protected override void LoadContent()
         {
             // Initialize Model and View
-            model = new CStrikeModel(this);
+            model = new CStrikeModel(this, center, dimensions);
             view = new CStrikeRenderer(this);
 
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
 
-            LoadMap("default");
-            WriteMap("bigmap");
+
         }
 
         /// <summary>
