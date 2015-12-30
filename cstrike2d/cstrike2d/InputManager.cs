@@ -18,6 +18,7 @@ namespace CStrike2D
         private KeyboardState prevKeyboardState;
         private KeyboardState keyboardState;
         private float prevMouseScroll;
+        private bool textInput;
 
         /// <summary>
         /// Returns the mouse position as a Vector2
@@ -52,8 +53,8 @@ namespace CStrike2D
         /// <returns></returns>
         public bool Tapped(Keys key)
         {
-            return (keyboardState.IsKeyDown(key) && 
-                prevKeyboardState.IsKeyUp(key));
+            return keyboardState.IsKeyDown(key) &&
+                   prevKeyboardState.IsKeyUp(key);
         }
 
         /// <summary>
@@ -63,8 +64,8 @@ namespace CStrike2D
         /// <returns></returns>
         public bool Held(Keys key)
         {
-            return (keyboardState.IsKeyDown(key) &&
-                prevKeyboardState.IsKeyDown(key));
+            return keyboardState.IsKeyDown(key) &&
+                   prevKeyboardState.IsKeyDown(key);
         }
 
         /// <summary>
@@ -161,6 +162,67 @@ namespace CStrike2D
         public Vector2 WorldToScreen(Vector2 vector, Camera2D origin)
         {
             return (vector - origin.Position);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public string GetText()
+        {
+            // If text is enabled, process the keyboard, else return an empty string
+            if (textInput)
+            {
+                string text = "";
+
+                Keys[] pressedKeys = keyboardState.GetPressedKeys();
+                foreach (Keys key in pressedKeys)
+                {
+                    // Special cases for either the backspace or space key
+                    if (key == Keys.Back)
+                    {
+                        if (text.Length > 0)
+                        {
+                            text = text.Substring(0, text.Length - 2);
+                        }
+                    }
+                    else if (key == Keys.Space)
+                    {
+                        text += " ";
+                    }
+                    else
+                    {
+                        // Convert the key into a literal string
+                        string asciiString = key.ToString();
+
+                        // If the length is greater than one, it is either one of the
+                        // function keys, special keys (Ctrl, Shift, Capslock, etc), or a key
+                        // that is not part of the alphabet.
+                        if (asciiString.Length == 1)
+                        {
+                            text += asciiString;
+                        }
+                    }
+                }
+                return text;
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Enables text input
+        /// </summary>
+        public void EnableTextInput()
+        {
+            textInput = true;
+        }
+
+        /// <summary>
+        /// Disables text input 
+        /// </summary>
+        public void DisableTextInput()
+        {
+            textInput = false;
         }
     }
 }

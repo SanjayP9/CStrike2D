@@ -90,6 +90,10 @@ namespace CStrike2D
                 case CStrikeModel.State.Options:
                     break;
                 case CStrikeModel.State.Lobby:
+                    sb.Begin();
+                    
+                    sb.DrawString(assets.DefaultFont, "Connect to Server:", Vector2.Zero, Color.White);
+
                     break;
                 case CStrikeModel.State.InGame:
                     sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, model.Camera.GetTransform(model.DriverInstance.GraphicsDevice));

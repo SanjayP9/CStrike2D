@@ -38,6 +38,10 @@ namespace CStrike2D
         public float GlowTimer { get; private set; }
         public bool FadeIn { get; private set; }
 
+        // Lobby Variables
+        string address = "";
+        int port = 27015;
+
         public int[] Collidables { get; private set; }
         public int[] RaycastCollidables { get; private set; }
 
@@ -75,7 +79,7 @@ namespace CStrike2D
             InterfaceManager = new UIManager();
 
             // Initialize buttons
-            InterfaceManager.AddComponent(new Button("TestButton", new Rectangle(20, 500, 200, 40), Color.White, "Play", 1.0f, EasingFunctions.AnimationType.CubicIn));
+            InterfaceManager.AddComponent(new Button("playButton", new Rectangle(20, 500, 200, 40), Color.White, "Play", 1.0f, EasingFunctions.AnimationType.CubicIn));
 
             InterfaceManager.Show("TestButton");
 
@@ -96,8 +100,6 @@ namespace CStrike2D
             Camera = new Camera2D();
             Camera.Position = new Vector2((NewMap.TileMap.GetLength(0) / 2) * 64 + 32,
                 (NewMap.TileMap.GetLength(1) / 2) * 64 + 32);
-
-          
         }
 
         public void Update(float gameTime)
@@ -109,6 +111,12 @@ namespace CStrike2D
             switch (CurState)
             {
                 case State.Menu:
+
+                    if (InterfaceManager.Clicked(Input, "playButton"))
+                    {
+                        CurState = State.Lobby;
+                        Input.EnableTextInput();
+                    }
                     /*
                     if (FadeIn)
                     {
@@ -163,6 +171,19 @@ namespace CStrike2D
                 case State.Options:
                     break;
                 case State.Lobby:
+                    if (Input.Tapped(Keys.Escape))
+                    {
+                        CurState = State.Menu;
+                        Input.DisableTextInput();
+                    }
+                    else if (Input.Tapped(Keys.Enter))
+                    {
+
+                    }
+                    else
+                    {
+                        address = Input.GetText();
+                    }
                     break;
                 case State.InGame:
                     break;
