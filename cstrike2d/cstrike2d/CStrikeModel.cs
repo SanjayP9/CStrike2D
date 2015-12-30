@@ -26,6 +26,14 @@ namespace CStrike2D
         public Map NewMap { get; private set; }
         public InputManager Input { get; private set; }
 
+        public Random NumGen { get; private set; }
+
+        /// <summary>
+        /// Bool for choosing whether the terrorist or counter-terrorist background will show.
+        /// True for counter-terrorist, false for terrorist
+        /// </summary>
+        public bool MenuBackgroundType { get; private set; }
+
 
         public float GlowTimer { get; private set; }
         public bool FadeIn { get; private set; }
@@ -67,10 +75,18 @@ namespace CStrike2D
             InterfaceManager = new UIManager();
 
             // Initialize buttons
-            InterfaceManager.AddComponent(new Button("TestButton", new Rectangle(20, 500, 200, 40), Color.Black, Color.Gray, Color.Blue, "Test", 1.0f, EasingFunctions.AnimationType.QuinticIn));
-            
+            InterfaceManager.AddComponent(new Button("TestButton", new Rectangle(20, 500, 200, 40), Color.White, "Play", 1.0f, EasingFunctions.AnimationType.CubicIn));
+
             InterfaceManager.Show("TestButton");
+
+            // Initialize Control Class
             Input = new InputManager();
+
+            // Initialize Random number generator
+            NumGen = new Random();
+
+            // Determine menu background, true if the number is not 0
+            MenuBackgroundType = NumGen.Next(0, 2) != 0;
 
             FadeIn = true;
 
@@ -93,7 +109,7 @@ namespace CStrike2D
             switch (CurState)
             {
                 case State.Menu:
-
+                    /*
                     if (FadeIn)
                     {
                         GlowTimer += gameTime;
@@ -142,7 +158,7 @@ namespace CStrike2D
                     PathfindingTime = Math.Round((double)stopWatch.ElapsedMilliseconds, 10);
 
                     stopWatch.Reset();
-
+                    */
                     break;
                 case State.Options:
                     break;

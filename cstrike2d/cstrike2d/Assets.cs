@@ -22,6 +22,9 @@ namespace CStrike2D
         public Texture2D PixelTexture { get; private set; }     // Pixel texture
         public SpriteFont DefaultFont { get; private set; }     // Default Font
 
+        public Texture2D CTMenuBackground { get; private set; } // Counter-Terrorist Menu Background
+        public Texture2D TMenuBackground { get; private set; }  // Terrorist Menu Background
+
         /// <summary>
         /// Loads assets that are required at the start of the application (fonts, UI)
         /// </summary>
@@ -36,7 +39,6 @@ namespace CStrike2D
         /// Loads assets that are required in-game (weapons, playermodels, grenades
         /// </summary>
         private ContentManager gameContentLoader;
-
 
         public Assets(Game instance)
         {
@@ -63,6 +65,8 @@ namespace CStrike2D
             PixelTexture.SetData(new [] {Color.White});
 
             DefaultFont = coreContentLoader.Load<SpriteFont>("font/defFont");
+            CTMenuBackground = coreContentLoader.Load<Texture2D>("texture/bg/ctmenu");
+            TMenuBackground = coreContentLoader.Load<Texture2D>("texture/bg/tmenu");
         }
 
         /// <summary>

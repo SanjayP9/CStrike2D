@@ -5,6 +5,7 @@
 // Description: Creates a button, which can be clicked
 
 using System;
+using System.Xml.Serialization;
 using cstrike2d;
 using LightEngine;
 using Microsoft.Xna.Framework;
@@ -29,6 +30,7 @@ namespace CStrike2D
         private const float ALPHA_CHANGE = 0.05f;       // Rate at which the transparency changes per second
         private Vector2 startPosition;                  // The off-screen position of the button
         private Vector2 endPosition;                    // The final destination of the button
+        private Vector2 textPosition;                   // Position of the text
         private Color fillColour;                       // The colour used for the fill of the button
         private Color borderColour;                     // The colour used for the border of the button
         private Color textColour;                       // The colour used for the text
@@ -49,12 +51,33 @@ namespace CStrike2D
         /// <param name="text"></param>
         /// <param name="animTime"></param>
         /// <param name="animType"></param>
-        public Button(string identifier, Rectangle dimensions, Color fillColour, Color borderColour, Color textColour, string text, float animTime, EasingFunctions.AnimationType animType)
+        public Button(string identifier, Rectangle dimensions, Color fillColour, Color borderColour, Color textColour,
+            string text, float animTime, EasingFunctions.AnimationType animType)
         {
             Identifier = identifier;
             Dimensions = dimensions;
             this.fillColour = fillColour;
             this.borderColour = borderColour;
+            this.textColour = textColour;
+            this.text = text;
+            this.animTime = animTime;
+            this.animType = animType;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <param name="dimensions"></param>
+        /// <param name="textColour"></param>
+        /// <param name="text"></param>
+        /// <param name="animTime"></param>
+        /// <param name="animType"></param>
+        public Button(string identifier, Rectangle dimensions, Color textColour, string text, float animTime,
+            EasingFunctions.AnimationType animType)
+        {
+            Identifier = identifier;
+            Dimensions = dimensions;
             this.textColour = textColour;
             this.text = text;
             this.animTime = animTime;
@@ -175,8 +198,8 @@ namespace CStrike2D
 
             // Draw text
             Vector2 centeredText = new Vector2(
-                Dimensions.X + (assets.DefaultFont.MeasureString(text).X / 2), 
-                Dimensions.Y + (assets.DefaultFont.MeasureString(text).Y / 2));
+                Dimensions.Center.X - (assets.DefaultFont.MeasureString(text).X / 2), 
+                Dimensions.Center.Y - (assets.DefaultFont.MeasureString(text).Y / 2));
 
             sb.DrawString(assets.DefaultFont, text, centeredText, textColour, 0, Vector2.Zero, 1f, SpriteEffects.None, 0);
 
@@ -187,9 +210,9 @@ namespace CStrike2D
             // Draw right side
             sb.Draw(assets.PixelTexture, new Rectangle(Dimensions.Right, Dimensions.Y, 1, Dimensions.Height), borderColour);
             // Draw bottom side
-            sb.Draw(assets.PixelTexture, new Rectangle(Dimensions.Bottom, Dimensions.Y, Dimensions.Width, 1), borderColour);
+            sb.Draw(assets.PixelTexture, new Rectangle(Dimensions.X, Dimensions.Bottom, Dimensions.Width, 1), borderColour);
             // Draw top side
-            sb.Draw(assets.PixelTexture, new Rectangle(Dimensions.Top, Dimensions.Y, Dimensions.Width, 1), borderColour);
+            sb.Draw(assets.PixelTexture, new Rectangle(Dimensions.X, Dimensions.Y, Dimensions.Width, 1), borderColour);
 
         }
     }
