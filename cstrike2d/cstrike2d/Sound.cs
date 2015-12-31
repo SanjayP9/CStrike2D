@@ -9,10 +9,16 @@ namespace cstrike2d
 {
     class Sound
     {
-        AudioEmitter emitter = new AudioEmitter();
-        AudioListener listener = new AudioListener();
+        private AudioEmitter emitter = new AudioEmitter();
+        private AudioListener listener = new AudioListener();
 
-        private void PlaySound(SoundEffect soundEffect, Vector3 playerPos, Vector3 emiterPos)
+        public SoundEffectInstance menuBgSoundInstance;
+        public Sound(SoundEffect menuBgSound)
+        {
+            SoundEffectInstance menuBgSoundInstance = menuBgSound.CreateInstance();
+        }
+
+        public void PlaySound(SoundEffect soundEffect, Vector3 playerPos, Vector3 emiterPos)
         {
             SoundEffectInstance soundEffectInstance = soundEffect.CreateInstance();
             
@@ -23,7 +29,8 @@ namespace cstrike2d
             soundEffectInstance.Play();
         }
 
-        private void PlaySound(SoundEffect soundEffect)
+        // I dont need this i think
+        public void PlaySound(SoundEffect soundEffect)
         {
             SoundEffectInstance soundEffectInstance = soundEffect.CreateInstance();
             soundEffectInstance.Play();
