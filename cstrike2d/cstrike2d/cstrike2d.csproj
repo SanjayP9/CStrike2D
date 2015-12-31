@@ -90,7 +90,7 @@
     <Compile Include="Map.cs" />
     <Compile Include="MathOps.cs" />
     <Compile Include="Player.cs" />
-    <Compile Include="Sound.cs" />
+    <Compile Include="SoundContainer.cs" />
     <Compile Include="UIManager.cs" />
     <Content Include="Notes.txt" />
     <Compile Include="Properties\AssemblyInfo.cs" />
