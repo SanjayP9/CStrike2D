@@ -12,7 +12,7 @@ namespace cstrike2d
         private AudioListener listener = new AudioListener();
         private AudioEmitter emitter = new AudioEmitter();
         private SoundEffectInstance soundEffectInstance;
-        public string Identifier { public get; private set; }
+        public string Identifier { get; private set; }
 
         public SoundContainer(string identifier, SoundEffect soundEffect)
         {
@@ -20,7 +20,7 @@ namespace cstrike2d
             soundEffectInstance = soundEffect.CreateInstance();
         }
 
-        public void Play(Vector2 listenerPos, Vector2 emiterPos)
+        public void Play(float volume, Vector2 listenerPos, Vector2 emiterPos)
         {
             //Convert the Vector2s to Vector3s
             Vector3 listenerPosition = new Vector3(listenerPos.X, 0f, emiterPos.Y);
@@ -30,11 +30,13 @@ namespace cstrike2d
             emitter.Position = emiterPosition;
 
             soundEffectInstance.Apply3D(listener, emitter);
+            soundEffectInstance.Volume = volume;
             soundEffectInstance.Play();
         }
 
-        public void Play()
+        public void Play(float volume)
         {
+            soundEffectInstance.Volume = volume;
             soundEffectInstance.Play();
         }
         public void Stop()
