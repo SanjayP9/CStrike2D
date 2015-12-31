@@ -21,6 +21,8 @@ namespace CStrike2D
     {
         public UIManager InterfaceManager { get; private set; }
 
+        public AudioManager AudioManager { get; private set; }
+
         public Camera2D Camera { get; private set; }
 
         public Map NewMap { get; private set; }
@@ -39,7 +41,7 @@ namespace CStrike2D
         public bool FadeIn { get; private set; }
 
         // Lobby Variables
-        string address = "";
+        public string Address { get; private set; }
         int port = 27015;
 
         public int[] Collidables { get; private set; }
@@ -89,6 +91,8 @@ namespace CStrike2D
             // Initialize Random number generator
             NumGen = new Random();
 
+            Address = string.Empty;
+
             // Determine menu background, true if the number is not 0
             MenuBackgroundType = NumGen.Next(0, 2) != 0;
 
@@ -115,7 +119,6 @@ namespace CStrike2D
                     if (InterfaceManager.Clicked(Input, "playButton"))
                     {
                         CurState = State.Lobby;
-                        Input.EnableTextInput();
                     }
                     /*
                     if (FadeIn)
@@ -174,7 +177,6 @@ namespace CStrike2D
                     if (Input.Tapped(Keys.Escape))
                     {
                         CurState = State.Menu;
-                        Input.DisableTextInput();
                     }
                     else if (Input.Tapped(Keys.Enter))
                     {
@@ -182,13 +184,12 @@ namespace CStrike2D
                     }
                     else
                     {
-                        address = Input.GetText();
+                        Address = Input.GetText(Address);
                     }
                     break;
                 case State.InGame:
                     break;
             }
-
             Input.Tock();
         }
 

@@ -79,6 +79,7 @@
   <ItemGroup>
     <Compile Include="AssetLoader.cs" />
     <Compile Include="Assets.cs" />
+    <Compile Include="AudioManager.cs" />
     <Compile Include="Button.cs" />
     <Compile Include="Camera2D.cs" />
     <Compile Include="CStrikeModel.cs" />

@@ -6,6 +6,7 @@
 // Description: Handles all input from the user
 
 using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -19,6 +20,7 @@ namespace CStrike2D
         private KeyboardState keyboardState;
         private float prevMouseScroll;
         private bool textInput;
+        private bool capslock;
 
         /// <summary>
         /// Returns the mouse position as a Vector2
@@ -168,29 +170,155 @@ namespace CStrike2D
         /// 
         /// </summary>
         /// <returns></returns>
-        public string GetText()
+        public string GetText(string text)
         {
-            // If text is enabled, process the keyboard, else return an empty string
-            if (textInput)
+            // Check if the capslock key was tapped
+            if (Tapped(Keys.CapsLock))
             {
-                string text = "";
+                capslock = !capslock;
+            }
 
-                Keys[] pressedKeys = keyboardState.GetPressedKeys();
-                foreach (Keys key in pressedKeys)
+            // If one of the shift keys are being held down
+            bool shift = Held(Keys.LeftShift) || Held(Keys.RightShift);
+
+            Keys[] pressedKeys = keyboardState.GetPressedKeys();
+            foreach (Keys key in pressedKeys.Where(Tapped))
+            {
+                // Special cases for either the backspace or space key
+                switch (key)
                 {
-                    // Special cases for either the backspace or space key
-                    if (key == Keys.Back)
-                    {
-                        if (text.Length > 0)
+                    case Keys.Back:
+                        text = text.Length > 1 ? text.Substring(0, text.Length - 1) : string.Empty;
+                        break;
+                    case Keys.Space:
+                        text += ' ';
+                        break;
+                    case Keys.OemPeriod:
+                        if (shift)
                         {
-                            text = text.Substring(0, text.Length - 2);
+                            text += '>';
                         }
-                    }
-                    else if (key == Keys.Space)
-                    {
-                        text += " ";
-                    }
-                    else
+                        else
+                        {
+                            text += '.';
+                        }
+                        break;
+                    case Keys.Decimal:
+                        text += '.';
+                        break;
+                    case Keys.OemPlus:
+                        if (shift)
+                        {
+                            text += '+';
+                        }
+                        else
+                        {
+                            text += '=';
+                        }
+                        break;
+                    case Keys.Add:
+                        text += '+';
+                        break;
+                    case Keys.OemMinus:
+                        if (shift)
+                        {
+                            text += '_';
+                        }
+                        else
+                        {
+                            text += '-';
+                        }
+                        break;
+                    case Keys.Subtract:
+                        text += '-';
+                        break;
+                    case Keys.OemQuestion:
+                        if (shift)
+                        {
+                            text += '?';
+                        }
+                        else
+                        {
+                            text += '/';
+                        }
+                        break;
+                    case Keys.OemPipe:
+                        if (shift)
+                        {
+                            text += '|';
+                        }
+                        else
+                        {
+                            text += '\\';
+                        }
+                        break;
+                    case Keys.OemOpenBrackets:
+                        if (shift)
+                        {
+                            text += '{';
+                        }
+                        else
+                        {
+                            text += '[';
+                        }
+                        break;
+                    case Keys.OemCloseBrackets:
+                        if (shift)
+                        {
+                            text += '}';
+                        }
+                        else
+                        {
+                            text += ']';
+                        }
+                        break;
+                    case Keys.OemComma:
+                        if (shift)
+                        {
+                            text += '<';
+                        }
+                        else
+                        {
+                            text += ',';
+                        }
+                        break;
+                    case Keys.OemSemicolon:
+                        if (shift)
+                        {
+                            text += ':';
+                        }
+                        else
+                        {
+                            text += ';';
+                        }
+                        break;
+                    case Keys.OemQuotes:
+                        if (shift)
+                        {
+                            text += '"';
+                        }
+                        else
+                        {
+                            text += '\'';
+                        }
+                        break;
+                    case Keys.Multiply:
+                        text += '*';
+                        break;
+                    case Keys.Divide:
+                        text += '/';
+                        break;
+                    case Keys.OemTilde:
+                        if (shift)
+                        {
+                            text += '~';
+                        }
+                        else
+                        {
+                            text += '`';
+                        }
+                        break;
+                    default:
                     {
                         // Convert the key into a literal string
                         string asciiString = key.ToString();
@@ -198,15 +326,81 @@ namespace CStrike2D
                         // If the length is greater than one, it is either one of the
                         // function keys, special keys (Ctrl, Shift, Capslock, etc), or a key
                         // that is not part of the alphabet.
-                        if (asciiString.Length == 1)
+                        switch (asciiString.Length)
                         {
-                            text += asciiString;
+                            case 1: // A letter
+
+                                // If capslock is enabled or shift is not held, 
+                                // convert the character into lowercase
+                                if (capslock || shift)
+                                {
+                                    text += asciiString;
+                                }
+                                else
+                                {
+                                    text += asciiString.ToLower();
+                                }
+                                break;
+                            case 2: // NumPad Numbers
+
+                                // If the first character is D (meaning a numpad number) and not one of the Function keys which start with F
+                                if (asciiString[0] == 'D')
+                                {
+                                    // If 
+                                    if (shift)
+                                    {
+                                        switch (asciiString[1])
+                                        {
+                                            case '1':
+                                                text += '!';
+                                                break;
+                                            case '2':
+                                                text += '@';
+                                                break;
+                                            case '3':
+                                                text += '#';
+                                                break;
+                                            case '4':
+                                                text += '$';
+                                                break;
+                                            case '5':
+                                                text += '%';
+                                                break;
+                                            case '6':
+                                                text += '^';
+                                                break;
+                                            case '7':
+                                                text += '&';
+                                                break;
+                                            case '8':
+                                                text += '*';
+                                                break;
+                                            case '9':
+                                                text += '(';
+                                                break;
+                                            case '0':
+                                                text += ')';
+                                                break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        text += asciiString[1];
+                                    }
+                                }
+                                break;
+                            default:
+                                if (asciiString.Contains("NumPad"))
+                                {
+                                    text += asciiString[6];
+                                }
+                                break;
                         }
                     }
+                        break;
                 }
-                return text;
             }
-            return string.Empty;
+            return text;
         }
 
         /// <summary>

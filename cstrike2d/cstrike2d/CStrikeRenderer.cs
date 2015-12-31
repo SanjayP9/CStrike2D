@@ -92,7 +92,7 @@ namespace CStrike2D
                 case CStrikeModel.State.Lobby:
                     sb.Begin();
                     
-                    sb.DrawString(assets.DefaultFont, "Connect to Server:", Vector2.Zero, Color.White);
+                    sb.DrawString(assets.DefaultFont, "Connect to Server: " + model.Address, Vector2.Zero, Color.White);
 
                     break;
                 case CStrikeModel.State.InGame:
