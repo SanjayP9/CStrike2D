@@ -87,7 +87,7 @@ namespace CStrike2D
             InterfaceManager = new UIManager();
 
             // Initialize buttons
-            InterfaceManager.AddComponent(new Button("playButton", new Rectangle(20, 500, 200, 40), Color.White, "Play", 1.0f, EasingFunctions.AnimationType.CubicIn));
+            InterfaceManager.AddComponent(new Button("playButton", new Rectangle(150, 40, 200, 40), Color.White, "Play", 1.0f, EasingFunctions.AnimationType.CubicIn));
 
             InterfaceManager.Show("TestButton");
 

@@ -85,6 +85,10 @@ namespace CStrike2D
                     sb.Draw(model.MenuBackgroundType ? assets.CTMenuBackground : assets.TMenuBackground, Vector2.Zero,
                         Color.White);
 
+                    // Draw Background UI elements
+
+                    sb.Draw(assets.PixelTexture, new Rectangle(0, 20, (int)model.Dimensions.X, 80), Color.Black * 0.8f);
+
                     model.InterfaceManager.Draw(sb, assets);
                     break;
                 case CStrikeModel.State.Options:
