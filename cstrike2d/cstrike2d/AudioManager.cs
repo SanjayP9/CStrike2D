@@ -9,11 +9,13 @@ namespace cstrike2d
 {
     public class AudioManager
     {
+        // Variables used to store volume levels
         public float MusicVolume { get; set; }
         public float UiVolume { get; set; }
         public float VoiceVolume { get; set; }
         public float SoundEffectVolume { get; set; }
 
+        // Variable used to modify the sound effects' master volume
         public float MasterVolume
         {
             get
@@ -26,6 +28,7 @@ namespace cstrike2d
             }
         }
 
+        // lists of sounds
         private List<SoundContainer> sounds = new List<SoundContainer>(); 
 
         public AudioManager()
@@ -50,10 +53,10 @@ namespace cstrike2d
         /// <summary>
         /// Plays a sound with positional effects
         /// </summary>
-        /// <param name="identifier"></param>
-        /// <param name="listenerPosition"></param>
-        /// <param name="emitterPosition"></param>
-        /// <param name="volume"></param>
+        /// <param name="identifier">the name of the sound file</param>
+        /// <param name="listenerPosition">the position of the listener</param>
+        /// <param name="emitterPosition">the position of the emitter</param>
+        /// <param name="volume">the volume of the sound</param>
         public void PlaySound(string identifier, float volume, Vector2 listenerPosition, Vector2 emitterPosition)
         {
             SoundContainer sound = sounds.Find(snd => snd.Identifier == identifier);
@@ -71,15 +74,16 @@ namespace cstrike2d
         /// <summary>
         /// Plays a sound without any positional effects
         /// </summary>
-        /// <param name="identifier"></param>
-        /// <param name="volume"></param>
+        /// <param name="identifier">the name of the sound file</param>
+        /// <param name="volume">the volume of the sound</param>
         public void PlaySound(string identifier, float volume)
         {
             SoundContainer sound = sounds.Find(snd => snd.Identifier == identifier);
 
             if (sound != null)
             {
-                sound.Play(volume);
+                sound.ChangeVolume(volume);
+                sound.Play();
             }
             else
             {
@@ -90,7 +94,7 @@ namespace cstrike2d
         /// <summary>
         /// Stops a sound
         /// </summary>
-        /// <param name="identifier"></param>
+        /// <param name="identifier">the name of the sound file</param>
         public void StopSound(string identifier)
         {
             SoundContainer sound = sounds.Find(snd => snd.Identifier == identifier);
@@ -108,7 +112,7 @@ namespace cstrike2d
         /// <summary>
         /// Pauses a sound
         /// </summary>
-        /// <param name="identifier"></param>
+        /// <param name="identifier">the name of the sound file</param>
         public void PauseSound(string identifier)
         {
             SoundContainer sound = sounds.Find(snd => snd.Identifier == identifier);
@@ -126,7 +130,7 @@ namespace cstrike2d
         /// <summary>
         /// Resumes a sound
         /// </summary>
-        /// <param name="identifier"></param>
+        /// <param name="identifier">the name of the sound file</param>
         public void ResumeSound(string identifier)
         {
             SoundContainer sound = sounds.Find(snd => snd.Identifier == identifier);
