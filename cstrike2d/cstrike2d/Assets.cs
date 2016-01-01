@@ -7,7 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using cstrike2d;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -40,7 +42,7 @@ namespace CStrike2D
         /// </summary>
         private ContentManager gameContentLoader;
 
-        public Assets(Game instance)
+        public Assets(CStrike2D instance)
         {
             // Initialize Content Loaders
             coreContentLoader = new ContentManager(instance.Services);
@@ -58,7 +60,7 @@ namespace CStrike2D
         /// <summary>
         /// Load core assets in this method
         /// </summary>
-        public void LoadCoreContent(Game instance)
+        public void LoadCoreContent(CStrike2D instance)
         {
             // Load Pixel texture
             PixelTexture = new Texture2D(instance.GraphicsDevice, 1, 1);
@@ -67,6 +69,10 @@ namespace CStrike2D
             DefaultFont = coreContentLoader.Load<SpriteFont>("font/defFont");
             CTMenuBackground = coreContentLoader.Load<Texture2D>("texture/bg/ctmenu");
             TMenuBackground = coreContentLoader.Load<Texture2D>("texture/bg/tmenu");
+
+            instance.Model.AudioManager.AddSound(new SoundContainer("menuMusic", coreContentLoader.Load<SoundEffect>("sound/music/mainmenu")));
+            instance.Model.AudioManager.AddSound(new SoundContainer("ak47shot", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/ak47")));
+            instance.Model.AudioManager.AddSound(new SoundContainer("ak47shotdistant", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/ak47d")));
         }
 
         /// <summary>

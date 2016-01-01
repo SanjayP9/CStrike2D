@@ -23,8 +23,8 @@ namespace CStrike2D
         private RenderTarget2D finalRender;
 
         // Model and View
-        private CStrikeModel model;
-        private CStrikeRenderer view;
+        public CStrikeModel Model { get; private set; }
+        public CStrikeView View { get; private set; }
 
         // Game Properties (FPS, Resolution)
 
@@ -87,8 +87,9 @@ namespace CStrike2D
         protected override void LoadContent()
         {
             // Initialize Model and View
-            model = new CStrikeModel(this, center, dimensions);
-            view = new CStrikeRenderer(this);
+            Model = new CStrikeModel(this, center, dimensions);
+            View = new CStrikeView(this);
+
 
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -104,7 +105,7 @@ namespace CStrike2D
         protected override void UnloadContent()
         {
             // Unloads content from all pipelines
-            view.UnloadAll();
+            View.UnloadAll();
         }
 
         /// <summary>
@@ -123,7 +124,7 @@ namespace CStrike2D
                 counter = 0;
             }
 
-            model.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000f);
+            Model.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000f);
 
             base.Update(gameTime);
         }
@@ -137,7 +138,7 @@ namespace CStrike2D
             
             GraphicsDevice.Clear(Color.Transparent);
 
-            view.Draw(spriteBatch, model);
+            View.Draw(spriteBatch, Model);
 
             counter++;
             base.Draw(gameTime);

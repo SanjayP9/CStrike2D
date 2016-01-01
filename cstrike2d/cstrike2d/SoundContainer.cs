@@ -23,13 +23,15 @@ namespace cstrike2d
             soundEffectInstance = soundEffect.CreateInstance();
         }
 
+        public SoundState State { get { return soundEffectInstance.State; } }
+
         public void Play(float volume, Vector2 listenerPos, Vector2 emiterPos)
         {
             //Convert the Vector2s to Vector3s
-            Vector3 listenerPosition = new Vector3(listenerPos.X, 0f, emiterPos.Y);
+            Vector3 listenerPosition = new Vector3(listenerPos.X, 0f, listenerPos.Y);
             Vector3 emiterPosition = new Vector3(emiterPos.X, 0f, emiterPos.Y);
 
-            SoundEffectInstance soundEffectInstance = soundEffect.CreateInstance();
+            //SoundEffectInstance soundEffectInstance = soundEffect.CreateInstance();
 
             listener.Position = listenerPosition;
             emitter.Position = emiterPosition;

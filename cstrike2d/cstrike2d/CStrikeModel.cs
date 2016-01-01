@@ -59,6 +59,9 @@ namespace CStrike2D
 
         public Vector2 Dimensions { get; private set; }
 
+        private const float SPRAY_TIMER = 0.1f;
+        private float shotTimer = 0.0f;
+
         public enum State
         {
             Menu,
@@ -76,6 +79,9 @@ namespace CStrike2D
             Dimensions = dimensions;
 
             CurState = State.Menu;
+
+            // Initialize AudioManager
+            AudioManager = new AudioManager();
 
             // Initialize UIManager
             InterfaceManager = new UIManager();
@@ -115,7 +121,9 @@ namespace CStrike2D
             switch (CurState)
             {
                 case State.Menu:
+                    AudioManager.PlaySound("menuMusic", AudioManager.MusicVolume);
 
+                    //AudioManager.PlaySound("menuMusic", AudioManager.MusicVolume, Center, new Vector2(Center.X, Center.Y + 100));
                     if (InterfaceManager.Clicked(Input, "playButton"))
                     {
                         CurState = State.Lobby;

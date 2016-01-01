@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
 {
-    internal class CStrikeRenderer
+    public class CStrikeView
     {
         // Asset loaders
 
@@ -23,7 +23,7 @@ namespace CStrike2D
         /// Initializes the view and loads all applicable assets
         /// </summary>
         /// <param name="instance">The driver class that contains the ServiceProvider</param>
-        public CStrikeRenderer(Game instance)
+        public CStrikeView(CStrike2D instance)
         {
             assets = new Assets(instance);
         }

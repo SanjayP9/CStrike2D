@@ -77,7 +77,6 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssetLoader.cs" />
     <Compile Include="Assets.cs" />
     <Compile Include="AudioManager.cs" />
     <Compile Include="Button.cs" />
@@ -98,7 +97,7 @@
     <Compile Include="CStrike2D.cs" />
     <Compile Include="RayCast.cs" />
     <Compile Include="Tile.cs" />
-    <Compile Include="CStrikeRenderer.cs" />
+    <Compile Include="CStrikeView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
