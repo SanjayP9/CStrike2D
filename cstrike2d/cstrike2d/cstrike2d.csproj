@@ -69,14 +69,6 @@
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.GamerServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="mscorlib" />
-    <Reference Include="Nuclex.Fonts, Version=4.0.0.0, Culture=neutral, PublicKeyToken=96bb577564343f16, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\Nuclex.Fonts.dll</HintPath>
-    </Reference>
-    <Reference Include="Nuclex.Fonts.Content.TrueTypeImporter, Version=4.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\Nuclex.Fonts.Content.TrueTypeImporter.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -106,10 +98,6 @@
     <Compile Include="RayCast.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="CStrikeView.cs" />
-    <Content Include="Nuclex.Fonts.Content.TrueTypeImporter.dll" />
-    <Content Include="Nuclex.Fonts.Content.TrueTypeImporter.xml" />
-    <Content Include="Nuclex.Fonts.dll" />
-    <Content Include="Nuclex.Fonts.xml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
