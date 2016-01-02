@@ -70,7 +70,6 @@ namespace CStrike2D
                         case AnimationDirection.Left:
                             dimensions.X =
                                 (int)EasingFunctions.Animate(timer, startPosition.X, endPosition.X, animTime, animType);
-
                             break;
                         case AnimationDirection.Right:
                             dimensions.Width =
@@ -81,6 +80,8 @@ namespace CStrike2D
                                 (int)EasingFunctions.Animate(timer, endPosition.Y, startPosition.Y, animTime, animType);
                             break;
                         case AnimationDirection.Down:
+                            dimensions.Height =
+                               (int)EasingFunctions.Animate(timer, startPosition.Y, endPosition.Y, animTime, animType);
                             break;
                     }
 
