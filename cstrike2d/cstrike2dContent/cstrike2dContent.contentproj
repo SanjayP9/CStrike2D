@@ -34,6 +34,7 @@
       <Name>defFont</Name>
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
+      <SubType>Designer</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -60,6 +61,7 @@
   <ItemGroup>
     <Folder Include="sound\sfx\player\" />
     <Folder Include="sound\sfx\radio\" />
+    <Folder Include="texture\font\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="sound\sfx\weapon\ak47d.wav">

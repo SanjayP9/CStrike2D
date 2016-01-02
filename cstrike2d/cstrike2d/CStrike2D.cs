@@ -18,6 +18,9 @@ namespace CStrike2D
         public CStrikeModel Model { get; private set; }
         public CStrikeView View { get; private set; }
 
+        // Assets
+        public Assets Assets { get; private set; }
+
         // Game Properties (FPS, Resolution)
 
         /// <summary>
@@ -62,32 +65,18 @@ namespace CStrike2D
         }
 
         /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
-        protected override void Initialize()
-        {
-            base.Initialize();
-        }
-
-        /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
         /// </summary>
         protected override void LoadContent()
         {
             // Initialize Model and View
+            Assets = new Assets(this);
             Model = new CStrikeModel(this, center, dimensions);
             View = new CStrikeView(this);
 
-
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-
-
         }
 
         /// <summary>

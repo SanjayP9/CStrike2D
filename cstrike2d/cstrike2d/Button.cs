@@ -3,6 +3,8 @@
 // Creation Date: Dec 23rd 2015
 // Modified Date:
 // Description: Creates a button, which can be clicked
+
+using System;
 using LightEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,11 +14,6 @@ namespace CStrike2D
     public sealed class Button : GUIComponent
     {
         public override State CurState { get; protected set; }
-
-        /// <summary>
-        /// The dimensions of the button
-        /// </summary>
-        public override Rectangle Dimensions { get; protected set; }
 
         /// <summary>
         /// Used to identify the button
@@ -47,12 +44,12 @@ namespace CStrike2D
         /// <param name="text"></param>
         /// <param name="animTime"></param>
         /// <param name="animType"></param>
+        /// <param name="animDir"></param>
         /// <param name="assets"></param>
         public Button(string identifier, Rectangle dimensions, Color fillColour, Color borderColour, Color textColour,
-            string text, float animTime, EasingFunctions.AnimationType animType, Assets assets) : base(assets)
+            string text, float animTime, EasingFunctions.AnimationType animType, AnimationDirection animDir, Assets assets) : base(assets)
         {
             Identifier = identifier;
-            Dimensions = dimensions;
             this.fillColour = fillColour;
             this.borderColour = borderColour;
             this.textColour = textColour;
@@ -60,6 +57,9 @@ namespace CStrike2D
             this.animTime = animTime;
             this.animType = animType;
             CurState = State.InActive;
+            endPosition = new Vector2(dimensions.X, dimensions.Y);
+            startPosition = SetStartPosition(animDir);
+            this.dimensions.Location = new Point((int)startPosition.X, (int)startPosition.Y);
         }
 
         /// <summary>
@@ -71,17 +71,41 @@ namespace CStrike2D
         /// <param name="text"></param>
         /// <param name="animTime"></param>
         /// <param name="animType"></param>
+        /// <param name="animDir"></param>
         /// <param name="assets"></param>
         public Button(string identifier, Rectangle dimensions, Color textColour, string text, float animTime,
-            EasingFunctions.AnimationType animType, Assets assets) : base(assets)
+            EasingFunctions.AnimationType animType, AnimationDirection animDir, Assets assets) : base(assets)
         {
             Identifier = identifier;
-            Dimensions = dimensions;
             this.textColour = textColour;
             this.text = text;
             this.animTime = animTime;
             this.animType = animType;
             CurState = State.InActive;
+            endPosition = new Vector2(dimensions.X, dimensions.Y);
+            startPosition = SetStartPosition(animDir);
+            this.dimensions.Location = new Point((int)startPosition.X, (int)startPosition.Y);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="animDir"></param>
+        /// <returns></returns>
+        public Vector2 SetStartPosition(AnimationDirection animDir)
+        {
+            switch (animDir)
+            {
+                case AnimationDirection.Left:
+                    return new Vector2(1366, endPosition.Y);
+                case AnimationDirection.Right:
+                    return new Vector2(-250, endPosition.Y);
+                case AnimationDirection.Up:
+                    return new Vector2(endPosition.X, 768);
+                case AnimationDirection.Down:
+                    return new Vector2(endPosition.X, -250);
+            }
+            return Vector2.Zero;
         }
 
         /// <summary>
@@ -96,15 +120,15 @@ namespace CStrike2D
 
                     // Advance time
                     timer += gameTime;
-
                     // Move the button
-                    Dimensions.Offset(
-                        (int) EasingFunctions.Animate(timer, startPosition.X, endPosition.X, animTime, animType),
-                        (int) EasingFunctions.Animate(timer, startPosition.Y, endPosition.Y, animTime, animType));
-
+                    dimensions.X =
+                        (int) EasingFunctions.Animate(timer, startPosition.X, endPosition.X, animTime, animType);
+                    dimensions.Y =
+                        (int) EasingFunctions.Animate(timer, startPosition.Y, endPosition.Y, animTime, animType);
+                    
                     // If the button has reached its end point, set it to active
-                    if (Dimensions.X == (int) endPosition.X &&
-                        Dimensions.Y == (int) endPosition.Y)
+                    if (dimensions.X == (int) endPosition.X &&
+                        dimensions.Y == (int)endPosition.Y)
                     {
                         CurState = State.Active;
                     }
@@ -121,13 +145,15 @@ namespace CStrike2D
                     timer += gameTime;
 
                     // Move the button
-                    Dimensions.Offset(
-                        (int)EasingFunctions.Animate(timer, endPosition.X, startPosition.X, animTime, animType),
-                        (int)EasingFunctions.Animate(timer, endPosition.Y, startPosition.Y, animTime, animType));
+
+                    dimensions.X =
+                        (int) EasingFunctions.Animate(timer, endPosition.X, startPosition.X, animTime, animType);
+                    dimensions.Y =
+                        (int) EasingFunctions.Animate(timer, endPosition.Y, startPosition.Y, animTime, animType);
 
                     // If the button has reached its end point, set it to active
-                    if (Dimensions.X == (int)startPosition.X &&
-                        Dimensions.Y == (int)startPosition.Y)
+                    if (dimensions.X == (int)startPosition.X &&
+                        dimensions.Y == (int)startPosition.Y)
                     {
                         CurState = State.InActive;
                     }
@@ -173,7 +199,7 @@ namespace CStrike2D
         /// <returns></returns>
         public bool Hover(InputManager input)
         {
-            return Dimensions.Contains((int)input.MousePosition.X, (int)input.MousePosition.Y);
+            return Dimensions().Contains((int)input.MousePosition.X, (int)input.MousePosition.Y);
         }
 
         /// <summary>
@@ -196,12 +222,12 @@ namespace CStrike2D
             if (CurState != State.InActive)
             {
                 // Draw fill
-                sb.Draw(Assets.PixelTexture, Dimensions, fillColour);
+                sb.Draw(Assets.PixelTexture, dimensions, fillColour);
 
                 // Draw text
                 Vector2 centeredText = new Vector2(
-                    Dimensions.Center.X - (Assets.DefaultFont.MeasureString(text).X / 2),
-                    Dimensions.Center.Y - (Assets.DefaultFont.MeasureString(text).Y / 2));
+                    dimensions.Center.X - (Assets.DefaultFont.MeasureString(text).X / 2),
+                    dimensions.Center.Y - (Assets.DefaultFont.MeasureString(text).Y / 2));
 
                 sb.DrawString(Assets.DefaultFont, text, centeredText, textColour, 0, Vector2.Zero, 1f,
                     SpriteEffects.None, 0);
@@ -209,16 +235,16 @@ namespace CStrike2D
                 // Draw border
 
                 // Draw left side
-                sb.Draw(Assets.PixelTexture, new Rectangle(Dimensions.Left, Dimensions.Y, 1, Dimensions.Height),
+                sb.Draw(Assets.PixelTexture, new Rectangle(dimensions.Left, dimensions.Y, 1, dimensions.Height),
                     borderColour);
                 // Draw right side
-                sb.Draw(Assets.PixelTexture, new Rectangle(Dimensions.Right, Dimensions.Y, 1, Dimensions.Height),
+                sb.Draw(Assets.PixelTexture, new Rectangle(dimensions.Right, dimensions.Y, 1, dimensions.Height),
                     borderColour);
                 // Draw bottom side
-                sb.Draw(Assets.PixelTexture, new Rectangle(Dimensions.X, Dimensions.Bottom, Dimensions.Width, 1),
+                sb.Draw(Assets.PixelTexture, new Rectangle(dimensions.X, dimensions.Bottom, dimensions.Width, 1),
                     borderColour);
                 // Draw top side
-                sb.Draw(Assets.PixelTexture, new Rectangle(Dimensions.X, Dimensions.Y, Dimensions.Width, 1),
+                sb.Draw(Assets.PixelTexture, new Rectangle(dimensions.X, dimensions.Y, dimensions.Width, 1),
                     borderColour);
             }
         }

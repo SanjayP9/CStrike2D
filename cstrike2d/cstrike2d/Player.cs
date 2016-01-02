@@ -19,7 +19,7 @@ namespace CStrike2D
 
         }
 
-        public override void Draw(SpriteBatch sb, Assets assets)
+        public override void Draw(SpriteBatch sb)
         {
         }
     }

@@ -23,6 +23,7 @@ namespace CStrike2D
         /// </summary>
         public abstract Rectangle Dimensions { get; protected set; }
 
+        protected Assets Assets { get; set; }
 
         /// <summary>
         /// Update logic of the entity
@@ -34,7 +35,6 @@ namespace CStrike2D
         /// Draw logic of the entity
         /// </summary>
         /// <param name="sb"> Spritebatch used to draw components of the game</param>
-        /// <param name="assets"> Globally accessible assets used in the game</param>
-        public abstract void Draw(SpriteBatch sb, Assets assets);
+        public abstract void Draw(SpriteBatch sb);
     }
 }

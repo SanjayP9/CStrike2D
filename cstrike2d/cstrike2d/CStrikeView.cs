@@ -14,16 +14,16 @@ namespace CStrike2D
     public class CStrikeView
     {
         // Asset loaders
-
         private Assets assets;
 
         /// <summary>
         /// Initializes the view and loads all applicable assets
         /// </summary>
-        /// <param name="instance">The driver class that contains the ServiceProvider</param>
-        public CStrikeView(CStrike2D instance)
+        /// <param name="assets"></param>
+        public CStrikeView(CStrike2D driver)
         {
-            assets = new Assets(instance);
+            assets = driver.Assets;
+            assets.LoadCoreContent(driver);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace CStrike2D
             switch (model.CurState)
             {
                 case CStrikeModel.State.Menu:
-                    sb.Begin();
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, null, null, null);
 
                     // Show counter-terrorist background if true, terrorist background if false
                     sb.Draw(model.MenuBackgroundType ? assets.CTMenuBackground : assets.TMenuBackground, Vector2.Zero,

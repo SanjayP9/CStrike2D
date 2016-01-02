@@ -47,9 +47,6 @@ namespace CStrike2D
             coreContentLoader.RootDirectory = "Content";
             mapContentLoader.RootDirectory = "Content";
             gameContentLoader.RootDirectory = "Content";
-
-            // Load Core Content
-            LoadCoreContent(instance);
         }
 
         /// <summary>

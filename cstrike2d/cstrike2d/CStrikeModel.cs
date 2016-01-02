@@ -17,15 +17,34 @@ namespace CStrike2D
 {
     public class CStrikeModel
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public UIManager InterfaceManager { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public AudioManager AudioManager { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Camera2D Camera { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Map NewMap { get; private set; }
+        
+        /// <summary>
+        /// 
+        /// </summary>
         public InputManager Input { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Random NumGen { get; private set; }
 
         /// <summary>
@@ -33,7 +52,6 @@ namespace CStrike2D
         /// True for counter-terrorist, false for terrorist
         /// </summary>
         public bool MenuBackgroundType { get; private set; }
-
 
         public float GlowTimer { get; private set; }
         public bool FadeIn { get; private set; }
@@ -85,13 +103,13 @@ namespace CStrike2D
             InterfaceManager = new UIManager();
 
             // Initialize buttons
-            InterfaceManager.AddComponent(new Button("playButton", new Rectangle(150, 40, 200, 40), Color.White, "Connect", 1.0f, EasingFunctions.AnimationType.CubicIn));
+            InterfaceManager.AddComponent(new Button("playButton", new Rectangle(150, 40, 200, 40), Color.White, "Connect", 1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Down, DriverInstance.Assets));
+            InterfaceManager.AddComponent(new Button("optionsButton", new Rectangle(621, 40, 200, 40), Color.White, "Options", 1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Down, DriverInstance.Assets));
+            InterfaceManager.AddComponent(new Button("quitButton", new Rectangle(1200, 40, 200, 40), Color.White, "Quit", 1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Down, DriverInstance.Assets));
 
-            InterfaceManager.AddComponent(new Button("optionsButton", new Rectangle(600, 40, 200, 40), Color.White, "Options", 1.0f, EasingFunctions.AnimationType.CubicIn));
-
-            InterfaceManager.AddComponent(new Button("quitButton", new Rectangle(1200, 40, 200, 40), Color.White, "Quit", 1.0f, EasingFunctions.AnimationType.CubicIn));
-
-            InterfaceManager.Show("TestButton");
+            InterfaceManager.Show("playButton");
+            InterfaceManager.Show("optionsButton");
+            InterfaceManager.Show("quitButton");
 
             // Initialize Control Class
             Input = new InputManager();
@@ -109,9 +127,11 @@ namespace CStrike2D
             LoadMap("default");
             WriteMap("bigmap");
 
-            Camera = new Camera2D();
-            Camera.Position = new Vector2((NewMap.TileMap.GetLength(0) / 2) * 64 + 32,
-                (NewMap.TileMap.GetLength(1) / 2) * 64 + 32);
+            Camera = new Camera2D
+            {
+                Position = new Vector2((NewMap.TileMap.GetLength(0)/2)*64 + 32,
+                    (NewMap.TileMap.GetLength(1)/2)*64 + 32)
+            };
         }
 
         public void Update(float gameTime)

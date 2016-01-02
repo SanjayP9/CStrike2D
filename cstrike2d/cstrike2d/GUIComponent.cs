@@ -11,10 +11,7 @@ namespace CStrike2D
         /// </summary>
         public abstract State CurState { get; protected set; }
 
-        /// <summary>
-        /// The dimensions of the component
-        /// </summary>
-        public abstract Rectangle Dimensions { get; protected set; }
+        protected Rectangle dimensions;
 
         /// <summary>
         /// Used to identify the component
@@ -28,6 +25,11 @@ namespace CStrike2D
             Assets = assets;
         }
 
+        public Rectangle Dimensions()
+        {
+            return dimensions;
+        }
+
         /// <summary>
         /// Different states the component could be in
         /// </summary>
@@ -37,6 +39,14 @@ namespace CStrike2D
             TransitionIn,
             TransitionOut,
             Active
+        }
+
+        public enum AnimationDirection
+        {
+            Left,
+            Right,
+            Up,
+            Down,
         }
 
         /// <summary>

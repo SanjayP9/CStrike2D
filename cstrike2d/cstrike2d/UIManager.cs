@@ -47,7 +47,7 @@ namespace CStrike2D
         {
             foreach (GUIComponent component in guiComponents)
             {
-                component.Draw(sb, assets);
+                component.Draw(sb);
             }
         }
 
@@ -82,6 +82,12 @@ namespace CStrike2D
             {
                 component.Show();
             }
+            else
+            {
+                throw new NullReferenceException(
+                    "Attempted to show a component that does not exist. The component you tried to access was named \"" +
+                    identifier + "\"");
+            }
         }
 
         /// <summary>
@@ -96,6 +102,12 @@ namespace CStrike2D
             if (component != null)
             {
                 component.Hide();
+            }
+            else
+            {
+                throw new NullReferenceException(
+                    "Attempted to show a component that does not exist. The component you tried to access was named \"" +
+                    identifier + "\"");
             }
         }
 
