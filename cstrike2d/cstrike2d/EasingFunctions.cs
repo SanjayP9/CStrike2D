@@ -2,7 +2,7 @@
 // File Name: EasingFunctions.cs
 // Project Name: LightEngine
 // Creation Date: Feburary 10th, 2015
-// Modified Date: Dec 23rd, 2015
+// Modified Date: Jan 2nd, 2016
 // Description: See Below.
 using System;
 
@@ -21,6 +21,9 @@ namespace LightEngine
     /// -------------------------------------------------------------------------------------------
     /// Main Methods: Linear, Quadratic, Cubic, Quartic, Quintic, Sinusoidal, Exponential, Circular
     ///               All functions have an In, Out, and In/Out version.
+    /// Sub Methods:  ReturnOppositeType
+    ///               Returns the "recipricol" type of an animation type. For example, QuinticIn
+    ///               will return QuinticOut
     /// -------------------------------------------------------------------------------------------
     /// </summary>
     public static class EasingFunctions
@@ -119,6 +122,48 @@ namespace LightEngine
                     return CircInOut(time, startingPoint, change, animationTime);
                 default:
                     throw new Exception("An Invalid Enum was given");
+            }
+        }
+
+        /// <summary>
+        /// Returns the "recipricol" animation type. Useful for transitioning out/in
+        /// </summary>
+        /// <param name="animType"></param>
+        /// <returns></returns>
+        public static AnimationType ReturnOppositeType(AnimationType animType)
+        {
+            switch (animType)
+            {
+                case AnimationType.QuadraticIn:
+                    return AnimationType.QuadraticOut;
+                case AnimationType.QuadraticOut:
+                    return AnimationType.QuadraticIn;
+                case AnimationType.CubicIn:
+                    return AnimationType.CubicOut;
+                case AnimationType.CubicOut:
+                    return AnimationType.CubicIn;
+                case AnimationType.QuarticIn:
+                    return AnimationType.QuarticOut;
+                case AnimationType.QuarticOut:
+                    return AnimationType.QuarticIn;
+                case AnimationType.QuinticIn:
+                    return AnimationType.QuinticOut;
+                case AnimationType.QuinticOut:
+                    return AnimationType.QuinticIn;
+                case AnimationType.SinIn:
+                    return AnimationType.SinOut;
+                case AnimationType.SinOut:
+                    return AnimationType.SinIn;
+                case AnimationType.ExpIn:
+                    return AnimationType.ExpOut;
+                case AnimationType.ExpOut:
+                    return AnimationType.ExpIn;
+                case AnimationType.CircIn:
+                    return AnimationType.CircOut;
+                case AnimationType.CircOut:
+                    return AnimationType.CircIn;
+                default:
+                    return AnimationType.Linear;
             }
         }
 

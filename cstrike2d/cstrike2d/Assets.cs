@@ -1,7 +1,8 @@
 ﻿// Author: Mark Voong
-// Class Name: Assets.cs
-// Creation Date: Dec 23rd 2015
-// Modified Date:
+// File Name: Assets.cs
+// Project Name: CStrike2D
+// Creation Date: Dec 23rd, 2015
+// Modified Date: Jan 3rd, 2016
 // Description: Stores all assets required in the game and is globally accessible
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -65,6 +66,7 @@ namespace CStrike2D
             instance.Model.AudioManager.AddSound(new SoundContainer("menuMusic", coreContentLoader.Load<SoundEffect>("sound/music/mainmenu")));
             instance.Model.AudioManager.AddSound(new SoundContainer("ak47shot", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/ak47")));
             instance.Model.AudioManager.AddSound(new SoundContainer("ak47shotdistant", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/ak47d")));
+            instance.Model.AudioManager.AddSound(new SoundContainer("buttonclick", coreContentLoader.Load<SoundEffect>("sound/sfx/ui/buttonclick")));
         }
 
         /// <summary>

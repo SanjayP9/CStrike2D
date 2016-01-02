@@ -1,10 +1,9 @@
 ﻿// Author: Mark Voong
 // File Name: InputManager.cs
-// Project: cstrike2d
+// Project Name: CStrike2D
 // Creation Date: Sept 10th, 2015
-// Modified Date: Sept 20th, 2015
+// Modified Date: Dec 31st, 2015
 // Description: Handles all input from the user
-
 using System;
 using System.Linq;
 using Microsoft.Xna.Framework;

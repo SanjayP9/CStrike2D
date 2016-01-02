@@ -1,4 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿// Author: Mark Voong
+// File Name: CStrikeModel.cs
+// Project Name: CStrike2D
+// Creation Date: Dec 21st, 2015
+// Modified Date: Jan 3rd, 2016
+// Description: Handles logic for the camera
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D

@@ -1,4 +1,9 @@
-﻿using System;
+﻿// Author: Mark Voong
+// File Name: View.cs
+// Project: CStrike2D
+// Date Created: Dec 6th 2015
+// Date Modified: Jan 3rd 2016
+// Description: Handles all graphical aspects of the game
 using LightEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,7 +15,6 @@ namespace CStrike2D
         public override State CurState { get; protected set; }
         public override string Identifier { get; protected set; }
 
-        private const float ALPHA_CHANGE = 0.05f;
         private Vector2 startPosition;
         private Vector2 endPosition;
         private Color fillColour;
@@ -81,7 +85,7 @@ namespace CStrike2D
                             break;
                         case AnimationDirection.Down:
                             dimensions.Height =
-                               (int)EasingFunctions.Animate(timer, startPosition.Y, endPosition.Y, animTime, animType);
+                               (int)EasingFunctions.Animate(timer, 0, endPosition.Y, animTime, animType);
                             break;
                     }
 
@@ -102,18 +106,32 @@ namespace CStrike2D
                     }
                     break;
                 case State.TransitionOut:
-                    timer += gameTime;
+                    timer -= gameTime;
 
                     // Move the bar
-                    dimensions.Width =
-                        (int)EasingFunctions.Animate(timer, endPosition.X, startPosition.X, animTime, animType);
-                    dimensions.Height =
-                        (int)EasingFunctions.Animate(timer, endPosition.Y, startPosition.Y, animTime, animType);
-
-                    if (dimensions.Width == (int)(startPosition.X - endPosition.X) &&
-                        dimensions.Height == (int)(startPosition.Y - endPosition.Y))
+                    switch (animDir)
                     {
-                        CurState = State.Active;
+                        case AnimationDirection.Left:
+                            dimensions.X =
+                                (int)EasingFunctions.Animate(timer, startPosition.X, endPosition.X, animTime, animType);
+                            break;
+                        case AnimationDirection.Right:
+                            dimensions.Width =
+                                (int)EasingFunctions.Animate(timer, startPosition.X, endPosition.X, animTime, animType);
+                            break;
+                        case AnimationDirection.Up:
+                            dimensions.Height =
+                                (int)EasingFunctions.Animate(timer, endPosition.Y, startPosition.Y, animTime, animType);
+                            break;
+                        case AnimationDirection.Down:
+                            dimensions.Height =
+                               (int)EasingFunctions.Animate(timer, 0, endPosition.Y, animTime, animType);
+                            break;
+                    }
+
+                    if (timer <= 0)
+                    {
+                        CurState = State.InActive;
                     }
 
                     // Change the alpha

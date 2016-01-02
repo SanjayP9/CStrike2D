@@ -1,10 +1,9 @@
 ﻿// Author: Mark Voong
-// Class Name: CStrikeModel.cs
-// Project: CStrike2D
-// Creation Date: Dec 21st 2015
-// Modified Date:
+// File Name: CStrikeModel.cs
+// Project Name: CStrike2D
+// Creation Date: Dec 21st, 2015
+// Modified Date: Jan 3rd, 2016
 // Description: Handles all logic processing of the game
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -94,41 +93,59 @@ namespace CStrike2D
             Center = center;
             Dimensions = dimensions;
 
-            CurState = State.Menu;
-
             // Initialize AudioManager
             AudioManager = new AudioManager();
 
             // Initialize UIManager
             InterfaceManager = new UIManager();
 
-            InterfaceManager.AddComponent(new Bar("menuTopBar", new Rectangle(0, 20, (int) Dimensions.X, 80), 1.0f, 0.5f,
-                Color.Black, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Down,
-                DriverInstance.Assets));
-
-            // Initialize buttons
-            InterfaceManager.AddComponent(new Button("playButton", new Rectangle(150, 55, 200, 40), Color.White,
-                "Connect", 1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Right,
-                DriverInstance.Assets));
-
-            InterfaceManager.AddComponent(new Button("optionsButton", new Rectangle(621, 55, 200, 40), Color.White,
-                "Options", 1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Right,
-                DriverInstance.Assets));
-
-            InterfaceManager.AddComponent(new Button("quitButton", new Rectangle(1200, 55, 200, 40), Color.White, "Quit",
-                1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Right,
-                DriverInstance.Assets));
-
-            InterfaceManager.Show("playButton");
-            InterfaceManager.Show("optionsButton");
-            InterfaceManager.Show("quitButton");
-            InterfaceManager.Show("menuTopBar");
-
             // Initialize Control Class
             Input = new InputManager();
 
             // Initialize Random number generator
             NumGen = new Random();
+        }
+
+        /// <summary>
+        /// Called once at the startup of the game
+        /// </summary>
+        public void Initialize()
+        {
+            DriverInstance.Assets.LoadCoreContent(DriverInstance);
+
+            CurState = State.Menu;
+
+            InterfaceManager.AddComponent(new Bar("menuTopBar", new Rectangle(0, 20, (int)Dimensions.X, 80), 1.0f, 0.65f,
+                Color.Black, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Down,
+                DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Bar("playBar", new Rectangle(0, 100, (int)Dimensions.X, 660), 1.0f, 0.8f,
+                Color.Black, EasingFunctions.AnimationType.QuarticInOut, GUIComponent.AnimationDirection.Down,
+                DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Bar("optionsBar", new Rectangle(0, 100, (int)Dimensions.X, 660), 1.0f, 0.8f,
+                Color.Black, EasingFunctions.AnimationType.QuarticInOut, GUIComponent.AnimationDirection.Down,
+                DriverInstance.Assets));
+
+            // Initialize buttons
+            InterfaceManager.AddComponent(new Button("playButton", new Rectangle(150, 40, 200, 40), Color.White,
+                "Play", 1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Right,
+                DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("optionsButton", new Rectangle(500, 40, 200, 40), Color.White,
+                "Options", 1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Right,
+                DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("quitButton", new Rectangle(1100, 40, 200, 40), Color.White, "Quit",
+                1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Right,
+                DriverInstance.Assets));
+
+            // Options Menu Buttons
+
+            InterfaceManager.Show("playButton");
+            InterfaceManager.Show("optionsButton");
+            InterfaceManager.Show("quitButton");
+            InterfaceManager.Show("menuTopBar");
 
             Address = string.Empty;
 
@@ -142,8 +159,8 @@ namespace CStrike2D
 
             Camera = new Camera2D
             {
-                Position = new Vector2((NewMap.TileMap.GetLength(0)/2)*64 + 32,
-                    (NewMap.TileMap.GetLength(1)/2)*64 + 32)
+                Position = new Vector2((NewMap.TileMap.GetLength(0) / 2) * 64 + 32,
+                    (NewMap.TileMap.GetLength(1) / 2) * 64 + 32)
             };
         }
 
@@ -161,8 +178,21 @@ namespace CStrike2D
                     //AudioManager.PlaySound("menuMusic", AudioManager.MusicVolume, Center, new Vector2(Center.X, Center.Y + 100));
                     if (InterfaceManager.Clicked(Input, "playButton"))
                     {
-                        CurState = State.Lobby;
+                        InterfaceManager.Show("playBar");
+                        InterfaceManager.Hide("optionsBar");
+                        AudioManager.PlaySound("buttonclick", AudioManager.UiVolume);
                     }
+                    else if (InterfaceManager.Clicked(Input, "optionsButton"))
+                    {
+                        InterfaceManager.Show("optionsBar");
+                        InterfaceManager.Hide("playBar");
+                        AudioManager.PlaySound("buttonclick", AudioManager.UiVolume);
+                    }
+                    else if (InterfaceManager.Clicked(Input, "quitButton"))
+                    {
+                        DriverInstance.Exit();
+                    }
+                    
                     /*
                     if (FadeIn)
                     {

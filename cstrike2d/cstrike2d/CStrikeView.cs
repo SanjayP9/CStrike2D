@@ -1,10 +1,9 @@
 ﻿// Author: Mark Voong
 // File Name: View.cs
-// Project: CStrike2D
-// Date Created: Dec 6th 2015
-// Date Modified: Dec 23rd 2015
+// Project Name: CStrike2D
+// Creation Date: Dec 6th, 2015
+// Modified Date: Jan 3rd, 2016
 // Description: Handles all graphical aspects of the game
-
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -23,7 +22,6 @@ namespace CStrike2D
         public CStrikeView(CStrike2D driver)
         {
             assets = driver.Assets;
-            assets.LoadCoreContent(driver);
         }
 
         /// <summary>

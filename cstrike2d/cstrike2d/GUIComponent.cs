@@ -1,4 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿// Author: Mark Voong
+// File Name: GUIComponent.cs
+// Project Name: CStrike2D
+// Creation Date: Dec 21st, 2015
+// Modified Date: Jan 2nd, 2016
+// Description: Base class for a UI component. Has basic functions for
+// Animation and state
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
@@ -18,16 +25,24 @@ namespace CStrike2D
         /// </summary>
         public abstract string Identifier { get; protected set; }
 
+        protected const float ALPHA_CHANGE = 0.05f;       // Rate at which the transparency changes per second
         protected float timer = 0.0f;                     // Timer used to animate the button
         protected Assets Assets;
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="assets"></param>
         protected GUIComponent(Assets assets)
         {
             Assets = assets;
         }
 
-        public Rectangle Dimensions()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public virtual Rectangle Dimensions()
         {
             return dimensions;
         }
@@ -43,12 +58,16 @@ namespace CStrike2D
             Active
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public enum AnimationDirection
         {
             Left,
             Right,
             Up,
             Down,
+            None
         }
 
         /// <summary>
@@ -56,11 +75,6 @@ namespace CStrike2D
         /// </summary>
         public virtual void Show()
         {
-            // Reset the timer only if the button isn't already currently moving
-            if (CurState == State.InActive)
-            {
-                timer = 0;
-            }
             CurState = State.TransitionIn;
         }
 
@@ -69,11 +83,6 @@ namespace CStrike2D
         /// </summary>
         public virtual void Hide()
         {
-            // Reset the timer only if the button isn't already currently moving
-            if (CurState == State.Active)
-            {
-                timer = 0;
-            }
             CurState = State.TransitionOut;
         }
 

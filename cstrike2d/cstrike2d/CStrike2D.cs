@@ -1,3 +1,9 @@
+// Author: Mark Voong
+// File Name: CStrike2D.cs
+// Project Name: CStrike2D
+// Creation Date: Sept 28th, 2015
+// Modified Date: Jan 3rd, 2016
+// Description: Driver class. Holds all MVC components of the game
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -6,13 +12,9 @@ namespace CStrike2D
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class CStrike2D : Microsoft.Xna.Framework.Game
+    public class CStrike2D : Game
     {
-        private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
-
-        private RenderTarget2D render;
-        private RenderTarget2D finalRender;
 
         // Model and View
         public CStrikeModel Model { get; private set; }
@@ -43,11 +45,12 @@ namespace CStrike2D
 
         public CStrike2D()
         {
-            graphics = new GraphicsDeviceManager(this);
-
             // Default dimensions
-            graphics.PreferredBackBufferHeight = 768;
-            graphics.PreferredBackBufferWidth = 1366;
+            GraphicsDeviceManager graphics = new GraphicsDeviceManager(this)
+            {
+                PreferredBackBufferHeight = 768,
+                PreferredBackBufferWidth = 1366
+            };
 
             dimensions = new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
             center = new Vector2(dimensions.X / 2, dimensions.Y / 2);
@@ -72,8 +75,9 @@ namespace CStrike2D
         {
             // Initialize Model and View
             Assets = new Assets(this);
-            Model = new CStrikeModel(this, center, dimensions);
             View = new CStrikeView(this);
+            Model = new CStrikeModel(this, center, dimensions);
+            Model.Initialize();
 
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
