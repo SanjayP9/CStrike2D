@@ -102,14 +102,27 @@ namespace CStrike2D
             // Initialize UIManager
             InterfaceManager = new UIManager();
 
+            InterfaceManager.AddComponent(new Bar("menuTopBar", new Rectangle(0, 20, (int) Dimensions.X, 80), 1.0f, 0.5f,
+                Color.Black, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Up,
+                DriverInstance.Assets));
+
             // Initialize buttons
-            InterfaceManager.AddComponent(new Button("playButton", new Rectangle(150, 40, 200, 40), Color.White, "Connect", 1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Down, DriverInstance.Assets));
-            InterfaceManager.AddComponent(new Button("optionsButton", new Rectangle(621, 40, 200, 40), Color.White, "Options", 1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Down, DriverInstance.Assets));
-            InterfaceManager.AddComponent(new Button("quitButton", new Rectangle(1200, 40, 200, 40), Color.White, "Quit", 1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Down, DriverInstance.Assets));
+            InterfaceManager.AddComponent(new Button("playButton", new Rectangle(150, 55, 200, 40), Color.White,
+                "Connect", 1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Down,
+                DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("optionsButton", new Rectangle(621, 55, 200, 40), Color.White,
+                "Options", 1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Down,
+                DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("quitButton", new Rectangle(1200, 55, 200, 40), Color.White, "Quit",
+                1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Down,
+                DriverInstance.Assets));
 
             InterfaceManager.Show("playButton");
             InterfaceManager.Show("optionsButton");
             InterfaceManager.Show("quitButton");
+            InterfaceManager.Show("menuTopBar");
 
             // Initialize Control Class
             Input = new InputManager();

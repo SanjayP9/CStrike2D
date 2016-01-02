@@ -85,7 +85,7 @@ namespace CStrike2D
 
                     // Draw Background UI elements
 
-                    sb.Draw(assets.PixelTexture, new Rectangle(0, 20, (int)model.Dimensions.X, 80), Color.Black * 0.8f);
+                    //sb.Draw(assets.PixelTexture, new Rectangle(0, 20, (int)model.Dimensions.X, 80), Color.Black * 0.8f);
 
                     model.InterfaceManager.Draw(sb, assets);
                     break;

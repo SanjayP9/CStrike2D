@@ -18,7 +18,9 @@ namespace CStrike2D
         /// </summary>
         public abstract string Identifier { get; protected set; }
 
+        protected float timer = 0.0f;                     // Timer used to animate the button
         protected Assets Assets;
+
 
         protected GUIComponent(Assets assets)
         {
@@ -52,12 +54,28 @@ namespace CStrike2D
         /// <summary>
         /// Shows the component
         /// </summary>
-        public abstract void Show();
+        public virtual void Show()
+        {
+            // Reset the timer only if the button isn't already currently moving
+            if (CurState == State.InActive)
+            {
+                timer = 0;
+            }
+            CurState = State.TransitionIn;
+        }
 
         /// <summary>
         /// Hides the component
         /// </summary>
-        public abstract void Hide();
+        public virtual void Hide()
+        {
+            // Reset the timer only if the button isn't already currently moving
+            if (CurState == State.Active)
+            {
+                timer = 0;
+            }
+            CurState = State.TransitionOut;
+        }
 
         /// <summary>
         /// All logic operations of the component

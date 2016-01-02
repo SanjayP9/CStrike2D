@@ -29,7 +29,6 @@ namespace CStrike2D
         private Color textColour;                       // The colour used for the text
         private string text;                            // The text shown inside the button
         private float alpha = 0.0f;                     // The alpha transparency of the button
-        private float timer = 0.0f;                     // Timer used to animate the button
         private float animTime;                         // Time the button takes to move from one point to another
         private EasingFunctions.AnimationType animType; // Type of animation the button should use
 
@@ -127,8 +126,7 @@ namespace CStrike2D
                         (int) EasingFunctions.Animate(timer, startPosition.Y, endPosition.Y, animTime, animType);
                     
                     // If the button has reached its end point, set it to active
-                    if (dimensions.X == (int) endPosition.X &&
-                        dimensions.Y == (int)endPosition.Y)
+                    if (timer >= animTime)
                     {
                         CurState = State.Active;
                     }
@@ -136,7 +134,7 @@ namespace CStrike2D
                     // Change the alpha
                     if (alpha <= 1.0f)
                     {
-                        alpha += ALPHA_CHANGE * gameTime;
+                        alpha += ALPHA_CHANGE;
                     }
                     break;
                 case State.TransitionOut:
@@ -165,51 +163,6 @@ namespace CStrike2D
                     }
                     break;
             }
-        }
-
-        /// <summary>
-        /// Transitions in the button
-        /// </summary>
-        public override void Show()
-        {
-            // Reset the timer only if the button isn't already currently moving
-            if (CurState == State.InActive)
-            {
-                timer = 0;
-            }
-            CurState = State.TransitionIn;
-        }
-
-        /// <summary>
-        /// Transitions out the button
-        /// </summary>
-        public override void Hide()
-        {
-            // Reset the timer only if the button isn't already currently moving
-            if (CurState == State.Active)
-            {
-                timer = 0;
-            }
-            CurState = State.TransitionOut;
-        }
-
-        /// <summary>
-        /// Checks if the button is hovered over
-        /// </summary>
-        /// <returns></returns>
-        public bool Hover(InputManager input)
-        {
-            return Dimensions().Contains((int)input.MousePosition.X, (int)input.MousePosition.Y);
-        }
-
-        /// <summary>
-        /// Check if the button was clicked
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public bool Clicked(InputManager input)
-        {
-            return Hover(input) && input.LeftClick();
         }
 
         /// <summary>
@@ -247,6 +200,25 @@ namespace CStrike2D
                 sb.Draw(Assets.PixelTexture, new Rectangle(dimensions.X, dimensions.Y, dimensions.Width, 1),
                     borderColour);
             }
+        }
+
+        /// <summary>
+        /// Checks if the button is hovered over
+        /// </summary>
+        /// <returns></returns>
+        public bool Hover(InputManager input)
+        {
+            return Dimensions().Contains((int)input.MousePosition.X, (int)input.MousePosition.Y);
+        }
+
+        /// <summary>
+        /// Check if the button was clicked
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public bool Clicked(InputManager input)
+        {
+            return Hover(input) && input.LeftClick();
         }
     }
 }
