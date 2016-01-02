@@ -3,11 +3,6 @@
 // Creation Date: Dec 23rd 2015
 // Modified Date:
 // Description: Stores all assets required in the game and is globally accessible
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using cstrike2d;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;

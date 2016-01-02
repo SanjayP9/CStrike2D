@@ -1,9 +1,7 @@
-﻿
-using System;
+﻿using System;
 using System.IO;
-using CStrike2D;
 
-namespace cstrike2d
+namespace CStrike2D
 {
     public class Map
     {

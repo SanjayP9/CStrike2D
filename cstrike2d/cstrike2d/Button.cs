@@ -3,10 +3,6 @@
 // Creation Date: Dec 23rd 2015
 // Modified Date:
 // Description: Creates a button, which can be clicked
-
-using System;
-using System.Xml.Serialization;
-using cstrike2d;
 using LightEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -51,8 +47,9 @@ namespace CStrike2D
         /// <param name="text"></param>
         /// <param name="animTime"></param>
         /// <param name="animType"></param>
+        /// <param name="assets"></param>
         public Button(string identifier, Rectangle dimensions, Color fillColour, Color borderColour, Color textColour,
-            string text, float animTime, EasingFunctions.AnimationType animType)
+            string text, float animTime, EasingFunctions.AnimationType animType, Assets assets) : base(assets)
         {
             Identifier = identifier;
             Dimensions = dimensions;
@@ -62,6 +59,7 @@ namespace CStrike2D
             this.text = text;
             this.animTime = animTime;
             this.animType = animType;
+            CurState = State.InActive;
         }
 
         /// <summary>
@@ -73,8 +71,9 @@ namespace CStrike2D
         /// <param name="text"></param>
         /// <param name="animTime"></param>
         /// <param name="animType"></param>
+        /// <param name="assets"></param>
         public Button(string identifier, Rectangle dimensions, Color textColour, string text, float animTime,
-            EasingFunctions.AnimationType animType)
+            EasingFunctions.AnimationType animType, Assets assets) : base(assets)
         {
             Identifier = identifier;
             Dimensions = dimensions;
@@ -82,6 +81,7 @@ namespace CStrike2D
             this.text = text;
             this.animTime = animTime;
             this.animType = animType;
+            CurState = State.InActive;
         }
 
         /// <summary>
@@ -191,29 +191,36 @@ namespace CStrike2D
         /// </summary>
         /// <param name="sb"></param>
         /// <param name="assets"></param>
-        public override void Draw(SpriteBatch sb, Assets assets)
+        public override void Draw(SpriteBatch sb)
         {
-            // Draw fill
-            sb.Draw(assets.PixelTexture, Dimensions, fillColour);
+            if (CurState != State.InActive)
+            {
+                // Draw fill
+                sb.Draw(Assets.PixelTexture, Dimensions, fillColour);
 
-            // Draw text
-            Vector2 centeredText = new Vector2(
-                Dimensions.Center.X - (assets.DefaultFont.MeasureString(text).X / 2), 
-                Dimensions.Center.Y - (assets.DefaultFont.MeasureString(text).Y / 2));
+                // Draw text
+                Vector2 centeredText = new Vector2(
+                    Dimensions.Center.X - (Assets.DefaultFont.MeasureString(text).X / 2),
+                    Dimensions.Center.Y - (Assets.DefaultFont.MeasureString(text).Y / 2));
 
-            sb.DrawString(assets.DefaultFont, text, centeredText, textColour, 0, Vector2.Zero, 1f, SpriteEffects.None, 0);
+                sb.DrawString(Assets.DefaultFont, text, centeredText, textColour, 0, Vector2.Zero, 1f,
+                    SpriteEffects.None, 0);
 
-            // Draw border
+                // Draw border
 
-            // Draw left side
-            sb.Draw(assets.PixelTexture, new Rectangle(Dimensions.Left, Dimensions.Y, 1, Dimensions.Height), borderColour);
-            // Draw right side
-            sb.Draw(assets.PixelTexture, new Rectangle(Dimensions.Right, Dimensions.Y, 1, Dimensions.Height), borderColour);
-            // Draw bottom side
-            sb.Draw(assets.PixelTexture, new Rectangle(Dimensions.X, Dimensions.Bottom, Dimensions.Width, 1), borderColour);
-            // Draw top side
-            sb.Draw(assets.PixelTexture, new Rectangle(Dimensions.X, Dimensions.Y, Dimensions.Width, 1), borderColour);
-
+                // Draw left side
+                sb.Draw(Assets.PixelTexture, new Rectangle(Dimensions.Left, Dimensions.Y, 1, Dimensions.Height),
+                    borderColour);
+                // Draw right side
+                sb.Draw(Assets.PixelTexture, new Rectangle(Dimensions.Right, Dimensions.Y, 1, Dimensions.Height),
+                    borderColour);
+                // Draw bottom side
+                sb.Draw(Assets.PixelTexture, new Rectangle(Dimensions.X, Dimensions.Bottom, Dimensions.Width, 1),
+                    borderColour);
+                // Draw top side
+                sb.Draw(Assets.PixelTexture, new Rectangle(Dimensions.X, Dimensions.Y, Dimensions.Width, 1),
+                    borderColour);
+            }
         }
     }
 }

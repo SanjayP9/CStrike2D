@@ -9,10 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using cstrike2d;
 using LightEngine;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace CStrike2D
@@ -87,7 +85,11 @@ namespace CStrike2D
             InterfaceManager = new UIManager();
 
             // Initialize buttons
-            InterfaceManager.AddComponent(new Button("playButton", new Rectangle(150, 40, 200, 40), Color.White, "Play", 1.0f, EasingFunctions.AnimationType.CubicIn));
+            InterfaceManager.AddComponent(new Button("playButton", new Rectangle(150, 40, 200, 40), Color.White, "Connect", 1.0f, EasingFunctions.AnimationType.CubicIn));
+
+            InterfaceManager.AddComponent(new Button("optionsButton", new Rectangle(600, 40, 200, 40), Color.White, "Options", 1.0f, EasingFunctions.AnimationType.CubicIn));
+
+            InterfaceManager.AddComponent(new Button("quitButton", new Rectangle(1200, 40, 200, 40), Color.White, "Quit", 1.0f, EasingFunctions.AnimationType.CubicIn));
 
             InterfaceManager.Show("TestButton");
 

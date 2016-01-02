@@ -5,9 +5,6 @@
 // Modified Date: Oct 9th, 2015
 // Description: Holds various useful functions
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
 
 namespace CStrike2D

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CStrike2D;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace cstrike2d
+namespace CStrike2D
 {
     public abstract class GUIComponent
     {
@@ -25,6 +20,13 @@ namespace cstrike2d
         /// Used to identify the component
         /// </summary>
         public abstract string Identifier { get; protected set; }
+
+        protected Assets Assets;
+
+        protected GUIComponent(Assets assets)
+        {
+            Assets = assets;
+        }
 
         /// <summary>
         /// Different states the component could be in
@@ -57,7 +59,6 @@ namespace cstrike2d
         /// All draw operations of the component
         /// </summary>
         /// <param name="sb"> Used to draw the object on the screen</param>
-        /// <param name="assets"> Assets that may be used for drawing</param>
-        public abstract void Draw(SpriteBatch sb, Assets assets);
+        public abstract void Draw(SpriteBatch sb);
     }
 }

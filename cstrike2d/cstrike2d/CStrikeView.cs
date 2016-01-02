@@ -6,9 +6,7 @@
 // Description: Handles all graphical aspects of the game
 
 using System;
-using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
