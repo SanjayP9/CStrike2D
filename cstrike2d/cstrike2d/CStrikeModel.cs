@@ -116,36 +116,64 @@ namespace CStrike2D
             CurState = State.Menu;
 
             InterfaceManager.AddComponent(new Bar("menuTopBar", new Rectangle(0, 20, (int)Dimensions.X, 80), 1.0f, 0.65f,
-                Color.Black, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Down,
+                Color.Black, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down,
                 DriverInstance.Assets));
 
-            InterfaceManager.AddComponent(new Bar("playBar", new Rectangle(0, 100, (int)Dimensions.X, 660), 1.0f, 0.8f,
-                Color.Black, EasingFunctions.AnimationType.QuarticInOut, GUIComponent.AnimationDirection.Down,
+            InterfaceManager.AddComponent(new Button("playButton", new Rectangle(150, 20, 200, 80), Color.White,
+                "Play", 1.5f, EasingFunctions.AnimationType.QuinticOut, GUIComponent.AnimationDirection.Up,
                 DriverInstance.Assets));
 
-            InterfaceManager.AddComponent(new Bar("optionsBar", new Rectangle(0, 100, (int)Dimensions.X, 660), 1.0f, 0.8f,
-                Color.Black, EasingFunctions.AnimationType.QuarticInOut, GUIComponent.AnimationDirection.Down,
+            InterfaceManager.AddComponent(new Button("loadoutButton", new Rectangle(450, 20, 200, 80), Color.White,
+                "Loadout", 1.5f, EasingFunctions.AnimationType.QuinticOut, GUIComponent.AnimationDirection.Up,
                 DriverInstance.Assets));
 
-            // Initialize buttons
-            InterfaceManager.AddComponent(new Button("playButton", new Rectangle(150, 40, 200, 40), Color.White,
-                "Play", 1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Right,
+            InterfaceManager.AddComponent(new Button("optionsButton", new Rectangle(800, 20, 200, 80), Color.White,
+                "Options", 1.5f, EasingFunctions.AnimationType.QuinticOut, GUIComponent.AnimationDirection.Up,
                 DriverInstance.Assets));
 
-            InterfaceManager.AddComponent(new Button("optionsButton", new Rectangle(500, 40, 200, 40), Color.White,
-                "Options", 1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Right,
+            InterfaceManager.AddComponent(new Button("quitButton", new Rectangle(1100, 20, 200, 80), Color.White, "Quit",
+                1.5f, EasingFunctions.AnimationType.QuinticOut, GUIComponent.AnimationDirection.Up,
                 DriverInstance.Assets));
 
-            InterfaceManager.AddComponent(new Button("quitButton", new Rectangle(1100, 40, 200, 40), Color.White, "Quit",
-                1.0f, EasingFunctions.AnimationType.QuarticOut, GUIComponent.AnimationDirection.Right,
+            InterfaceManager.FormPage("defaultMenu");
+
+
+            InterfaceManager.AddComponent(new Bar("playBar", new Rectangle(0, 100, (int)Dimensions.X, 648), 1.0f, 0.8f,
+                Color.Black, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down,
                 DriverInstance.Assets));
 
-            // Options Menu Buttons
+            InterfaceManager.AddComponent(new Button("connectButton", new Rectangle(150, 200, 200, 80), Color.White,
+                "Connect", 1.0f, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.None,
+                DriverInstance.Assets));
 
-            InterfaceManager.Show("playButton");
-            InterfaceManager.Show("optionsButton");
-            InterfaceManager.Show("quitButton");
-            InterfaceManager.Show("menuTopBar");
+
+            InterfaceManager.FormPage("playMenu");
+
+
+
+            InterfaceManager.AddComponent(new Bar("optionsBar", new Rectangle(0, 100, (int)Dimensions.X, 648), 1.0f, 0.8f,
+                Color.Black, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down,
+                DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new TextBox("uiVolumeText", new Vector2(200, 250), "UI Volume",
+                Color.White, 1.1f, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down,
+                DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new TextBox("musicVolumeText", new Vector2(200, 300), "Music Volume",
+                Color.White, 1.2f, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down,
+                DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new TextBox("sfxVolumeText", new Vector2(200, 350), "Sound Effects Volume",
+                Color.White, 1.3f, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down,
+                DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new TextBox("voiceVolumeText", new Vector2(200, 400), "Voice Volume Volume",
+                Color.White, 1.4f, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down,
+                DriverInstance.Assets));
+
+            InterfaceManager.FormPage("optionsMenu");
+
+            InterfaceManager.ShowPage("defaultMenu");
 
             Address = string.Empty;
 
@@ -176,19 +204,19 @@ namespace CStrike2D
                     AudioManager.PlaySound("menuMusic", AudioManager.MusicVolume);
 
                     //AudioManager.PlaySound("menuMusic", AudioManager.MusicVolume, Center, new Vector2(Center.X, Center.Y + 100));
-                    if (InterfaceManager.Clicked(Input, "playButton"))
+                    if (InterfaceManager.Clicked(Input, "defaultMenu", "playButton"))
                     {
-                        InterfaceManager.Show("playBar");
-                        InterfaceManager.Hide("optionsBar");
+                        InterfaceManager.HidePage("optionsMenu");
+                        InterfaceManager.ShowPage("playMenu");
                         AudioManager.PlaySound("buttonclick", AudioManager.UiVolume);
                     }
-                    else if (InterfaceManager.Clicked(Input, "optionsButton"))
+                    else if (InterfaceManager.Clicked(Input, "defaultMenu", "optionsButton"))
                     {
-                        InterfaceManager.Show("optionsBar");
-                        InterfaceManager.Hide("playBar");
+                        InterfaceManager.HidePage("playMenu");
+                        InterfaceManager.ShowPage("optionsMenu");
                         AudioManager.PlaySound("buttonclick", AudioManager.UiVolume);
                     }
-                    else if (InterfaceManager.Clicked(Input, "quitButton"))
+                    else if (InterfaceManager.Clicked(Input, "defaultMenu", "quitButton"))
                     {
                         DriverInstance.Exit();
                     }

@@ -14,6 +14,7 @@ namespace CStrike2D
     {
         // Asset loaders
         private Assets assets;
+        private RasterizerState cullableRasterizer;
 
         /// <summary>
         /// Initializes the view and loads all applicable assets
@@ -22,6 +23,7 @@ namespace CStrike2D
         public CStrikeView(CStrike2D driver)
         {
             assets = driver.Assets;
+            cullableRasterizer = new RasterizerState {ScissorTestEnable = true};
         }
 
         /// <summary>
@@ -75,7 +77,7 @@ namespace CStrike2D
             switch (model.CurState)
             {
                 case CStrikeModel.State.Menu:
-                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, null, null, null);
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
 
                     // Show counter-terrorist background if true, terrorist background if false
                     sb.Draw(model.MenuBackgroundType ? assets.CTMenuBackground : assets.TMenuBackground, Vector2.Zero,
@@ -85,7 +87,33 @@ namespace CStrike2D
 
                     //sb.Draw(assets.PixelTexture, new Rectangle(0, 20, (int)model.Dimensions.X, 80), Color.Black * 0.8f);
 
-                    model.InterfaceManager.Draw(sb, assets);
+                    foreach (GUIPage page in model.InterfaceManager.GUIPages)
+                    {
+                        switch (page.Identifier)
+                        {
+                            case "optionsMenu":
+                                sb.End();
+                                sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null,
+                                    cullableRasterizer, null);
+                                sb.GraphicsDevice.ScissorRectangle = new Rectangle(0, 100, 1366, 648);
+                                page.Draw(sb);
+                                sb.End();
+                                sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null);
+                                break;
+                            case "defaultMenu":
+                                sb.End();
+                                sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null,
+                                    cullableRasterizer, null);
+                                sb.GraphicsDevice.ScissorRectangle = new Rectangle(0, 19, 1366, 82);
+                                page.Draw(sb);
+                                sb.End();
+                                sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null);
+                                break;
+                            default:
+                                page.Draw(sb);
+                                break;
+                        }
+                    }
                     break;
                 case CStrikeModel.State.Options:
                     break;

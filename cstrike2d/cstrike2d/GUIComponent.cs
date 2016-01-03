@@ -25,7 +25,6 @@ namespace CStrike2D
         /// </summary>
         public abstract string Identifier { get; protected set; }
 
-        protected const float ALPHA_CHANGE = 0.05f;       // Rate at which the transparency changes per second
         protected float timer = 0.0f;                     // Timer used to animate the button
         protected Assets Assets;
 
@@ -75,7 +74,10 @@ namespace CStrike2D
         /// </summary>
         public virtual void Show()
         {
-            CurState = State.TransitionIn;
+            if (CurState != State.Active)
+            {
+                CurState = State.TransitionIn;
+            }
         }
 
         /// <summary>
@@ -83,7 +85,10 @@ namespace CStrike2D
         /// </summary>
         public virtual void Hide()
         {
-            CurState = State.TransitionOut;
+            if (CurState != State.InActive)
+            {
+                CurState = State.TransitionOut;
+            }
         }
 
         /// <summary>

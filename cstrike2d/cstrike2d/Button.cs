@@ -27,10 +27,11 @@ namespace CStrike2D
         private Color textColour;                       // The colour used for the text
         private string text;                            // The text shown inside the button
         private float alpha = 0.0f;                     // The alpha transparency of the button
+        private float changeRate;
         private float animTime;                         // Time the button takes to move from one point to another
         private EasingFunctions.AnimationType animType; // Type of animation the button should use
 
-        private bool debug = true;
+        private bool debug = false;
 
         /// <summary>
         /// Creates a button
@@ -55,6 +56,7 @@ namespace CStrike2D
             this.text = text;
             this.animTime = animTime;
             this.animType = animType;
+            changeRate = 0.1f / animTime;
             CurState = State.InActive;
             endPosition = new Vector2(dimensions.X, dimensions.Y);
             startPosition = SetStartPosition(animDir);
@@ -80,6 +82,7 @@ namespace CStrike2D
             this.text = text;
             this.animTime = animTime;
             this.animType = animType;
+            changeRate = 0.1f / animTime;
             CurState = State.InActive;
             endPosition = new Vector2(dimensions.X, dimensions.Y);
             startPosition = SetStartPosition(animDir);
@@ -105,6 +108,8 @@ namespace CStrike2D
                     return new Vector2(endPosition.X, 768);
                 case AnimationDirection.Down:
                     return new Vector2(endPosition.X, -250);
+                case AnimationDirection.None:
+                    return endPosition;
             }
             return Vector2.Zero;
         }
@@ -121,6 +126,7 @@ namespace CStrike2D
 
                     // Advance time
                     timer += gameTime;
+
                     // Move the button
                     dimensions.X =
                         (int) EasingFunctions.Animate(timer, startPosition.X, endPosition.X, animTime, animType);
@@ -136,23 +142,22 @@ namespace CStrike2D
                     // Change the alpha
                     if (alpha <= 1.0f)
                     {
-                        alpha += ALPHA_CHANGE;
+                        alpha += changeRate;
                     }
                     break;
                 case State.TransitionOut:
 
                     // Advance time
-                    timer += gameTime;
+                    timer -= gameTime;
 
                     // Move the button
-
                     dimensions.X =
-                        (int) EasingFunctions.Animate(timer, endPosition.X, startPosition.X, animTime, animType);
+                        (int)EasingFunctions.Animate(timer, startPosition.X, endPosition.X, animTime, animType);
                     dimensions.Y =
-                        (int) EasingFunctions.Animate(timer, endPosition.Y, startPosition.Y, animTime, animType);
+                        (int)EasingFunctions.Animate(timer, startPosition.Y, endPosition.Y, animTime, animType);
 
                     // If the button has reached its end point, set it to active
-                    if (timer >= animTime)
+                    if (timer <= 0.0f)
                     {
                         CurState = State.InActive;
                     }
@@ -160,7 +165,7 @@ namespace CStrike2D
                     // Change the alpha
                     if (alpha >= 0.0f)
                     {
-                        alpha -= ALPHA_CHANGE * gameTime;
+                        alpha -= changeRate;
                     }
                     break;
             }
@@ -183,7 +188,7 @@ namespace CStrike2D
                     dimensions.Center.X - (Assets.DefaultFont.MeasureString(text).X / 2),
                     dimensions.Center.Y - (Assets.DefaultFont.MeasureString(text).Y / 2));
 
-                sb.DrawString(Assets.DefaultFont, text, centeredText, textColour, 0, Vector2.Zero, 1f,
+                sb.DrawString(Assets.DefaultFont, text, centeredText, textColour * alpha, 0, Vector2.Zero, 1f,
                     SpriteEffects.None, 0);
 
                 // Draw border
@@ -192,31 +197,31 @@ namespace CStrike2D
                 {
                     // Draw left side
                     sb.Draw(Assets.PixelTexture, new Rectangle(dimensions.Left, dimensions.Y, 1, dimensions.Height),
-                        Color.Red);
+                        Color.Red * alpha);
                     // Draw right side
                     sb.Draw(Assets.PixelTexture, new Rectangle(dimensions.Right, dimensions.Y, 1, dimensions.Height),
-                        Color.Red);
+                        Color.Red * alpha);
                     // Draw bottom side
                     sb.Draw(Assets.PixelTexture, new Rectangle(dimensions.X, dimensions.Bottom, dimensions.Width, 1),
-                        Color.Red);
+                        Color.Red * alpha);
                     // Draw top side
                     sb.Draw(Assets.PixelTexture, new Rectangle(dimensions.X, dimensions.Y, dimensions.Width, 1),
-                        Color.Red);
+                        Color.Red * alpha);
                 }
                 else
                 {
                     // Draw left side
                     sb.Draw(Assets.PixelTexture, new Rectangle(dimensions.Left, dimensions.Y, 1, dimensions.Height),
-                        borderColour);
+                        borderColour * alpha);
                     // Draw right side
                     sb.Draw(Assets.PixelTexture, new Rectangle(dimensions.Right, dimensions.Y, 1, dimensions.Height),
-                        borderColour);
+                        borderColour * alpha);
                     // Draw bottom side
                     sb.Draw(Assets.PixelTexture, new Rectangle(dimensions.X, dimensions.Bottom, dimensions.Width, 1),
-                        borderColour);
+                        borderColour * alpha);
                     // Draw top side
                     sb.Draw(Assets.PixelTexture, new Rectangle(dimensions.X, dimensions.Y, dimensions.Width, 1),
-                        borderColour);
+                        borderColour * alpha);
                 }
             }
         }

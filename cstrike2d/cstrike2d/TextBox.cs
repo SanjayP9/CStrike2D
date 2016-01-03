@@ -6,27 +6,45 @@
 // Description: Handles all input from the user
 
 using System;
+using System.Net.NetworkInformation;
 using LightEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
 {
-    class TextBox : GUIComponent
+    sealed class TextBox : GUIComponent
     {
         public override State CurState { get; protected set; }
         public override string Identifier { get; protected set; }
 
         private Color textColour;
         private string text;
+        private string data;
         private float animTime;
+        private float changeRate;
         private EasingFunctions.AnimationType animType;
         private Vector2 startPosition;
         private Vector2 endPosition;
         private Vector2 position;
         private float alpha;
 
-        public TextBox(string identifier, Vector2 position, string text, Color textColour, float animTime, EasingFunctions.AnimationType animType, AnimationDirection animDir, Assets assets)
+        /// <summary>
+        /// Creates an animated text. Note the text is passed by value
+        /// and will not change regardless of what happens to it. It is
+        /// recommended you use the referenced version of this constructor
+        /// to take advantage of persistent data
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <param name="position"></param>
+        /// <param name="text"></param>
+        /// <param name="textColour"></param>
+        /// <param name="animTime"></param>
+        /// <param name="animType"></param>
+        /// <param name="animDir"></param>
+        /// <param name="assets"></param>
+        public TextBox(string identifier, Vector2 position, string text, Color textColour, float animTime,
+            EasingFunctions.AnimationType animType, AnimationDirection animDir, Assets assets)
             : base(assets)
         {
             Identifier = identifier;
@@ -35,8 +53,40 @@ namespace CStrike2D
             this.position = position;
             this.animTime = animTime;
             this.animType = animType;
+            changeRate = 0.1f/animTime;
             endPosition = position;
             startPosition = SetStartPosition(animDir);
+            this.position = startPosition;
+        }
+
+        /// <summary>
+        /// Creates a text box with the text being a direct reference to another value.
+        /// Useful for data that is constantly changing.
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <param name="position"></param>
+        /// <param name="prefix"> Static string that is added to the beginning of the data</param>
+        /// <param name="data"></param>
+        /// <param name="textColour"></param>
+        /// <param name="animTime"></param>
+        /// <param name="animType"></param>
+        /// <param name="animDir"></param>
+        /// <param name="assets"></param>
+        public TextBox(string identifier, Vector2 position, string prefix, ref Type data, Color textColour, float animTime,
+            EasingFunctions.AnimationType animType, AnimationDirection animDir, Assets assets)
+            : base(assets)
+        {
+            Identifier = identifier;
+            this.textColour = textColour;
+            text = prefix;
+            this.data = data.ToString();
+            this.position = position;
+            this.animTime = animTime;
+            this.animType = animType;
+            changeRate = 0.1f/animTime;
+            endPosition = position;
+            startPosition = SetStartPosition(animDir);
+            this.position = startPosition;
         }
 
         /// <summary>
@@ -53,13 +103,13 @@ namespace CStrike2D
             switch (animDir)
             {
                 case AnimationDirection.Left:
-                    return new Vector2(1366, endPosition.Y);
+                    return new Vector2(endPosition.X + 1366, endPosition.Y);
                 case AnimationDirection.Right:
-                    return new Vector2(-250, endPosition.Y);
+                    return new Vector2(endPosition.X - 1366, endPosition.Y);
                 case AnimationDirection.Up:
-                    return new Vector2(endPosition.X, 768);
+                    return new Vector2(endPosition.X, endPosition.Y + 768);
                 case AnimationDirection.Down:
-                    return new Vector2(endPosition.X, -250);
+                    return new Vector2(endPosition.X, endPosition.Y - 768);
                 default:
                     return endPosition;
             }
@@ -84,7 +134,7 @@ namespace CStrike2D
 
                     if (alpha <= 1.0f)
                     {
-                        alpha += ALPHA_CHANGE;
+                        alpha += changeRate * gameTime;
                     }
                     break;
                 case State.TransitionOut:
@@ -94,14 +144,14 @@ namespace CStrike2D
                     position.X = (float)EasingFunctions.Animate(timer, startPosition.X, endPosition.X, animTime, animType);
                     position.Y = (float)EasingFunctions.Animate(timer, startPosition.Y, endPosition.Y, animTime, animType);
 
-                    if (timer >= animTime)
+                    if (timer <= 0.0f)
                     {
-                        CurState = State.Active;
+                        CurState = State.InActive;
                     }
 
                     if (alpha >= 0.0f)
                     {
-                        alpha -= ALPHA_CHANGE;
+                        alpha -= changeRate * gameTime;
                     }
                     break;
             }
@@ -112,7 +162,16 @@ namespace CStrike2D
             if (CurState != State.InActive)
             {
                 // Draw Text
-                sb.DrawString(Assets.DefaultFont, text, position, textColour);
+                sb.DrawString(Assets.DefaultFont, text + data, position, textColour);
+            }
+        }
+
+        public override void Show()
+        {
+            base.Show();
+            if (position.X <= -100)
+            {
+                timer = 0;
             }
         }
     }

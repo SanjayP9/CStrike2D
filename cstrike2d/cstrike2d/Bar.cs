@@ -21,6 +21,7 @@ namespace CStrike2D
         private float alpha;
         private float maxAlpha;
         private float animTime;
+        private float changeRate;
         private EasingFunctions.AnimationType animType;
         private AnimationDirection animDir;
 
@@ -31,6 +32,7 @@ namespace CStrike2D
             Identifier = identifier;
             this.fillColour = fillColour;
             this.animTime = animTime;
+            changeRate = maxAlpha/animTime;
             this.animType = animType;
             this.maxAlpha = maxAlpha;
             this.dimensions = dimensions;
@@ -102,7 +104,7 @@ namespace CStrike2D
                     // Change the alpha
                     if (alpha <= maxAlpha)
                     {
-                        alpha += ALPHA_CHANGE;
+                        alpha += changeRate * gameTime;
                     }
                     break;
                 case State.TransitionOut:
@@ -137,7 +139,7 @@ namespace CStrike2D
                     // Change the alpha
                     if (alpha >= 0.0f)
                     {
-                        alpha -= ALPHA_CHANGE * gameTime;
+                        alpha -= changeRate * gameTime;
                     }
                     break;
             }
