@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
 {
-    public class Player : Entity
+    public sealed class Player : Entity
     {
         public override int DrawOrder { get; protected set; }
         public override Vector2 Position { get; protected set; }
@@ -19,8 +19,14 @@ namespace CStrike2D
             Name = name;
         }
 
+        public void SetPosition(Vector2 newPosition)
+        {
+            Position = newPosition;
+        }
+
         public override void Update(float gameTime)
-        { 
+        {
+             
         }
 
         public override void Draw(SpriteBatch sb)

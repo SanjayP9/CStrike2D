@@ -151,7 +151,7 @@ namespace CStrike2D
                     break;
                 case CStrikeModel.State.InGame:
                     sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, model.Camera.GetTransform(model.DriverInstance.GraphicsDevice));
-
+                    model.GameEngine.Draw(sb);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

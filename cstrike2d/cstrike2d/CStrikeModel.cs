@@ -114,7 +114,8 @@ namespace CStrike2D
             // Initialize Random number generator
             NumGen = new Random();
 
-            NetworkManager = new NetworkManager();
+            GameEngine = new GameEngine(driver);
+            NetworkManager = new NetworkManager(GameEngine);
         }
 
         /// <summary>
@@ -309,6 +310,8 @@ namespace CStrike2D
                             {
                                 NetworkManager.Connect(Address);
                                 CurState = State.InGame;
+                                GameEngine.CurState = GameEngine.GameEngineState.Active;
+                                GameEngine.Initialize(NetworkManager, AudioManager);
                             }
                             else
                             {
@@ -321,6 +324,7 @@ namespace CStrike2D
                     }
                     break;
                 case State.InGame:
+                    GameEngine.Update(Input, NetworkManager, gameTime);
                     shotTimer += gameTime;
 
                     if (shotTimer >= SPRAY_TIMER)
