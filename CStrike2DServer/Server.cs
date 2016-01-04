@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,9 +11,12 @@ namespace CStrike2DServer
 {
     class Server
     {
-
+        private static NetServer server;
+        private static NetPeerConfiguration config;
+        private static NetIncomingMessage msg;
         static void Main(string[] args)
         {
+            Stopwatch sw = new Stopwatch();
             string serverVersion = "0.0.1a";            // Server Version
             int port = 27015;
             string serverName = "Global Offensive Server - " + serverVersion;
@@ -26,47 +30,51 @@ namespace CStrike2DServer
 
             Console.WriteLine("Booting up server...");
 
-            NetPeerConfiguration config = new NetPeerConfiguration("cstrike");
-            config.Port = port;
-            NetServer server = new NetServer(config);
+            config = new NetPeerConfiguration("cstrike") {Port = port};
+            server = new NetServer(config);
             server.Start();
-
             Console.WriteLine("Server is live.");
 
-            NetIncomingMessage msg;
+            sw.Start();
+            while (server.Status == NetPeerStatus.Running)
+            {
+                if (sw.Elapsed.Milliseconds >= 32)
+                {
+                    Update();
+                    sw.Restart();
+                }
+            }
+        }
+
+        public static void Update()
+        {
             while ((msg = server.ReadMessage()) != null)
             {
                 switch (msg.MessageType)
                 {
-                    case NetIncomingMessageType.Error:
-                        break;
                     case NetIncomingMessageType.StatusChanged:
-                        break;
-                    case NetIncomingMessageType.ConnectionApproval:
+                        switch ((NetConnectionStatus) msg.ReadByte())
+                        {
+                            case NetConnectionStatus.Connected:
+                                NetOutgoingMessage outMsg = server.CreateMessage();
+                                outMsg.Write("welcome");
+                                msg.SenderConnection.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+                                break;
+                            case NetConnectionStatus.Disconnected:
+                                Console.WriteLine("Player has left the server");
+                                break;
+                        }
                         break;
                     case NetIncomingMessageType.Data:
-                        Console.WriteLine(msg.ReadString());
-                        break;
-                    case NetIncomingMessageType.Receipt:
-                        break;
-                    case NetIncomingMessageType.DiscoveryRequest:
-                        break;
-                    case NetIncomingMessageType.DiscoveryResponse:
-                        break;
-                    case NetIncomingMessageType.VerboseDebugMessage:
-                        break;
-                    case NetIncomingMessageType.DebugMessage:
-                        break;
-                    case NetIncomingMessageType.WarningMessage:
-                        break;
-                    case NetIncomingMessageType.ErrorMessage:
-                        break;
-                    case NetIncomingMessageType.ConnectionLatencyUpdated:
+                        string line = msg.ReadString();
+                        if (line.Contains("HNDSHAKE"))
+                        {
+                            Console.WriteLine("Player: \"" + line.Substring(8, line.Length - 8) + "\" Connected.");
+                        }
                         break;
                 }
             }
-
-            Console.ReadLine();
+            server.Recycle(msg);
         }
 
         static void ReadConfig()

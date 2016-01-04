@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Text;
 using Lidgren.Network;
 
@@ -11,13 +12,14 @@ namespace CStrike2D
     {
         private string address;
         private string clientVersion = "0.0.1a";
-        private int port = 27015;
+        private int port = 27014;
         private string clientName = "DevHalo";
         private NetPeerConfiguration config;
         private NetClient client;
         private NetBuffer buffer;
+        private NetIncomingMessage msg;
 
-        private NetState curState;
+        public NetState CurState { get; private set; }
 
         public enum NetState
         {
@@ -29,64 +31,45 @@ namespace CStrike2D
         public NetworkManager()
         {
             config = new NetPeerConfiguration("cstrike");
-            config.Port = port;
             client = new NetClient(config);
-            curState = NetState.Disconnected;
+            CurState = NetState.Disconnected;
             buffer = new NetBuffer();
         }
 
 
         public void Connect(string address)
         {
-            if (curState != NetState.Connected)
+            if (CurState != NetState.Connected)
             {
+                client.Start();
+                client.Connect(address, 27015);
+
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
-                client.Connect(address, port);
-
-                if (sw.Elapsed.Seconds < 5)
-                {
-                    if (client.ConnectionStatus == NetConnectionStatus.Connected)
-                    {
-                        NetOutgoingMessage msg = client.CreateMessage();
-                        msg.Write("HNDSHAKE" + clientName);
-                        client.SendMessage(msg, NetDeliveryMethod.ReliableOrdered);
-                        curState = NetState.Connected;
-                        sw.Stop();
-                    }
-                }
+                
+                sw.Stop();
             }
         }
 
         public void Update()
         {
-            if (curState != NetState.Disconnected)
+            while ((msg = client.ReadMessage()) != null)
             {
-                NetIncomingMessage msg = client.ReadMessage();
-                switch (curState)
+                switch (msg.MessageType)
                 {
-                    case NetState.Handshake:
-                        if (msg != null)
-                        {
-                            if (msg.MessageType == NetIncomingMessageType.Data)
-                            {
-                                if (msg.ReadString() == "accepted")
-                                {
-                                    curState = NetState.Connected;
-                                }
-                            }
-                        }
-                        break;
-                    case NetState.Connected:
-                        if (msg.MessageType != null)
-                        {
+                    case NetIncomingMessageType.Data:
+                        string line = msg.ReadString();
 
+                        if (line.Contains("welcome"))
+                        {
+                            NetOutgoingMessage outgoing = client.CreateMessage();
+                            outgoing.Write("HNDSHAKE" + clientName);
+                            client.SendMessage(outgoing, NetDeliveryMethod.ReliableOrdered);
                         }
                         break;
                 }
             }
+            client.Recycle(msg);
         }
-
-
     }
 }

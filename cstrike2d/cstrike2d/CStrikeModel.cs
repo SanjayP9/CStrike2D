@@ -29,6 +29,16 @@ namespace CStrike2D
         /// <summary>
         /// 
         /// </summary>
+        public InputManager Input { get; private set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public NetworkManager NetworkManager { get; private set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public Camera2D Camera { get; private set; }
 
         /// <summary>
@@ -36,10 +46,7 @@ namespace CStrike2D
         /// </summary>
         public Map NewMap { get; private set; }
         
-        /// <summary>
-        /// 
-        /// </summary>
-        public InputManager Input { get; private set; }
+
 
         /// <summary>
         /// 
@@ -104,6 +111,8 @@ namespace CStrike2D
 
             // Initialize Random number generator
             NumGen = new Random();
+
+            NetworkManager = new NetworkManager();
         }
 
         /// <summary>
@@ -201,6 +210,7 @@ namespace CStrike2D
             Input.Tick();
 
             InterfaceManager.Update(gameTime);
+            NetworkManager.Update();
 
             switch (CurState)
             {
@@ -286,17 +296,26 @@ namespace CStrike2D
                 case State.Options:
                     break;
                 case State.Lobby:
-                    if (Input.Tapped(Keys.Escape))
+                    switch (NetworkManager.CurState)
                     {
-                        CurState = State.Menu;
-                    }
-                    else if (Input.Tapped(Keys.Enter))
-                    {
-                        
-                    }
-                    else
-                    {
-                        Address = Input.GetText(Address);
+                        case NetworkManager.NetState.Disconnected:
+                            if (Input.Tapped(Keys.Escape))
+                            {
+                                CurState = State.Menu;
+                            }
+                            else if (Input.Tapped(Keys.Enter))
+                            {
+                                NetworkManager.Connect(Address);
+                                CurState = State.InGame;
+                            }
+                            else
+                            {
+                                Address = Input.GetText(Address);
+                            }
+                            break;
+                        case NetworkManager.NetState.Connected:
+                            CurState = State.InGame;
+                            break;
                     }
                     break;
                 case State.InGame:

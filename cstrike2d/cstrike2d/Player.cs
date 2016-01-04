@@ -9,18 +9,23 @@ namespace CStrike2D
         public override Vector2 Position { get; protected set; }
         public override Rectangle Dimensions { get; protected set; }
 
-        public Player()
+        private int playerType;
+
+        public string Name { get; private set; }
+
+        public Player(string name, Vector2 position)
         {
-            
+            Position = position;
+            Name = name;
         }
 
         public override void Update(float gameTime)
         { 
-
         }
 
         public override void Draw(SpriteBatch sb)
         {
+
         }
     }
 }
