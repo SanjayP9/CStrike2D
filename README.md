@@ -18,7 +18,10 @@
 
 # General Introduction #
 
-     A top down version of the popular game Counter-Strike Global Offensive. The game will feature many aspects from the game including bots, level editors, demo replays, non-axis-aligned collision detection, networked play, particles, and shaders. Many of the core competitive aspects of the game will be carried over with extreme attention to the balance of weapons, line of sight, and the effects of smoke grenades (They obstruct sight).
+     A top down version of the popular game Counter-Strike Global Offensive. The game will feature many aspects from the game 
+including bots, level editors, demo replays, non-axis-aligned collision detection, networked play, particles, and shaders. 
+Many of the core competitive aspects of the game will be carried over with extreme attention to the balance of weapons, 
+line of sight, and the effects of smoke grenades (They obstruct sight).
 
      The game will be developed using XNA and will be fully 2D. The game will feature a complex sound system along with a user friendly level designer which will allow users to extend beyond the content that is initially delivered by developers. The artificial intelligence will base decisions on what objective needs to be completed, risk and reward, along with multiple intelligences working together to effectively complete the objective
 
