@@ -26,3 +26,11 @@
 # Game Documentation #
 
 ### UI ###
+
+### Game Mechanics ###
+
+### Sound ###
+
+### Graphics ###
+
+# Other Notes #
