@@ -232,7 +232,7 @@ namespace CStrike2D
         /// <returns></returns>
         public bool Hover(InputManager input)
         {
-            return dimensions.Contains((int)input.MousePosition.X, (int)input.MousePosition.Y);
+            return CurState == State.Active && dimensions.Contains((int) input.MousePosition.X, (int) input.MousePosition.Y);
         }
 
         /// <summary>
@@ -242,7 +242,11 @@ namespace CStrike2D
         /// <returns></returns>
         public bool Clicked(InputManager input)
         {
-            return Hover(input) && input.LeftClick();
+            if (CurState == State.Active)
+            {
+                return Hover(input) && input.LeftClick();
+            }
+            return false;
         }
     }
 }

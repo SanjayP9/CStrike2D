@@ -13,14 +13,13 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
 {
-    sealed class TextBox : GUIComponent
+    public sealed class TextBox : GUIComponent
     {
         public override State CurState { get; protected set; }
         public override string Identifier { get; protected set; }
 
         private Color textColour;
         private string text;
-        private string data;
         private float animTime;
         private float changeRate;
         private EasingFunctions.AnimationType animType;
@@ -30,10 +29,7 @@ namespace CStrike2D
         private float alpha;
 
         /// <summary>
-        /// Creates an animated text. Note the text is passed by value
-        /// and will not change regardless of what happens to it. It is
-        /// recommended you use the referenced version of this constructor
-        /// to take advantage of persistent data
+        /// Creates an animated text. 
         /// </summary>
         /// <param name="identifier"></param>
         /// <param name="position"></param>
@@ -50,36 +46,6 @@ namespace CStrike2D
             Identifier = identifier;
             this.textColour = textColour;
             this.text = text;
-            this.position = position;
-            this.animTime = animTime;
-            this.animType = animType;
-            changeRate = 0.1f/animTime;
-            endPosition = position;
-            startPosition = SetStartPosition(animDir);
-            this.position = startPosition;
-        }
-
-        /// <summary>
-        /// Creates a text box with the text being a direct reference to another value.
-        /// Useful for data that is constantly changing.
-        /// </summary>
-        /// <param name="identifier"></param>
-        /// <param name="position"></param>
-        /// <param name="prefix"> Static string that is added to the beginning of the data</param>
-        /// <param name="data"></param>
-        /// <param name="textColour"></param>
-        /// <param name="animTime"></param>
-        /// <param name="animType"></param>
-        /// <param name="animDir"></param>
-        /// <param name="assets"></param>
-        public TextBox(string identifier, Vector2 position, string prefix, ref Type data, Color textColour, float animTime,
-            EasingFunctions.AnimationType animType, AnimationDirection animDir, Assets assets)
-            : base(assets)
-        {
-            Identifier = identifier;
-            this.textColour = textColour;
-            text = prefix;
-            this.data = data.ToString();
             this.position = position;
             this.animTime = animTime;
             this.animType = animType;
@@ -162,7 +128,16 @@ namespace CStrike2D
             if (CurState != State.InActive)
             {
                 // Draw Text
-                sb.DrawString(Assets.DefaultFont, text + data, position, textColour);
+                sb.DrawString(Assets.DefaultFont, text, position, textColour);
+            }
+        }
+
+        public void Draw(SpriteBatch sb, string data)
+        {
+            if (CurState != State.InActive)
+            {
+                // Draw Text
+                sb.DrawString(Assets.DefaultFont, text + " " + data, position, textColour);
             }
         }
 

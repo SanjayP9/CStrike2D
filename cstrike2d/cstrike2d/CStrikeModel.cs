@@ -123,7 +123,7 @@ namespace CStrike2D
                 "Play", 1.5f, EasingFunctions.AnimationType.QuinticOut, GUIComponent.AnimationDirection.Up,
                 DriverInstance.Assets));
 
-            InterfaceManager.AddComponent(new Button("loadoutButton", new Rectangle(450, 20, 200, 80), Color.White,
+            InterfaceManager.AddComponent(new Button("loadoutButton", new Rectangle(480, 20, 200, 80), Color.White,
                 "Loadout", 1.5f, EasingFunctions.AnimationType.QuinticOut, GUIComponent.AnimationDirection.Up,
                 DriverInstance.Assets));
 
@@ -153,6 +153,10 @@ namespace CStrike2D
 
             InterfaceManager.AddComponent(new Bar("optionsBar", new Rectangle(0, 100, (int)Dimensions.X, 648), 1.0f, 0.8f,
                 Color.Black, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down,
+                DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new TextBox("masterVolumeText", new Vector2(200, 200), "Master Volume",
+                Color.White, 1.0f, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down,
                 DriverInstance.Assets));
 
             InterfaceManager.AddComponent(new TextBox("uiVolumeText", new Vector2(200, 250), "UI Volume",
@@ -220,6 +224,13 @@ namespace CStrike2D
                     {
                         DriverInstance.Exit();
                     }
+
+                    if (InterfaceManager.Clicked(Input, "playMenu", "connectButton"))
+                    {
+                        InterfaceManager.HideAll();
+                        AudioManager.PlaySound("buttonclick", AudioManager.UiVolume);
+                        CurState = State.Lobby;
+                    }
                     
                     /*
                     if (FadeIn)
@@ -281,7 +292,7 @@ namespace CStrike2D
                     }
                     else if (Input.Tapped(Keys.Enter))
                     {
-
+                        
                     }
                     else
                     {

@@ -96,7 +96,33 @@ namespace CStrike2D
                                 sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null,
                                     cullableRasterizer, null);
                                 sb.GraphicsDevice.ScissorRectangle = new Rectangle(0, 100, 1366, 648);
-                                page.Draw(sb);
+                                foreach (GUIComponent component in page.Components)
+                                {
+                                    if (component.Identifier == "masterVolumeText")
+                                    {
+                                        ((TextBox)component).Draw(sb, "                        " + model.AudioManager.MasterVolume.ToString());
+                                    }
+                                    else if (component.Identifier == "uiVolumeText")
+                                    {
+                                        ((TextBox)component).Draw(sb, "                                   " + model.AudioManager.UiVolume.ToString());
+                                    }
+                                    else if (component.Identifier == "musicVolumeText")
+                                    {
+                                        ((TextBox)component).Draw(sb, "                          " + model.AudioManager.MusicVolume.ToString());
+                                    }
+                                    else if (component.Identifier == "sfxVolumeText")
+                                    {
+                                        ((TextBox)component).Draw(sb, "          " + model.AudioManager.SoundEffectVolume.ToString());
+                                    }
+                                    else if (component.Identifier == "voiceVolumeText")
+                                    {
+                                        ((TextBox)component).Draw(sb, "           " + model.AudioManager.VoiceVolume.ToString());
+                                    }
+                                    else
+                                    {
+                                        component.Draw(sb);
+                                    }
+                                }
                                 sb.End();
                                 sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null);
                                 break;
