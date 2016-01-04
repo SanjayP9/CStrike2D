@@ -24,19 +24,22 @@
 
 ### Objective Breakdown ###
 
-Mark Voong \n
-* Networking \n
-* Shaders \n
+Mark Voong 
+
+* Networking 
+* Shaders 
 * Full Game Replay
 
-Sanjay Paraboo\n
-* Raycasting\n
-* Particle System\n
+Sanjay Paraboo
+
+* Raycasting
+* Particle System
 * Artificial Intelligence
 
-Shawn Verma\n
-* Level Designer\n
-* Sound System\n
+Shawn Verma
+
+* Level Designer
+* Sound System
 * Non Axis-Aligned Collision Detection
 
 ### Due Dates ###
