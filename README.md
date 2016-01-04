@@ -43,9 +43,13 @@ Shawn Verma
 * Non Axis-Aligned Collision Detection
 
 ### Due Dates ###
+
 Milestone One - Jan 4th
+
 Milestone Two - Jan 11th
+
 Milestone Three - Jan 18th
+
 Final Due Date - Jan 20th
 
 # Game Documentation #
