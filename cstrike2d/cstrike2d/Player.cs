@@ -25,7 +25,7 @@ namespace CStrike2D
 
         public override void Draw(SpriteBatch sb)
         {
-
+            sb.Draw(Assets.CTTexture, Position, Color.White);
         }
     }
 }

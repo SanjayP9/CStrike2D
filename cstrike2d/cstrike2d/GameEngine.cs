@@ -13,10 +13,11 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
 {
-    class GameEngine
+    public class GameEngine
     {
         public List<Entity> Entities { get; private set; }
         private CStrike2D driver;
+        private NetworkManager networkManager;
 
         public GameEngineState CurState { get; private set; }
 
@@ -24,6 +25,11 @@ namespace CStrike2D
         {
             Driver = driver;
             CurState = GameEngineState.InActive;
+        }
+
+        public void Initialize(NetworkManager networkManager)
+        {
+            this.networkManager = networkManager;
         }
 
         public enum GameEngineState

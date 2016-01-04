@@ -23,6 +23,8 @@ namespace CStrike2D
         public Texture2D CTMenuBackground { get; private set; } // Counter-Terrorist Menu Background
         public Texture2D TMenuBackground { get; private set; }  // Terrorist Menu Background
 
+        public Texture2D CTTexture { get; private set; }
+
         /// <summary>
         /// Loads assets that are required at the start of the application (fonts, UI)
         /// </summary>
@@ -62,6 +64,7 @@ namespace CStrike2D
             DefaultFont = coreContentLoader.Load<SpriteFont>("font/defFont");
             CTMenuBackground = coreContentLoader.Load<Texture2D>("texture/bg/ctmenu");
             TMenuBackground = coreContentLoader.Load<Texture2D>("texture/bg/tmenu");
+            CTTexture = coreContentLoader.Load<Texture2D>("texture/player/ct1");
 
             instance.Model.AudioManager.AddSound(new SoundContainer("menuMusic", coreContentLoader.Load<SoundEffect>("sound/music/mainmenu")));
             instance.Model.AudioManager.AddSound(new SoundContainer("ak47shot", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/ak47")));

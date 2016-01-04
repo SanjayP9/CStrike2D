@@ -36,6 +36,8 @@ namespace CStrike2D
         /// </summary>
         public NetworkManager NetworkManager { get; private set; }
 
+        public GameEngine GameEngine { get; private set; }
+
         /// <summary>
         /// 
         /// </summary>
@@ -319,6 +321,14 @@ namespace CStrike2D
                     }
                     break;
                 case State.InGame:
+                    shotTimer += gameTime;
+
+                    if (shotTimer >= SPRAY_TIMER)
+                    {
+                       //AudioManager.PlaySound("ak47shot", AudioManager.SoundEffectVolume, Center, new Vector2(Center.X + 100, Center.Y + 100));
+                        shotTimer = 0;
+                    }
+                    
                     break;
             }
             Input.Tock();
