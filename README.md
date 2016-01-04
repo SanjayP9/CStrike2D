@@ -24,9 +24,9 @@
 
 ### Objective Breakdown ###
 
-Mark Voong\n
-* Networking\n
-* Shaders\n
+Mark Voong \n
+* Networking \n
+* Shaders \n
 * Full Game Replay
 
 Sanjay Paraboo\n
