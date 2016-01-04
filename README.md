@@ -25,7 +25,7 @@
 ### Objective Breakdown ###
 
 Mark Voong
-* Networking
+* Networking *
 * Shaders
 * Full Game Replay
 
