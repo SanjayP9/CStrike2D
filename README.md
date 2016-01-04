@@ -1,29 +1,36 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
-
 ### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+2D Implementation of the popular game Counter-Strike: Global Offensive. It is the culminating project for ICS4U1
 
-### How do I get set up? ###
+# Table of Contents #
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+* General Introduction
+* Objective Breakdown
+* Due Dates 
+* Game Documentation
+* UI
+* Game Mechanics
+* Sound
+* Graphics
+* Other notes
 
-### Contribution guidelines ###
+# General Introduction #
 
-* Writing tests
-* Code review
-* Other guidelines
 
-### Who do I talk to? ###
+### Objective Breakdown ###
 
-* Repo owner or admin
-* Other community or team contact
+### Due Dates ###
+
+# Game Documentation #
+
+### UI ###
+
+### Game Mechanics ###
+
+### Sound ###
+
+### Graphics ###
+
+# Other Notes #
