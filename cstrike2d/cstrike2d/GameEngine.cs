@@ -74,11 +74,9 @@ namespace CStrike2D
                     network.SendInputData(NetworkManager.MOVE_RIGHT);
                 }
 
-
-
                 if (input.LeftClick())
                 {
-                    network.SendInputData(20);
+                    network.SendInputData(NetworkManager.FIRE);
                 }
             }
         }

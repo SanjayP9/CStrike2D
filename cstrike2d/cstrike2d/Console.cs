@@ -11,15 +11,4 @@ namespace CStrike2D
 
     }
 
-    struct ConVar<T>
-    {
-        public T Value { get; private set; }
-        public string Command { get; private set; }
-
-        public ConVar(T value, string command)
-        {
-            Value = value;
-            Command = command;
-        } 
-    }
 }

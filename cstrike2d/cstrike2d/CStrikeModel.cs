@@ -325,13 +325,6 @@ namespace CStrike2D
                     break;
                 case State.InGame:
                     GameEngine.Update(Input, NetworkManager, gameTime);
-                    shotTimer += gameTime;
-
-                    if (shotTimer >= SPRAY_TIMER)
-                    {
-                       //AudioManager.PlaySound("ak47shot", AudioManager.SoundEffectVolume, Center, new Vector2(Center.X + 100, Center.Y + 100));
-                        shotTimer = 0;
-                    }
                     
                     break;
             }

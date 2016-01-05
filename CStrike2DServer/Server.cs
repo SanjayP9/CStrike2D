@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CStrike2D;
 using Lidgren.Network;
 
 namespace CStrike2DServer
@@ -61,7 +62,7 @@ namespace CStrike2DServer
                         switch ((NetConnectionStatus) msg.ReadByte())
                         {
                             case NetConnectionStatus.Connected:
-                                outMsg.Write("welcome");
+                                outMsg.Write(NetInterface.HANDSHAKE);
                                 msg.SenderConnection.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
                                 break;
                             case NetConnectionStatus.Disconnected:
@@ -70,8 +71,8 @@ namespace CStrike2DServer
                         }
                         break;
                     case NetIncomingMessageType.Data:
-                        string line = msg.ReadString();
-                        if (line.Contains("HNDSHAKE"))
+                        byte identifier = msg.ReadByte();
+                        if (identifier == NetInterface.HANDSHAKE)
                         {
                             Console.WriteLine("Player: \"" + line.Substring(8, line.Length - 8) + "\" Connected.");
                             players.Add(new Player(line.Substring(8, line.Length - 8), msg.SenderConnection));

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO.Ports;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -21,13 +22,6 @@ namespace CStrike2D
         private NetIncomingMessage msg;
 
         GameEngine engine;
-
-        // Byte Constants
-        public const byte HANDSHAKE = 0;
-        public const byte MOVE_UP = 10;
-        public const byte MOVE_DOWN = 11;
-        public const byte MOVE_LEFT = 12;
-        public const byte MOVE_RIGHT = 13;
 
         public NetState CurState { get; private set; }
 
@@ -70,28 +64,27 @@ namespace CStrike2D
                 switch (msg.MessageType)
                 {
                     case NetIncomingMessageType.Data:
-                        string line = msg.ReadString();
+                        
                         switch (CurState)
                         {
                             case NetState.Disconnected:
                                 break;
                             case NetState.Handshake:
-                                if (line.Contains("welcome"))
+                                byte acknowledge = msg.ReadByte();
+                                if (acknowledge == NetInterface.HANDSHAKE)
                                 {
                                     NetOutgoingMessage outgoing = client.CreateMessage();
-                                    outgoing.Write("HNDSHAKE" + ClientName);
+                                    outgoing.Write(NetInterface.HANDSHAKE);
+                                    outgoing.Write(ClientName);
                                     client.SendMessage(outgoing, NetDeliveryMethod.ReliableOrdered);
                                     CurState = NetState.Connected;
                                 }
                                 break;
                             case NetState.Connected:
-                                if (line.Contains("PLYMOVE"))
+                                byte message = msg.ReadByte();
+                                if (message == )
                                 {
                                     int playerNum = line[6];
-                                }
-                                else if (line.Contains("AK47SHOT"))
-                                {
-                                    engine.PlaySound();
                                 }
                                 break;
                         }

@@ -50,6 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\cstrike2d\cstrike2d\NetInterface.cs">
+      <Link>NetInterface.cs</Link>
+    </Compile>
     <Compile Include="Player.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

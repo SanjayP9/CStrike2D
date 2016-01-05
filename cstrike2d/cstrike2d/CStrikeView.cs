@@ -98,29 +98,26 @@ namespace CStrike2D
                                 sb.GraphicsDevice.ScissorRectangle = new Rectangle(0, 100, 1366, 648);
                                 foreach (GUIComponent component in page.Components)
                                 {
-                                    if (component.Identifier == "masterVolumeText")
+                                    switch (component.Identifier)
                                     {
-                                        ((TextBox)component).Draw(sb, "                        " + model.AudioManager.MasterVolume.ToString());
-                                    }
-                                    else if (component.Identifier == "uiVolumeText")
-                                    {
-                                        ((TextBox)component).Draw(sb, "                                   " + model.AudioManager.UiVolume.ToString());
-                                    }
-                                    else if (component.Identifier == "musicVolumeText")
-                                    {
-                                        ((TextBox)component).Draw(sb, "                          " + model.AudioManager.MusicVolume.ToString());
-                                    }
-                                    else if (component.Identifier == "sfxVolumeText")
-                                    {
-                                        ((TextBox)component).Draw(sb, "          " + model.AudioManager.SoundEffectVolume.ToString());
-                                    }
-                                    else if (component.Identifier == "voiceVolumeText")
-                                    {
-                                        ((TextBox)component).Draw(sb, "           " + model.AudioManager.VoiceVolume.ToString());
-                                    }
-                                    else
-                                    {
-                                        component.Draw(sb);
+                                        case "masterVolumeText":
+                                            ((TextBox)component).Draw(sb, "                        " + model.AudioManager.MasterVolume);
+                                            break;
+                                        case "uiVolumeText":
+                                            ((TextBox)component).Draw(sb, "                                   " + model.AudioManager.UiVolume);
+                                            break;
+                                        case "musicVolumeText":
+                                            ((TextBox)component).Draw(sb, "                          " + model.AudioManager.MusicVolume);
+                                            break;
+                                        case "sfxVolumeText":
+                                            ((TextBox)component).Draw(sb, "          " + model.AudioManager.SoundEffectVolume);
+                                            break;
+                                        case "voiceVolumeText":
+                                            ((TextBox)component).Draw(sb, "           " + model.AudioManager.VoiceVolume);
+                                            break;
+                                        default:
+                                            component.Draw(sb);
+                                            break;
                                     }
                                 }
                                 sb.End();

@@ -93,6 +93,7 @@
     <Compile Include="InputManager.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MathOps.cs" />
+    <Compile Include="NetInterface.cs" />
     <Compile Include="NetworkManager.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="SoundContainer.cs" />
