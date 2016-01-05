@@ -91,6 +91,7 @@
     <Compile Include="GameEngine.cs" />
     <Compile Include="GUIComponent.cs" />
     <Compile Include="InputManager.cs" />
+    <Compile Include="LevelEditor.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MathOps.cs" />
     <Compile Include="NetInterface.cs" />
