@@ -31,10 +31,6 @@ namespace CStrike2D
         /// <param name="emiterPos">the emitter position</param>
         public void Play(float volume, Vector2 listenerPos, Vector2 emiterPos)
         {
-            // Convert the Vector2s to Vector3s
-            Vector3 listenerPosition = new Vector3(listenerPos.X, 0f, listenerPos.Y);
-            Vector3 emiterPosition = new Vector3(emiterPos.X, 0f, emiterPos.Y);
-
             // Create sound effect instance
             SoundEffectInstance soundEffectInstance = soundEffect.CreateInstance();
 
@@ -42,8 +38,8 @@ namespace CStrike2D
             soundEffectInstance.Volume = volume;
 
             // Set and apply the listener and emitter position for positional audio
-            listener.Position = listenerPosition;
-            emitter.Position = emiterPosition;
+            listener.Position = new Vector3(listenerPos.X, 0f, listenerPos.Y);;
+            emitter.Position = new Vector3(emiterPos.X, 0f, emiterPos.Y);
             soundEffectInstance.Apply3D(listener, emitter);
 
             // Play the sound effect
