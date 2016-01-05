@@ -12,6 +12,8 @@ namespace CStrike2DServer
     {
 
         private Vector2 position;
+        private NetConnection senderConnection;
+        private int count;
 
         public float Rotation { get; private set; }
 
@@ -19,10 +21,20 @@ namespace CStrike2DServer
 
         public NetConnection Client { get; private set; }
 
-        public Player(string playerName, NetConnection client)
+        public byte PlayerID { get; private set; }
+
+        public Player(string playerName, NetConnection client, byte playerID)
         {
             position = new Vector2(0, 0);
             Client = client;
+            PlayerID = playerID;
+        }
+
+        public Player(string playerName, NetConnection senderConnection, int count)
+        {
+            PlayerName = playerName;
+            this.senderConnection = senderConnection;
+            this.count = count;
         }
 
         public Vector2 GetPosition()

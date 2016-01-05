@@ -48,8 +48,8 @@ namespace CStrike2D
             // Default dimensions
             GraphicsDeviceManager graphics = new GraphicsDeviceManager(this)
             {
-                PreferredBackBufferHeight = 768,
-                PreferredBackBufferWidth = 1366
+                PreferredBackBufferHeight = 720,
+                PreferredBackBufferWidth = 1280
             };
 
             dimensions = new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);

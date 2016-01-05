@@ -24,8 +24,6 @@ namespace CStrike2D
         private AudioManager audioManager;
         List<Player> players;
 
-
-
         public GameEngineState CurState { get; set; }
 
         public GameEngine(CStrike2D Driver)
@@ -34,10 +32,11 @@ namespace CStrike2D
             CurState = GameEngineState.InActive;
         }
 
-        public void Initialize(NetworkManager networkManager, AudioManager audio)
+        public void Initialize(NetworkManager networkManager, AudioManager audio, InputManager input)
         {
             network = networkManager;
             audioManager = audio;
+            this.input = input;
             players = new List<Player>();
         }
 
@@ -52,31 +51,31 @@ namespace CStrike2D
             Entities.Add(entity);
         }
 
-        public void Update(InputManager input, NetworkManager network, float gameTime)
+        public void Update( float gameTime)
         {
             if (CurState == GameEngineState.Active)
             {
                 if (input.Tapped(Keys.W))
                 {
-                    network.SendInputData(NetworkManager.MOVE_UP);
+                    network.SendInputData(NetInterface.MOVE_UP);
                 }
                 else if (input.Tapped(Keys.S))
                 {
-                    network.SendInputData(NetworkManager.MOVE_DOWN);
+                    network.SendInputData(NetInterface.MOVE_DOWN);
                 }
 
                 if (input.Tapped(Keys.A))
                 {
-                    network.SendInputData(NetworkManager.MOVE_LEFT);
+                    network.SendInputData(NetInterface.MOVE_LEFT);
                 }
                 else if (input.Tapped(Keys.D))
                 {
-                    network.SendInputData(NetworkManager.MOVE_RIGHT);
+                    network.SendInputData(NetInterface.MOVE_RIGHT);
                 }
 
                 if (input.LeftClick())
                 {
-                    network.SendInputData(NetworkManager.FIRE);
+                    network.SendInputData(NetInterface.FIRE);
                 }
             }
         }
@@ -86,9 +85,14 @@ namespace CStrike2D
             
         }
 
-        public void PlaySound()
+        public void PlaySound(short soundID)
         {
-            audioManager.PlaySound("ak47shot", audioManager.SoundEffectVolume, Vector2.Zero, Vector2.Zero);
+            switch (soundID)
+            {
+                case NetInterface.AK47_SHOT:
+                    audioManager.PlaySound("ak47shot", audioManager.SoundEffectVolume, Vector2.Zero, Vector2.Zero);
+                    break;
+            }
         }
     }
 }

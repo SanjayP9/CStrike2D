@@ -72,34 +72,35 @@ namespace CStrike2DServer
                         break;
                     case NetIncomingMessageType.Data:
                         byte identifier = msg.ReadByte();
-                        if (identifier == NetInterface.HANDSHAKE)
-                        {
-                            Console.WriteLine("Player: \"" + line.Substring(8, line.Length - 8) + "\" Connected.");
-                            players.Add(new Player(line.Substring(8, line.Length - 8), msg.SenderConnection));
 
-                        }
-                        else if (line.Contains("10"))
+                        switch (identifier)
                         {
-                            players.Find(ply => ply.Client == msg.SenderConnection).Move(0);
+                            case NetInterface.HANDSHAKE:
+                                string playerName = msg.ReadString();
+                                Console.WriteLine("Player: \"" + playerName + "\" Connected.");
+                                players.Add(new Player(playerName, msg.SenderConnection, players.Count));
+                                break;
+                            case NetInterface.MOVE_UP:
+                                players.Find(ply => ply.Client == msg.SenderConnection).Move(0);
+                                break;
+                            case NetInterface.MOVE_DOWN:
+                                players.Find(ply => ply.Client == msg.SenderConnection).Move(1);
+                                break;
+                            case NetInterface.MOVE_LEFT:
+                                players.Find(ply => ply.Client == msg.SenderConnection).Move(2);
+                                break;
+                            case NetInterface.MOVE_RIGHT:
+                                players.Find(ply => ply.Client == msg.SenderConnection).Move(3);
+                                break;
+                            case NetInterface.FIRE:
+                                outMsg.Write(NetInterface.PLAY_SOUND);
+                                outMsg.Write(players.Find(ply => ply.Client == msg.SenderConnection).PlayerID);
+                                outMsg.Write(NetInterface.AK47_SHOT);
+                                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+                                Console.WriteLine("AK47 Shot");
+                                break;
                         }
-                        else if (line.Contains("11"))
-                        {
-                            players.Find(ply => ply.Client == msg.SenderConnection).Move(1);
-                        }
-                        else if (line.Contains("12"))
-                        {
-                            players.Find(ply => ply.Client == msg.SenderConnection).Move(2);
-                        }
-                        else if (line.Contains("13"))
-                        {
-                            players.Find(ply => ply.Client == msg.SenderConnection).Move(3);
-                        }
-                        else if (line.Contains("20"))
-                        {
-                            outMsg.Write("AK47SHOT");
-                            server.SendToAll(outMsg, NetDeliveryMethod.Unreliable);
-                           Console.WriteLine("AK47 Shot");
-                        }
+
                         /*
                         for (int i = 0; i < players.Count; i++)
                         {

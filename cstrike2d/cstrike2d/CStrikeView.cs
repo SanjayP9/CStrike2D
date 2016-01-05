@@ -95,7 +95,7 @@ namespace CStrike2D
                                 sb.End();
                                 sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null,
                                     cullableRasterizer, null);
-                                sb.GraphicsDevice.ScissorRectangle = new Rectangle(0, 100, 1366, 648);
+                                sb.GraphicsDevice.ScissorRectangle = new Rectangle(0, 100, 1280, 620);
                                 foreach (GUIComponent component in page.Components)
                                 {
                                     switch (component.Identifier)
@@ -127,7 +127,7 @@ namespace CStrike2D
                                 sb.End();
                                 sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null,
                                     cullableRasterizer, null);
-                                sb.GraphicsDevice.ScissorRectangle = new Rectangle(0, 19, 1366, 82);
+                                sb.GraphicsDevice.ScissorRectangle = new Rectangle(0, 19, 1280, 82);
                                 page.Draw(sb);
                                 sb.End();
                                 sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null);

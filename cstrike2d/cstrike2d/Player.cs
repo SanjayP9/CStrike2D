@@ -8,15 +8,18 @@ namespace CStrike2D
         public override int DrawOrder { get; protected set; }
         public override Vector2 Position { get; protected set; }
         public override Rectangle Dimensions { get; protected set; }
+        
+        public byte PlayerID { get; private set; }
 
         private int playerType;
 
         public string Name { get; private set; }
 
-        public Player(string name, Vector2 position)
+        public Player(string name, Vector2 position, byte playerID)
         {
             Position = position;
             Name = name;
+            PlayerID = playerID;
         }
 
         public void SetPosition(Vector2 newPosition)

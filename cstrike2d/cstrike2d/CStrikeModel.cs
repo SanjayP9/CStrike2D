@@ -132,15 +132,15 @@ namespace CStrike2D
                 Color.Black, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down,
                 DriverInstance.Assets));
 
-            InterfaceManager.AddComponent(new Button("playButton", new Rectangle(150, 20, 200, 80), Color.White,
+            InterfaceManager.AddComponent(new Button("playButton", new Rectangle(120, 20, 200, 80), Color.White,
                 "Play", 1.5f, EasingFunctions.AnimationType.QuinticOut, GUIComponent.AnimationDirection.Up,
                 DriverInstance.Assets));
 
-            InterfaceManager.AddComponent(new Button("loadoutButton", new Rectangle(480, 20, 200, 80), Color.White,
+            InterfaceManager.AddComponent(new Button("loadoutButton", new Rectangle(400, 20, 200, 80), Color.White,
                 "Loadout", 1.5f, EasingFunctions.AnimationType.QuinticOut, GUIComponent.AnimationDirection.Up,
                 DriverInstance.Assets));
 
-            InterfaceManager.AddComponent(new Button("optionsButton", new Rectangle(800, 20, 200, 80), Color.White,
+            InterfaceManager.AddComponent(new Button("optionsButton", new Rectangle(750, 20, 200, 80), Color.White,
                 "Options", 1.5f, EasingFunctions.AnimationType.QuinticOut, GUIComponent.AnimationDirection.Up,
                 DriverInstance.Assets));
 
@@ -151,7 +151,7 @@ namespace CStrike2D
             InterfaceManager.FormPage("defaultMenu");
 
 
-            InterfaceManager.AddComponent(new Bar("playBar", new Rectangle(0, 100, (int)Dimensions.X, 648), 1.0f, 0.8f,
+            InterfaceManager.AddComponent(new Bar("playBar", new Rectangle(0, 100, (int)Dimensions.X, 600), 1.0f, 0.8f,
                 Color.Black, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down,
                 DriverInstance.Assets));
 
@@ -164,7 +164,7 @@ namespace CStrike2D
 
 
 
-            InterfaceManager.AddComponent(new Bar("optionsBar", new Rectangle(0, 100, (int)Dimensions.X, 648), 1.0f, 0.8f,
+            InterfaceManager.AddComponent(new Bar("optionsBar", new Rectangle(0, 100, (int)Dimensions.X, 600), 1.0f, 0.8f,
                 Color.Black, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down,
                 DriverInstance.Assets));
 
@@ -312,7 +312,7 @@ namespace CStrike2D
                                 NetworkManager.Connect(Address);
                                 CurState = State.InGame;
                                 GameEngine.CurState = GameEngine.GameEngineState.Active;
-                                GameEngine.Initialize(NetworkManager, AudioManager);
+                                GameEngine.Initialize(NetworkManager, AudioManager, Input);
                             }
                             else
                             {
@@ -327,7 +327,7 @@ namespace CStrike2D
                 case State.LevelEditor:
                     break;
                 case State.InGame:
-                    GameEngine.Update(Input, NetworkManager, gameTime);
+                    GameEngine.Update(gameTime);
                     
                     break;
             }

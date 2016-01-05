@@ -82,13 +82,20 @@ namespace CStrike2D
                                 break;
                             case NetState.Connected:
                                 byte message = msg.ReadByte();
+                                byte playerNum;
+
                                 switch (message)
                                 {
                                     case NetInterface.SYNC_NEW_PLAYER:
                                         string name = msg.ReadString();
+                                        playerNum = msg.ReadByte();
                                         break;
                                     case NetInterface.PLAYER_MOVE:
-                                        byte playerNum = msg.ReadByte();
+                                        playerNum = msg.ReadByte();
+                                        break;
+                                    case NetInterface.PLAY_SOUND:
+                                        playerNum = msg.ReadByte();
+                                        engine.PlaySound(msg.ReadInt16());
                                         break;
                                 }
                                 break;
