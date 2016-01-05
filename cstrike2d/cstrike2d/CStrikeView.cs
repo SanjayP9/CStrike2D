@@ -146,6 +146,8 @@ namespace CStrike2D
                     sb.DrawString(assets.DefaultFont, "Connect to Server: " + model.Address, Vector2.Zero, Color.White);
 
                     break;
+                case CStrikeModel.State.LevelEditor:
+                    break;
                 case CStrikeModel.State.InGame:
                     sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, model.Camera.GetTransform(model.DriverInstance.GraphicsDevice));
                     model.GameEngine.Draw(sb);

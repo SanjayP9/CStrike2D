@@ -91,6 +91,7 @@ namespace CStrike2D
             Menu,
             Options,
             Lobby,
+            LevelEditor,
             InGame
         }
 
@@ -322,6 +323,8 @@ namespace CStrike2D
                             CurState = State.InGame;
                             break;
                     }
+                    break;
+                case State.LevelEditor:
                     break;
                 case State.InGame:
                     GameEngine.Update(Input, NetworkManager, gameTime);
