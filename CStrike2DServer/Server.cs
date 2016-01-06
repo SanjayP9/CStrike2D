@@ -91,7 +91,16 @@ namespace CStrike2DServer
                             case NetInterface.HANDSHAKE:
                                 string playerName = msg.ReadString();
                                 Console.WriteLine("Player: \"" + playerName + "\" Connected.");
-                                players.Add(new Player(playerName, msg.SenderConnection.RemoteUniqueIdentifier, players.Count));
+                                Player ply = new Player(playerName, msg.SenderConnection.RemoteUniqueIdentifier,
+                                    players.Count);
+                                players.Add(ply);
+                                
+                                // Send Data to all players
+                                outMsg.Write(NetInterface.SYNC_NEW_PLAYER);
+                                outMsg.Write(playerName);
+                                outMsg.Write(ply.PlayerID);
+                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
+                                Console.WriteLine("Sent player data to all connected clients");
                                 break;
                             case NetInterface.MOVE_UP:
                                 player.Move(0);

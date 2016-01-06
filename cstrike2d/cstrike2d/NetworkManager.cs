@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using Lidgren.Network;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace CStrike2D
@@ -88,7 +89,12 @@ namespace CStrike2D
                                 {
                                     case NetInterface.SYNC_NEW_PLAYER:
                                         string name = msg.ReadString();
-                                        playerNum = msg.ReadByte();
+                                        long identifier = msg.SenderConnection.RemoteUniqueIdentifier;
+                                        int playerID = msg.ReadInt32();
+                                        if (!engine.Exists(playerID))
+                                        {
+                                            engine.AddPlayer(new Player(name, Vector2.Zero, playerID));
+                                        }
                                         break;
                                     case NetInterface.PLAYER_MOVE:
                                         playerNum = msg.ReadByte();

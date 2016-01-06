@@ -47,12 +47,17 @@ namespace CStrike2D
             Active
         }
 
+        public void AddPlayer(Player player)
+        {
+            players.Add(player);
+        }
+
         public void AddEntity(Entity entity)
         {
             Entities.Add(entity);
         }
 
-        public void Update( float gameTime)
+        public void Update(float gameTime)
         {
             if (CurState == GameEngineState.Active)
             {
@@ -83,7 +88,7 @@ namespace CStrike2D
 
         public void Draw(SpriteBatch sb)
         {
-            
+
         }
 
         public void PlaySound(int playerID, short soundID)
@@ -92,7 +97,8 @@ namespace CStrike2D
             switch (soundID)
             {
                 case NetInterface.AK47_SHOT:
-                    audioManager.PlaySound("ak47shot", audioManager.SoundEffectVolume, players[0].Position, player.Position);
+                    audioManager.PlaySound("ak47shot", audioManager.SoundEffectVolume, players[0].Position,
+                        player.Position);
                     break;
             }
         }
@@ -102,5 +108,10 @@ namespace CStrike2D
             Player player = players.Find(ply => ply.PlayerID == playerID);
             player.Move(direction);
         }
-    }
+
+        public bool Exists(int playerID)
+        {
+            return players.Exists(ply => ply.PlayerID == playerID);
+        }
+}
 }
