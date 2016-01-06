@@ -79,7 +79,9 @@ namespace CStrike2DServer
                                 msg.SenderConnection.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
                                 break;
                             case NetConnectionStatus.Disconnected:
-                                Console.WriteLine("Player has left the server");
+                                Player plyr = players.Find(ply => ply.Client == msg.SenderConnection.RemoteUniqueIdentifier);
+                                players.Remove(plyr);
+                                Console.WriteLine("\"" + plyr.PlayerName + "\" has left the server");
                                 break;
                         }
                         break;

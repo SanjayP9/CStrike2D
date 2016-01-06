@@ -4,6 +4,8 @@
 // Creation Date: Sept 28th, 2015
 // Modified Date: Jan 3rd, 2016
 // Description: Driver class. Holds all MVC components of the game
+
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -120,13 +122,19 @@ namespace CStrike2D
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            
+
             GraphicsDevice.Clear(Color.Transparent);
 
             View.Draw(spriteBatch, Model);
 
             counter++;
             base.Draw(gameTime);
+        }
+
+        protected override void OnExiting(object sender, EventArgs args)
+        {
+            Model.NetworkManager.ShutDown();
+            base.OnExiting(sender, args);
         }
     }
 }
