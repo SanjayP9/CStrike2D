@@ -19,22 +19,16 @@ namespace CStrike2DServer
 
         public string PlayerName { get; private set; }
 
-        public NetConnection Client { get; private set; }
+        public long Client { get; private set; }
 
-        public byte PlayerID { get; private set; }
+        public int PlayerID { get; private set; }
 
-        public Player(string playerName, NetConnection client, byte playerID)
+        public Player(string playerName, long client, int playerID)
         {
+            PlayerName = playerName;
             position = new Vector2(0, 0);
             Client = client;
             PlayerID = playerID;
-        }
-
-        public Player(string playerName, NetConnection senderConnection, int count)
-        {
-            PlayerName = playerName;
-            this.senderConnection = senderConnection;
-            this.count = count;
         }
 
         public Vector2 GetPosition()

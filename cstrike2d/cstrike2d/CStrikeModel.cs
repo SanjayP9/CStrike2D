@@ -211,7 +211,10 @@ namespace CStrike2D
 
         public void Update(float gameTime)
         {
-            Input.Tick();
+            if (DriverInstance.IsActive)
+            {
+                Input.Tick();
+            }
 
             InterfaceManager.Update(gameTime);
             NetworkManager.Update();
@@ -331,7 +334,11 @@ namespace CStrike2D
                     
                     break;
             }
-            Input.Tock();
+
+            if (DriverInstance.IsActive)
+            {
+                Input.Tock();
+            }
         }
 
         public void LoadMap(string mapFolder)

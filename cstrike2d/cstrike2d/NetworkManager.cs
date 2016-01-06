@@ -92,10 +92,11 @@ namespace CStrike2D
                                         break;
                                     case NetInterface.PLAYER_MOVE:
                                         playerNum = msg.ReadByte();
+                                        engine.MovePlayer(playerNum, msg.ReadByte());
                                         break;
                                     case NetInterface.PLAY_SOUND:
                                         playerNum = msg.ReadByte();
-                                        engine.PlaySound(msg.ReadInt16());
+                                        engine.PlaySound(playerNum, msg.ReadInt16());
                                         break;
                                 }
                                 break;
@@ -110,7 +111,7 @@ namespace CStrike2D
         public void SendInputData(byte code)
         {
             NetOutgoingMessage outMsg = client.CreateMessage();
-            outMsg.Write(code.ToString());
+            outMsg.Write(code);
             client.SendMessage(outMsg, NetDeliveryMethod.Unreliable);
         }
     }

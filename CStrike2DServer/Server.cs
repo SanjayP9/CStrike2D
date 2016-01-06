@@ -40,14 +40,27 @@ namespace CStrike2DServer
             Console.WriteLine("Server is live.");
 
             sw.Start();
+            int tick = 0;
             while (server.Status == NetPeerStatus.Running)
             {
                 if (sw.Elapsed.Milliseconds >= 32)
                 {
+                    tick++;
                     Update();
                     sw.Restart();
+
+                    if (tick == 4)
+                    {
+                        SyncServer();
+                        tick = 0;
+                    }
                 }
             }
+        }
+
+        public static void SyncServer()
+        {
+            
         }
 
         public static void Update()
@@ -72,32 +85,45 @@ namespace CStrike2DServer
                         break;
                     case NetIncomingMessageType.Data:
                         byte identifier = msg.ReadByte();
-
+                        Player player = players.Find(ply => ply.Client == msg.SenderConnection.RemoteUniqueIdentifier);
                         switch (identifier)
                         {
                             case NetInterface.HANDSHAKE:
                                 string playerName = msg.ReadString();
                                 Console.WriteLine("Player: \"" + playerName + "\" Connected.");
-                                players.Add(new Player(playerName, msg.SenderConnection, players.Count));
+                                players.Add(new Player(playerName, msg.SenderConnection.RemoteUniqueIdentifier, players.Count));
                                 break;
                             case NetInterface.MOVE_UP:
-                                players.Find(ply => ply.Client == msg.SenderConnection).Move(0);
+                                player.Move(0);
+                                outMsg.Write(NetInterface.MOVE_UP);
+                                outMsg.Write(player.PlayerID);
+                                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+                                Console.WriteLine(player);
                                 break;
                             case NetInterface.MOVE_DOWN:
-                                players.Find(ply => ply.Client == msg.SenderConnection).Move(1);
+                                player.Move(1);
+                                outMsg.Write(NetInterface.MOVE_DOWN);
+                                outMsg.Write(player.PlayerID);
+                                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                                 break;
                             case NetInterface.MOVE_LEFT:
-                                players.Find(ply => ply.Client == msg.SenderConnection).Move(2);
+                                player.Move(2);
+                                outMsg.Write(NetInterface.MOVE_LEFT);
+                                outMsg.Write(player.PlayerID);
+                                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                                 break;
                             case NetInterface.MOVE_RIGHT:
-                                players.Find(ply => ply.Client == msg.SenderConnection).Move(3);
+                                player.Move(3);
+                                outMsg.Write(NetInterface.MOVE_RIGHT);
+                                outMsg.Write(player.PlayerID);
+                                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                                 break;
                             case NetInterface.FIRE:
                                 outMsg.Write(NetInterface.PLAY_SOUND);
-                                outMsg.Write(players.Find(ply => ply.Client == msg.SenderConnection).PlayerID);
+                                outMsg.Write(player.PlayerID);
                                 outMsg.Write(NetInterface.AK47_SHOT);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                                Console.WriteLine("AK47 Shot");
+                                Console.WriteLine(player.PlayerName + " fired weapon_ak47");
                                 break;
                         }
 

@@ -38,6 +38,7 @@ namespace CStrike2D
             audioManager = audio;
             this.input = input;
             players = new List<Player>();
+            players.Add(new Player(networkManager.ClientName, Vector2.Zero, players.Count));
         }
 
         public enum GameEngineState
@@ -85,14 +86,21 @@ namespace CStrike2D
             
         }
 
-        public void PlaySound(short soundID)
+        public void PlaySound(int playerID, short soundID)
         {
+            Player player = players.Find(ply => ply.PlayerID == playerID);
             switch (soundID)
             {
                 case NetInterface.AK47_SHOT:
-                    audioManager.PlaySound("ak47shot", audioManager.SoundEffectVolume, Vector2.Zero, Vector2.Zero);
+                    audioManager.PlaySound("ak47shot", audioManager.SoundEffectVolume, players[0].Position, player.Position);
                     break;
             }
+        }
+
+        public void MovePlayer(int playerID, int direction)
+        {
+            Player player = players.Find(ply => ply.PlayerID == playerID);
+            player.Move(direction);
         }
     }
 }
