@@ -38,7 +38,7 @@ namespace CStrike2D
             audioManager = audio;
             this.input = input;
             players = new List<Player>();
-            players.Add(new Player(networkManager.ClientName, Vector2.Zero, players.Count));
+            //players.Add(new Player(networkManager.ClientName, Vector2.Zero, players.Count));
         }
 
         public enum GameEngineState

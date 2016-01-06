@@ -116,8 +116,6 @@ namespace CStrike2DServer
                                             outMsg.Write(player.PlayerName);
                                             outMsg.Write(player.PlayerID);
                                             player.SetPosition(new Vector2(players.Count * 50, players.Count * 50));
-                                            outMsg.Write(player.GetPosition().X, player.GetPosition().Y);
-                                            server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
                                             Console.WriteLine("Sent player data to all connected clients");
                                         }
                                     }
