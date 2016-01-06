@@ -120,5 +120,10 @@ namespace CStrike2D
             outMsg.Write(code);
             client.SendMessage(outMsg, NetDeliveryMethod.Unreliable);
         }
+
+        public void ShutDown()
+        {
+            client.Shutdown("bye");
+        }
     }
 }
