@@ -56,6 +56,10 @@
                                                 // has joined the server and is about to send information
                                                 // such as their name
 
+        public const byte PLAYER_DC = 23;       // Used for notifying the client that a player has disconnected
+                                                // from the server. The server also sends their playerID so that
+                                                // it can be deleted from the client's list
+
         // Bytes 100 to 131 are reserved for identifying player indexes
         // This implies that the maximum number of players in a server is 32.
 

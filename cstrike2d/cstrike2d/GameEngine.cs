@@ -109,7 +109,7 @@ namespace CStrike2D
             player.Move(direction);
         }
 
-        public bool Exists(int playerID)
+        public bool Exists(short playerID)
         {
             return players.Exists(ply => ply.PlayerID == playerID);
         }

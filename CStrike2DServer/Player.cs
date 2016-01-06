@@ -10,6 +10,7 @@ namespace CStrike2DServer
 {
     class Player
     {
+        // SERVER-SIDE PLAYER ENTITY
 
         private Vector2 position;
         private NetConnection senderConnection;
@@ -21,9 +22,9 @@ namespace CStrike2DServer
 
         public long Client { get; private set; }
 
-        public int PlayerID { get; private set; }
+        public short PlayerID { get; private set; }
 
-        public Player(string playerName, long client, int playerID)
+        public Player(string playerName, long client, short playerID)
         {
             PlayerName = playerName;
             position = new Vector2(0, 0);
@@ -34,6 +35,11 @@ namespace CStrike2DServer
         public Vector2 GetPosition()
         {
             return position;
+        }
+
+        public void SetPosition(Vector2 position)
+        {
+            this.position = position;
         }
 
         public void Move(int direction)

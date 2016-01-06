@@ -5,6 +5,8 @@ namespace CStrike2D
 {
     public sealed class Player : Entity
     {
+        // CLIENT-SIDE PLAYER ENTITY
+
         public override int DrawOrder { get; protected set; }
 
         public override Vector2 Position
@@ -18,13 +20,13 @@ namespace CStrike2D
 
         private Vector2 position;
         
-        public int PlayerID { get; private set; }
+        public short PlayerID { get; private set; }
 
         private int playerType;
 
         public string Name { get; private set; }
 
-        public Player(string name, Vector2 position, int playerID)
+        public Player(string name, Vector2 position, short playerID)
         {
             Position = position;
             Name = name;

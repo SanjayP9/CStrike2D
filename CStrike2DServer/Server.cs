@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CStrike2D;
 using Lidgren.Network;
+using Microsoft.Xna.Framework;
 
 namespace CStrike2DServer
 {
@@ -19,6 +20,9 @@ namespace CStrike2DServer
         static List<Player> players; 
         static void Main(string[] args)
         {
+
+            Vector2 defSpawnPosition = new Vector2(350, 350);
+
             Stopwatch sw = new Stopwatch();
             string serverVersion = "0.0.1a";            // Server Version
             int port = 27015;
@@ -68,7 +72,7 @@ namespace CStrike2DServer
             while ((msg = server.ReadMessage()) != null)
             {
                 NetOutgoingMessage outMsg = server.CreateMessage();
-
+                Player player;
                 switch (msg.MessageType)
                 {
                     case NetIncomingMessageType.StatusChanged:
@@ -79,30 +83,45 @@ namespace CStrike2DServer
                                 msg.SenderConnection.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
                                 break;
                             case NetConnectionStatus.Disconnected:
-                                Player plyr = players.Find(ply => ply.Client == msg.SenderConnection.RemoteUniqueIdentifier);
-                                players.Remove(plyr);
-                                Console.WriteLine("\"" + plyr.PlayerName + "\" has left the server");
+                                player = players.Find(ply => ply.Client == msg.SenderConnection.RemoteUniqueIdentifier);
+
+                                outMsg.Write(NetInterface.PLAYER_DC);
+                                outMsg.Write(player.PlayerID);
+                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
+                                Console.WriteLine("\"" + player.PlayerName + "\" has left the server");
+                                players.Remove(player);
                                 break;
                         }
                         break;
                     case NetIncomingMessageType.Data:
                         byte identifier = msg.ReadByte();
-                        Player player = players.Find(ply => ply.Client == msg.SenderConnection.RemoteUniqueIdentifier);
+                        player = players.Find(ply => ply.Client == msg.SenderConnection.RemoteUniqueIdentifier);
                         switch (identifier)
                         {
                             case NetInterface.HANDSHAKE:
-                                string playerName = msg.ReadString();
-                                Console.WriteLine("Player: \"" + playerName + "\" Connected.");
-                                Player ply = new Player(playerName, msg.SenderConnection.RemoteUniqueIdentifier,
-                                    players.Count);
-                                players.Add(ply);
-                                
-                                // Send Data to all players
-                                outMsg.Write(NetInterface.SYNC_NEW_PLAYER);
-                                outMsg.Write(playerName);
-                                outMsg.Write(ply.PlayerID);
-                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
-                                Console.WriteLine("Sent player data to all connected clients");
+                                player = new Player(msg.ReadString(), msg.SenderConnection.RemoteUniqueIdentifier,
+                                    Convert.ToInt16(players.Count));
+                                players.Add(player);
+
+                                Console.WriteLine("Player: \"" + player.PlayerName + "\" Connected.");
+                                foreach (NetConnection client in server.Connections)
+                                {
+                                    // Send data about the new player to all connected players
+                                    foreach (Player plyr in players)
+                                    {
+                                        // If the data we are sending is not the player themself
+                                        if (client.RemoteUniqueIdentifier != plyr.Client)
+                                        {
+                                            outMsg.Write(NetInterface.SYNC_NEW_PLAYER);
+                                            outMsg.Write(player.PlayerName);
+                                            outMsg.Write(player.PlayerID);
+                                            player.SetPosition(new Vector2(players.Count * 50, players.Count * 50));
+                                            outMsg.Write(player.GetPosition().X, player.GetPosition().Y);
+                                            server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
+                                            Console.WriteLine("Sent player data to all connected clients");
+                                        }
+                                    }
+                                }
                                 break;
                             case NetInterface.MOVE_UP:
                                 player.Move(0);
