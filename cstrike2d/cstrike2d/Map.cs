@@ -22,7 +22,7 @@ namespace CStrike2D
             {
                 for (int x = 0; x < tileData.GetLength(0); x++)
                 {
-                    TileMap[x, y] = new Tile(tileData[x, y], false, false);
+                    TileMap[x, y] = new Tile(tileData[x, y]);
                 }
             }
 

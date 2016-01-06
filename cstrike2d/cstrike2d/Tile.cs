@@ -4,17 +4,12 @@ namespace CStrike2D
 {
     public class Tile
     {
-        public bool Collidable { get; private set; }
-        public bool ShootThrough { get; private set; }
         public int TileType { get; private set; }
-
         public Rectangle Bounds { get; private set; }
-
-        public Tile(int tileType, bool collidable, bool shootThrough)
+        
+        public Tile(int tileType)
         {
             TileType = tileType;
-            Collidable = collidable;
-            ShootThrough = shootThrough;
         }
     }
 }
