@@ -23,7 +23,7 @@ namespace CStrike2D
         private InputManager input;
         private AudioManager audioManager;
         private Assets assets;
-        List<Player> players;
+        private List<Player> players;
 
         public GameEngineState CurState { get; set; }
 
@@ -53,7 +53,7 @@ namespace CStrike2D
             Active
         }
 
-        public void AddPlayer(string name, Vector2 position, short playerID)
+        public void AddPlayer(string name, Vector2 position, long playerID)
         {
             players.Add(new Player(name, position, playerID, assets));
         }
@@ -95,7 +95,7 @@ namespace CStrike2D
 
                 if (players.Count > 0)
                 {
-                    driver.Model.Camera.Position = players[0].Position;
+                    driver.Model.Camera.Position = players.Find(ply => ply.PlayerID == network.ClientID()).Position;
                     players[0].SetRot(input.MouseRotation(driver.Model.Camera));
                 }
             }
@@ -114,7 +114,7 @@ namespace CStrike2D
             sb.Draw(assets.PixelTexture, new Rectangle(20, 20, 200, 200), Color.Yellow);
         }
 
-        public void PlaySound(int playerID, short soundID)
+        public void PlaySound(long playerID, short soundID)
         {
             Player player = players.Find(ply => ply.PlayerID == playerID);
             switch (soundID)
@@ -132,9 +132,9 @@ namespace CStrike2D
             player.Move(direction);
         }
 
-        public bool Exists(short playerID)
+        public bool Exists(long playerID)
         {
             return players.Exists(ply => ply.PlayerID == playerID);
         }
-}
+    }
 }

@@ -99,8 +99,7 @@ namespace CStrike2DServer
                         switch (identifier)
                         {
                             case NetInterface.HANDSHAKE:
-                                player = new Player(msg.ReadString(), msg.SenderConnection.RemoteUniqueIdentifier,
-                                    Convert.ToInt16(players.Count));
+                                player = new Player(msg.ReadString(), msg.SenderConnection.RemoteUniqueIdentifier);
                                 player.SetPosition(new Vector2(players.Count * 50, players.Count * 50));
                                 players.Add(player);
 
@@ -112,8 +111,8 @@ namespace CStrike2DServer
                                     // If the data we are sending is not the player themself
                                     outMsg = server.CreateMessage();
                                     outMsg.Write(NetInterface.SYNC_NEW_PLAYER);
-                                    outMsg.Write(player.PlayerName);
-                                    outMsg.Write(player.PlayerID);
+                                    outMsg.Write(plyr.PlayerName);
+                                    outMsg.Write(plyr.PlayerID);
                                     outMsg.Write((long) player.GetPosition().X);
                                     outMsg.Write((long) player.GetPosition().Y);
                                     server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
@@ -127,35 +126,30 @@ namespace CStrike2DServer
                                 outMsg.Write(NetInterface.MOVE_UP);
                                 outMsg.Write(player.PlayerID);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                                Console.WriteLine(player.PlayerName + " moved up");
                                 break;
                             case NetInterface.MOVE_DOWN:
                                 player.Move(1);
                                 outMsg.Write(NetInterface.MOVE_DOWN);
                                 outMsg.Write(player.PlayerID);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                                Console.WriteLine(player.PlayerName + " moved down");
                                 break;
                             case NetInterface.MOVE_LEFT:
                                 player.Move(2);
                                 outMsg.Write(NetInterface.MOVE_LEFT);
                                 outMsg.Write(player.PlayerID);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                                Console.WriteLine(player.PlayerName + " moved left");
                                 break;
                             case NetInterface.MOVE_RIGHT:
                                 player.Move(3);
                                 outMsg.Write(NetInterface.MOVE_RIGHT);
                                 outMsg.Write(player.PlayerID);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                                Console.WriteLine(player.PlayerName + " moved right");
                                 break;
                             case NetInterface.FIRE:
                                 outMsg.Write(NetInterface.PLAY_SOUND);
                                 outMsg.Write(player.PlayerID);
                                 outMsg.Write(NetInterface.AK47_SHOT);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                                Console.WriteLine(player.PlayerName + " fired weapon_ak47");
                                 break;
                         }
 

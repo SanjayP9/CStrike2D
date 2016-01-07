@@ -20,14 +20,14 @@ namespace CStrike2D
 
         private Vector2 position;
         private float rotation;
-        
-        public short PlayerID { get; private set; }
+
+        public long PlayerID { get; private set; }
 
         private int playerType;
 
         public string Name { get; private set; }
 
-        public Player(string name, Vector2 position, short playerID, Assets assets) : base(assets)
+        public Player(string name, Vector2 position, long playerID, Assets assets) : base(assets)
         {
             Position = position;
             Name = name;

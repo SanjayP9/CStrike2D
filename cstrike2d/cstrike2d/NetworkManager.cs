@@ -26,6 +26,11 @@ namespace CStrike2D
 
         public NetState CurState { get; private set; }
 
+        public long ClientID()
+        {
+            return client.UniqueIdentifier;
+        }
+
         public enum NetState
         {
             Disconnected,
@@ -39,7 +44,7 @@ namespace CStrike2D
             client = new NetClient(config);
             CurState = NetState.Disconnected;
             buffer = new NetBuffer();
-            ClientName = "Niggasauras Rex";
+            ClientName = "DevHalo";
             this.engine = engine;
         }
 
@@ -89,7 +94,7 @@ namespace CStrike2D
                                 {
                                     case NetInterface.SYNC_NEW_PLAYER:
                                         string name = msg.ReadString();
-                                        short playerID = msg.ReadInt16();
+                                        long playerID = msg.ReadInt64();
                                         float playerX = msg.ReadInt64();
                                         float playerY = msg.ReadInt64();
                                         if (!engine.Exists(playerID))
