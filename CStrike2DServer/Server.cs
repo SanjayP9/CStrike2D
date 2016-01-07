@@ -50,7 +50,6 @@ namespace CStrike2DServer
             server.Start();
             Console.WriteLine("Server is live.");
 
-
             sw.Start();
             int tick = 0;
             while (server.Status == NetPeerStatus.Running)
@@ -63,12 +62,13 @@ namespace CStrike2DServer
                 if (sw.Elapsed.Milliseconds >= 2)
                 {
                     tick++;
+                    Console.SetCursorPosition(0, 3 + players.Count);
                     Update();
                     sw.Restart();
 
                     if (tick == 50)
                     {
-                        Console.Clear();
+                        Console.SetCursorPosition(0, 0);
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("==================================");
                         Console.WriteLine("Global Offensive - Version " + serverVersion);
@@ -97,8 +97,8 @@ namespace CStrike2DServer
                 syncMsg = server.CreateMessage();
                 syncMsg.Write(NetInterface.SYNC_MOVEMENT);
                 syncMsg.Write(ply.PlayerID);
-                syncMsg.Write((long)ply.GetPosition().X);
-                syncMsg.Write((long)ply.GetPosition().Y);
+                syncMsg.Write(ply.GetPosition().X);
+                syncMsg.Write(ply.GetPosition().Y);
                 server.SendToAll(syncMsg, NetDeliveryMethod.UnreliableSequenced);
             }
         }
@@ -166,7 +166,6 @@ namespace CStrike2DServer
                                 outMsg.Write(NetInterface.MOVE_UP);
                                 outMsg.Write(player.PlayerID);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                                Console.WriteLine("Player moved up");
                                 break;
                             case NetInterface.MOVE_DOWN:
                                 player.Move(1);

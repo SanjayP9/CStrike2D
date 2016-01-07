@@ -41,7 +41,7 @@ namespace CStrike2D
             client = new NetClient(config);
             CurState = NetState.Disconnected;
             buffer = new NetBuffer();
-            ClientName = "Osama Bin Laden";
+            ClientName = "DevHalo";
             this.engine = engine;
         }
 
@@ -126,8 +126,8 @@ namespace CStrike2D
                                     case NetInterface.SYNC_MOVEMENT:
                                         
                                         playerID = msg.ReadInt16();
-                                        playerX = msg.ReadInt64();
-                                        playerY = msg.ReadInt64();
+                                        playerX = msg.ReadFloat();
+                                        playerY = msg.ReadFloat();
 
                                         if (engine.Players.Count > 0)
                                         {
