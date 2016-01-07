@@ -25,6 +25,11 @@ namespace CStrike2D
 
         protected Assets Assets { get; set; }
 
+        protected Entity(Assets assets)
+        {
+            Assets = assets;
+        }
+
         /// <summary>
         /// Update logic of the entity
         /// </summary>

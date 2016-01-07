@@ -90,14 +90,24 @@ namespace CStrike2D
                                     case NetInterface.SYNC_NEW_PLAYER:
                                         string name = msg.ReadString();
                                         short playerID = msg.ReadInt16();
+                                        float playerX = msg.ReadInt64();
+                                        float playerY = msg.ReadInt64();
                                         if (!engine.Exists(playerID))
                                         {
-                                            engine.AddPlayer(new Player(name, Vector2.Zero, playerID));
+                                            engine.AddPlayer(name, new Vector2(playerX, playerY), playerID);
                                         }
                                         break;
-                                    case NetInterface.PLAYER_MOVE:
-                                        playerNum = msg.ReadByte();
-                                        engine.MovePlayer(playerNum, msg.ReadByte());
+                                    case NetInterface.MOVE_UP:
+                                        engine.MovePlayer(msg.ReadInt16(), NetInterface.MOVE_UP);
+                                        break;
+                                    case NetInterface.MOVE_DOWN:
+                                        engine.MovePlayer(msg.ReadInt16(), NetInterface.MOVE_DOWN);
+                                        break;
+                                    case NetInterface.MOVE_LEFT:
+                                        engine.MovePlayer(msg.ReadInt16(), NetInterface.MOVE_LEFT);
+                                        break;
+                                    case NetInterface.MOVE_RIGHT:
+                                        engine.MovePlayer(msg.ReadInt16(), NetInterface.MOVE_RIGHT);
                                         break;
                                     case NetInterface.PLAY_SOUND:
                                         playerNum = msg.ReadByte();
@@ -117,7 +127,7 @@ namespace CStrike2D
         {
             NetOutgoingMessage outMsg = client.CreateMessage();
             outMsg.Write(code);
-            client.SendMessage(outMsg, NetDeliveryMethod.Unreliable);
+            client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
         public void ShutDown()

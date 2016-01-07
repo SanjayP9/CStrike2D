@@ -47,7 +47,7 @@ namespace CStrike2DServer
             int tick = 0;
             while (server.Status == NetPeerStatus.Running)
             {
-                if (sw.Elapsed.Milliseconds >= 32)
+                if (sw.Elapsed.Milliseconds >= 8)
                 {
                     tick++;
                     Update();
@@ -64,7 +64,7 @@ namespace CStrike2DServer
 
         public static void SyncServer()
         {
-            
+
         }
 
         public static void Update()
@@ -101,6 +101,7 @@ namespace CStrike2DServer
                             case NetInterface.HANDSHAKE:
                                 player = new Player(msg.ReadString(), msg.SenderConnection.RemoteUniqueIdentifier,
                                     Convert.ToInt16(players.Count));
+                                player.SetPosition(new Vector2(players.Count * 50, players.Count * 50));
                                 players.Add(player);
 
                                 Console.WriteLine("Player: \"" + player.PlayerName + "\" Connected.");
@@ -110,41 +111,45 @@ namespace CStrike2DServer
                                     foreach (Player plyr in players)
                                     {
                                         // If the data we are sending is not the player themself
-                                        if (client.RemoteUniqueIdentifier != plyr.Client)
-                                        {
-                                            outMsg.Write(NetInterface.SYNC_NEW_PLAYER);
-                                            outMsg.Write(player.PlayerName);
-                                            outMsg.Write(player.PlayerID);
-                                            player.SetPosition(new Vector2(players.Count * 50, players.Count * 50));
-                                            Console.WriteLine("Sent player data to all connected clients");
-                                        }
+                                        outMsg.Write(NetInterface.SYNC_NEW_PLAYER);
+                                        outMsg.Write(player.PlayerName);
+                                        outMsg.Write(player.PlayerID);
+                                        outMsg.Write((long) player.GetPosition().X);
+                                        outMsg.Write((long) player.GetPosition().Y);
+                                        server.SendMessage(outMsg, client, NetDeliveryMethod.ReliableSequenced);
+                                        Console.WriteLine("Sent data about \"" + player.PlayerName + "\"" +
+                                                          " to player \"" + plyr.PlayerName + "\"");
                                     }
                                 }
+                                Console.WriteLine("Sync Complete.");
                                 break;
                             case NetInterface.MOVE_UP:
                                 player.Move(0);
                                 outMsg.Write(NetInterface.MOVE_UP);
                                 outMsg.Write(player.PlayerID);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                                Console.WriteLine(player);
+                                Console.WriteLine(player.PlayerName + " moved up");
                                 break;
                             case NetInterface.MOVE_DOWN:
                                 player.Move(1);
                                 outMsg.Write(NetInterface.MOVE_DOWN);
                                 outMsg.Write(player.PlayerID);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+                                Console.WriteLine(player.PlayerName + " moved down");
                                 break;
                             case NetInterface.MOVE_LEFT:
                                 player.Move(2);
                                 outMsg.Write(NetInterface.MOVE_LEFT);
                                 outMsg.Write(player.PlayerID);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+                                Console.WriteLine(player.PlayerName + " moved left");
                                 break;
                             case NetInterface.MOVE_RIGHT:
                                 player.Move(3);
                                 outMsg.Write(NetInterface.MOVE_RIGHT);
                                 outMsg.Write(player.PlayerID);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+                                Console.WriteLine(player.PlayerName + " moved right");
                                 break;
                             case NetInterface.FIRE:
                                 outMsg.Write(NetInterface.PLAY_SOUND);

@@ -47,16 +47,16 @@ namespace CStrike2DServer
             switch (direction)
             {
                 case 0: // UP
-                    position.Y -= 0.5f;
+                    position.Y -= 1f;
                     break;
                 case 1: // DOWN
-                    position.Y += 0.5f;
+                    position.Y += 1f;
                     break;
                 case 2: // LEFT
-                    position.X -= 0.5f;
+                    position.X -= 1f;
                     break;
                 case 3: // RIGHT
-                    position.X += 0.5f;
+                    position.X += 1f;
                     break;
             }
         }

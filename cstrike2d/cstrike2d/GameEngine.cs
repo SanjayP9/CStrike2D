@@ -22,34 +22,40 @@ namespace CStrike2D
         private NetworkManager network;
         private InputManager input;
         private AudioManager audioManager;
+        private Assets assets;
         List<Player> players;
 
         public GameEngineState CurState { get; set; }
 
-        public GameEngine(CStrike2D Driver)
+        public GameEngine(CStrike2D driver)
         {
-            Driver = driver;
+            this.driver = driver;
             CurState = GameEngineState.InActive;
         }
 
-        public void Initialize(NetworkManager networkManager, AudioManager audio, InputManager input)
+        public void Initialize(NetworkManager networkManager, AudioManager audio, InputManager input, Assets assets)
         {
-            network = networkManager;
-            audioManager = audio;
-            this.input = input;
-            players = new List<Player>();
-            //players.Add(new Player(networkManager.ClientName, Vector2.Zero, players.Count));
+            if (CurState == GameEngineState.InActive)
+            {
+                network = networkManager;
+                audioManager = audio;
+                this.input = input;
+                this.assets = assets;
+                players = new List<Player>();
+                CurState = GameEngineState.Loaded;
+            }
         }
 
         public enum GameEngineState
         {
             InActive,
+            Loaded,
             Active
         }
 
-        public void AddPlayer(Player player)
+        public void AddPlayer(string name, Vector2 position, short playerID)
         {
-            players.Add(player);
+            players.Add(new Player(name, position, playerID, assets));
         }
 
         public void AddEntity(Entity entity)
@@ -61,20 +67,22 @@ namespace CStrike2D
         {
             if (CurState == GameEngineState.Active)
             {
-                if (input.Tapped(Keys.W))
+
+
+                if (input.Tapped(Keys.W) || input.Held(Keys.W))
                 {
                     network.SendInputData(NetInterface.MOVE_UP);
                 }
-                else if (input.Tapped(Keys.S))
+                else if (input.Tapped(Keys.S) || input.Held(Keys.S))
                 {
                     network.SendInputData(NetInterface.MOVE_DOWN);
                 }
 
-                if (input.Tapped(Keys.A))
+                if (input.Tapped(Keys.A) || input.Held(Keys.A))
                 {
                     network.SendInputData(NetInterface.MOVE_LEFT);
                 }
-                else if (input.Tapped(Keys.D))
+                else if (input.Tapped(Keys.D) | input.Held(Keys.D))
                 {
                     network.SendInputData(NetInterface.MOVE_RIGHT);
                 }
@@ -83,12 +91,27 @@ namespace CStrike2D
                 {
                     network.SendInputData(NetInterface.FIRE);
                 }
+
+                driver.Model.Camera.Position = players[0].Position;
+
+                if (players.Count > 0)
+                {
+                    players[0].SetRot(input.MouseRotation(driver.Model.Camera));
+                }
             }
         }
 
         public void Draw(SpriteBatch sb)
         {
+            if (CurState == GameEngineState.Active)
+            {
+                foreach (Player ply in players)
+                {
+                    ply.Draw(sb);
+                }
+            }
 
+            sb.Draw(assets.PixelTexture, new Rectangle(20, 20, 200, 200), Color.Yellow);
         }
 
         public void PlaySound(int playerID, short soundID)
@@ -103,7 +126,7 @@ namespace CStrike2D
             }
         }
 
-        public void MovePlayer(int playerID, int direction)
+        public void MovePlayer(short playerID, byte direction)
         {
             Player player = players.Find(ply => ply.PlayerID == playerID);
             player.Move(direction);

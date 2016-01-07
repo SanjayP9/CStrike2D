@@ -313,9 +313,8 @@ namespace CStrike2D
                             else if (Input.Tapped(Keys.Enter))
                             {
                                 NetworkManager.Connect(Address);
-                                CurState = State.InGame;
-                                GameEngine.CurState = GameEngine.GameEngineState.Active;
-                                GameEngine.Initialize(NetworkManager, AudioManager, Input);
+                                GameEngine.Initialize(NetworkManager, AudioManager, Input, DriverInstance.Assets);
+                                GameEngine.CurState = GameEngine.GameEngineState.Loaded;
                             }
                             else
                             {
@@ -324,6 +323,7 @@ namespace CStrike2D
                             break;
                         case NetworkManager.NetState.Connected:
                             CurState = State.InGame;
+                            GameEngine.CurState = GameEngine.GameEngineState.Active;
                             break;
                     }
                     break;

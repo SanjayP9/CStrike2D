@@ -19,6 +19,7 @@ namespace CStrike2D
         public override Rectangle Dimensions { get; protected set; }
 
         private Vector2 position;
+        private float rotation;
         
         public short PlayerID { get; private set; }
 
@@ -26,7 +27,7 @@ namespace CStrike2D
 
         public string Name { get; private set; }
 
-        public Player(string name, Vector2 position, short playerID)
+        public Player(string name, Vector2 position, short playerID, Assets assets) : base(assets)
         {
             Position = position;
             Name = name;
@@ -35,24 +36,29 @@ namespace CStrike2D
 
         public void SetPosition(Vector2 newPosition)
         {
-            Position = newPosition;
+            position = newPosition;
         }
 
-        public void Move(int direction)
+        public void SetRot(float rotation)
+        {
+            this.rotation = rotation;
+        }
+
+        public void Move(byte direction)
         {
             switch (direction)
             {
-                case 0: // UP
-                    position.Y -= 0.5f;
+                case NetInterface.MOVE_UP: // UP
+                    position = Vector2.Lerp(position, new Vector2(position.X, position.Y - 5), 0.6f);
                     break;
-                case 1: // DOWN
-                    position.Y += 0.5f;
+                case NetInterface.MOVE_DOWN: // DOWN
+                    position = Vector2.Lerp(position, new Vector2(position.X, position.Y + 5), 0.6f);
                     break;
-                case 2: // LEFT
-                    position.X -= 0.5f;
+                case NetInterface.MOVE_LEFT: // LEFT
+                    position = Vector2.Lerp(position, new Vector2(position.X - 5, position.Y), 0.6f);
                     break;
-                case 3: // RIGHT
-                    position.X += 0.5f;
+                case NetInterface.MOVE_RIGHT: // RIGHT
+                    position = Vector2.Lerp(position, new Vector2(position.X + 5, position.Y), 0.6f);
                     break;
             }
         }
@@ -64,7 +70,9 @@ namespace CStrike2D
 
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(Assets.CTTexture, Position, Color.White);
+            sb.Draw(Assets.CTTexture, position, new Rectangle(0, 0, 32, 32), Color.White, 1.57f + rotation,
+                new Vector2(16, 16),
+                1f, SpriteEffects.None, 0);
         }
     }
 }
