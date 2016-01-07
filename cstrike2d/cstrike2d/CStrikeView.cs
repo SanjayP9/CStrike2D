@@ -225,7 +225,6 @@ namespace CStrike2D
             // FPS
             sb.DrawString(assets.DefaultFont, "FPS: " + model.DriverInstance.FPS, new Vector2(model.Dimensions.X - (assets.DefaultFont.MeasureString("FPS: " + model.DriverInstance.FPS).X), 0), Color.White);
 
-
             sb.End();
         }
     }

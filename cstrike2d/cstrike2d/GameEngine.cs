@@ -120,6 +120,7 @@ namespace CStrike2D
 
         public void Draw(SpriteBatch sb)
         {
+            sb.Draw(assets.PixelTexture, new Rectangle(0, 0, (int)driver.Model.Dimensions.X, (int)driver.Model.Dimensions.Y), Color.White);
             if (CurState == GameEngineState.Active)
             {
                 foreach (Player ply in Players)
