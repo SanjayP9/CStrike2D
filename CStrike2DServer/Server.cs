@@ -66,7 +66,17 @@ namespace CStrike2DServer
 
         public static void SyncServer()
         {
+            NetOutgoingMessage syncMsg = server.CreateMessage();
 
+            foreach (Player ply in players)
+            {
+                syncMsg = server.CreateMessage();
+                syncMsg.Write(NetInterface.SYNC_MOVEMENT);
+                syncMsg.Write(ply.PlayerID);
+                syncMsg.Write((long)ply.GetPosition().X);
+                syncMsg.Write((long)ply.GetPosition().Y);
+                server.SendToAll(syncMsg, NetDeliveryMethod.ReliableSequenced);
+            }
         }
 
         public static void Update()

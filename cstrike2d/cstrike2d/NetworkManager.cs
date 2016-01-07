@@ -87,14 +87,16 @@ namespace CStrike2D
                             case NetState.Connected:
                                 byte message = msg.ReadByte();
                                 byte playerNum;
-
+                                short playerID;
+                                float playerX;
+                                float playerY;
                                 switch (message)
                                 {
                                     case NetInterface.SYNC_NEW_PLAYER:
                                         string name = msg.ReadString();
-                                        short playerID = msg.ReadInt16();
-                                        float playerX = msg.ReadInt64();
-                                        float playerY = msg.ReadInt64();
+                                        playerID = msg.ReadInt16();
+                                        playerX = msg.ReadInt64();
+                                        playerY = msg.ReadInt64();
                                         if (!engine.Exists(playerID))
                                         {
                                             engine.AddPlayer(name, new Vector2(playerX, playerY), playerID);
@@ -121,10 +123,16 @@ namespace CStrike2D
                                         playerNum = msg.ReadByte();
                                         engine.PlaySound(playerNum, msg.ReadInt16());
                                         break;
+                                    case NetInterface.SYNC_MOVEMENT:
+                                        playerID = msg.ReadInt16();
+                                        playerX = msg.ReadInt64();
+                                        playerY = msg.ReadInt64();
+
+                                        engine.Players.Find(ply => ply.PlayerID == playerID).SetPosition(new Vector2(playerX, playerY));
+                                        break;
                                 }
                                 break;
                         }
-
                         break;
                 }
             }
