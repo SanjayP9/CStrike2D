@@ -92,10 +92,10 @@ namespace CStrike2D
                     network.SendInputData(NetInterface.FIRE);
                 }
 
-                driver.Model.Camera.Position = players[0].Position;
 
                 if (players.Count > 0)
                 {
+                    driver.Model.Camera.Position = players[0].Position;
                     players[0].SetRot(input.MouseRotation(driver.Model.Camera));
                 }
             }

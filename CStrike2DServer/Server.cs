@@ -38,7 +38,7 @@ namespace CStrike2DServer
 
             Console.WriteLine("Booting up server...");
 
-            config = new NetPeerConfiguration("cstrike") {Port = port};
+            config = new NetPeerConfiguration("cstrike") {Port = port, EnableUPnP = true};
             server = new NetServer(config);
             server.Start();
             Console.WriteLine("Server is live.");
@@ -105,21 +105,19 @@ namespace CStrike2DServer
                                 players.Add(player);
 
                                 Console.WriteLine("Player: \"" + player.PlayerName + "\" Connected.");
-                                foreach (NetConnection client in server.Connections)
+                               
+                                // Send data about the new player to all connected players
+                                foreach (Player plyr in players)
                                 {
-                                    // Send data about the new player to all connected players
-                                    foreach (Player plyr in players)
-                                    {
-                                        // If the data we are sending is not the player themself
-                                        outMsg.Write(NetInterface.SYNC_NEW_PLAYER);
-                                        outMsg.Write(player.PlayerName);
-                                        outMsg.Write(player.PlayerID);
-                                        outMsg.Write((long) player.GetPosition().X);
-                                        outMsg.Write((long) player.GetPosition().Y);
-                                        server.SendMessage(outMsg, client, NetDeliveryMethod.ReliableSequenced);
-                                        Console.WriteLine("Sent data about \"" + player.PlayerName + "\"" +
-                                                          " to player \"" + plyr.PlayerName + "\"");
-                                    }
+                                    // If the data we are sending is not the player themself
+                                    outMsg.Write(NetInterface.SYNC_NEW_PLAYER);
+                                    outMsg.Write(player.PlayerName);
+                                    outMsg.Write(player.PlayerID);
+                                    outMsg.Write((long) player.GetPosition().X);
+                                    outMsg.Write((long) player.GetPosition().Y);
+                                    server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
+                                    Console.WriteLine("Sent data about \"" + player.PlayerName + "\"" +
+                                                      " to player \"" + plyr.PlayerName + "\"");
                                 }
                                 Console.WriteLine("Sync Complete.");
                                 break;
