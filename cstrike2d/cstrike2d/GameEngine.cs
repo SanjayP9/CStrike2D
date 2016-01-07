@@ -99,6 +99,8 @@ namespace CStrike2D
                 {
                     network.SendInputData(NetInterface.FIRE);
                 }
+                
+                
 
 
 
@@ -141,7 +143,11 @@ namespace CStrike2D
                 switch (soundID)
                 {
                     case NetInterface.AK47_SHOT:
-                        audioManager.PlaySound("ak47shot", audioManager.SoundEffectVolume,
+                        audioManager.PlaySound("awpshot", audioManager.SoundEffectVolume,
+                            clientPlayer.Position, player.Position);
+                        break;
+                    case NetInterface.AWP_SHOT:
+                        audioManager.PlaySound("awpshot", audioManager.SoundEffectVolume,
                             clientPlayer.Position, player.Position);
                         break;
                 }

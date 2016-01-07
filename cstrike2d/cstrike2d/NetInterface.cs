@@ -73,6 +73,7 @@
         // Sounds currently implemented in the game
         public const short AK47_SHOT = 0;
         public const short AK47_SHOT_DISTANT = 1;
+        public const short AWP_SHOT = 2;
 
     }
 }
