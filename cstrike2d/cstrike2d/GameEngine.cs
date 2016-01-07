@@ -102,7 +102,7 @@ namespace CStrike2D
                 if (Players.Count > 0)
                 {
                     driver.Model.Camera.Position = clientPlayer.Position;
-                    Players[0].SetRot(input.MouseRotation(driver.Model.Camera));
+                    clientPlayer.SetRot(input.MouseRotation(driver.Model.Camera));
                 }
             }
         }

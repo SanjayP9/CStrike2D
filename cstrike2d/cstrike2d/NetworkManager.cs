@@ -41,7 +41,7 @@ namespace CStrike2D
             client = new NetClient(config);
             CurState = NetState.Disconnected;
             buffer = new NetBuffer();
-            ClientName = "DevHalo";
+            ClientName = "asdasdasdsd";
             this.engine = engine;
         }
 
@@ -103,7 +103,7 @@ namespace CStrike2D
 
                                             if (PlayerID == playerID)
                                             {
-                                                engine.SetClientPlayer(engine.Players.First());
+                                                engine.SetClientPlayer(engine.Players.Find(ply => ply.PlayerID == PlayerID));
                                             }
                                         }
                                         break;
