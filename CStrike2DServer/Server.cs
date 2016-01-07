@@ -169,7 +169,10 @@ namespace CStrike2DServer
                                 break;
                             case NetInterface.ROTATE:
                                 outMsg.Write(NetInterface.ROTATE);
-                                players.Find(ply => ply.Client == msg.SenderConnection.RemoteUniqueIdentifier).SetRotation(msg.ReadInt64());
+                                player = players.Find(ply => ply.Client == msg.SenderConnection.RemoteUniqueIdentifier);
+                                player.SetRotation(msg.ReadInt64());
+                                outMsg.Write(player.PlayerID);
+                                outMsg.Write((long)player.Rotation);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                                 break;
                         }

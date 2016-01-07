@@ -135,6 +135,10 @@ namespace CStrike2D
                                                 .SetPosition(new Vector2(playerX, playerY));
                                         }
                                         break;
+                                    case NetInterface.ROTATE:
+                                        playerID = msg.ReadInt16();
+                                        engine.Players.Find(ply => ply.PlayerID == playerID).SetRot(msg.ReadInt64());
+                                        break;
                                 }
                                 break;
                         }
