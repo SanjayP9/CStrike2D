@@ -55,7 +55,7 @@ namespace CStrike2DServer
                     Update();
                     sw.Restart();
 
-                    if (tick == 8)
+                    if (tick == 50)
                     {
                         SyncServer();
                         tick = 0;

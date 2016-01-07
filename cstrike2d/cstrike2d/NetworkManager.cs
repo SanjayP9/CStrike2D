@@ -41,7 +41,7 @@ namespace CStrike2D
             client = new NetClient(config);
             CurState = NetState.Disconnected;
             buffer = new NetBuffer();
-            ClientName = "Olofmeister";
+            ClientName = "DevHalo";
             this.engine = engine;
         }
 
