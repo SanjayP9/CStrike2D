@@ -82,6 +82,8 @@ namespace CStrike2DServer
                         {
                             case NetConnectionStatus.Connected:
                                 outMsg.Write(NetInterface.HANDSHAKE);
+                                playerIdentifier++;
+                                outMsg.Write(playerIdentifier);
                                 msg.SenderConnection.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
                                 break;
                             case NetConnectionStatus.Disconnected:
@@ -104,7 +106,6 @@ namespace CStrike2DServer
                                 player = new Player(msg.ReadString(), msg.SenderConnection.RemoteUniqueIdentifier, playerIdentifier);
                                 player.SetPosition(new Vector2(players.Count * 50, players.Count * 50));
                                 players.Add(player);
-                                playerIdentifier++;
 
                                 Console.WriteLine("Player: \"" + player.PlayerName + "\" Connected.");
                                

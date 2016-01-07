@@ -26,10 +26,7 @@ namespace CStrike2D
 
         public NetState CurState { get; private set; }
 
-        public long ClientID()
-        {
-            return client.UniqueIdentifier;
-        }
+        public short PlayerID { get; private set; }
 
         public enum NetState
         {
@@ -79,10 +76,10 @@ namespace CStrike2D
                                 byte acknowledge = msg.ReadByte();
                                 if (acknowledge == NetInterface.HANDSHAKE)
                                 {
+                                    PlayerID = msg.ReadInt16();
                                     NetOutgoingMessage outgoing = client.CreateMessage();
                                     outgoing.Write(NetInterface.HANDSHAKE);
                                     outgoing.Write(ClientName);
-                                    outgoing.Write(ClientID());
                                     client.SendMessage(outgoing, NetDeliveryMethod.ReliableOrdered);
                                     CurState = NetState.Connected;
                                 }
@@ -100,10 +97,11 @@ namespace CStrike2D
                                         float playerY = msg.ReadInt64();
                                         if (!engine.Exists(playerID))
                                         {
-                                            if (engine.Players.Count == 0)
+                                            engine.AddPlayer(name, new Vector2(playerX, playerY), playerID);
+
+                                            if (PlayerID == playerID)
                                             {
-                                                engine.AddPlayer(name, new Vector2(playerX, playerY), playerID);
-                                                engine.SetClientPlayer(engine.Players[0]);
+                                                engine.SetClientPlayer(engine.Players.Last());
                                             }
                                         }
                                         break;
