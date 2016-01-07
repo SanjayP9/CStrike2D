@@ -110,12 +110,13 @@ namespace CStrike2DServer
                                 foreach (Player plyr in players)
                                 {
                                     // If the data we are sending is not the player themself
+                                    outMsg = server.CreateMessage();
                                     outMsg.Write(NetInterface.SYNC_NEW_PLAYER);
                                     outMsg.Write(player.PlayerName);
                                     outMsg.Write(player.PlayerID);
                                     outMsg.Write((long) player.GetPosition().X);
                                     outMsg.Write((long) player.GetPosition().Y);
-                                    server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
+                                    server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
                                     Console.WriteLine("Sent data about \"" + player.PlayerName + "\"" +
                                                       " to player \"" + plyr.PlayerName + "\"");
                                 }
