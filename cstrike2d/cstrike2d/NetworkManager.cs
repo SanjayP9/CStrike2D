@@ -158,6 +158,7 @@ namespace CStrike2D
         public void SendRotData(float rotation)
         {
             NetOutgoingMessage outMsg = client.CreateMessage();
+            outMsg.Write(NetInterface.ROTATE);
             outMsg.Write(rotation);
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
