@@ -139,6 +139,10 @@ namespace CStrike2D
                                         playerID = msg.ReadInt16();
                                         engine.Players.Find(ply => ply.PlayerID == playerID).SetRot(msg.ReadFloat());
                                         break;
+                                    case NetInterface.PLAYER_DC:
+                                        playerID = msg.ReadInt16();
+                                        engine.Players.Remove(engine.Players.Find(ply => ply.PlayerID == playerID));
+                                        break;
                                 }
                                 break;
                         }
