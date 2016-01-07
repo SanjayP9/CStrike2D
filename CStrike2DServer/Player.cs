@@ -42,6 +42,11 @@ namespace CStrike2DServer
             this.position = position;
         }
 
+        public void SetRotation(float rotation)
+        {
+            Rotation = rotation;
+        }
+
         public void Move(int direction)
         {
             switch (direction)

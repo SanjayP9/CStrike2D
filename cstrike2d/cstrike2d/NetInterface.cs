@@ -30,6 +30,7 @@
         public const byte MOVE_DOWN = 11;       // Used for requesting player movement Down
         public const byte MOVE_LEFT = 12;       // Used for requesting player movement Left
         public const byte MOVE_RIGHT = 13;      // Used for requesting player movement Right
+        public const byte ROTATE = 14;          
         public const byte FIRE = 20;            // Used for requesting player left fire button
 
 

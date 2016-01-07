@@ -41,7 +41,7 @@ namespace CStrike2D
             client = new NetClient(config);
             CurState = NetState.Disconnected;
             buffer = new NetBuffer();
-            ClientName = "ASD";
+            ClientName = "DevHalo";
             this.engine = engine;
         }
 
@@ -148,6 +148,13 @@ namespace CStrike2D
         {
             NetOutgoingMessage outMsg = client.CreateMessage();
             outMsg.Write(code);
+            client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
+        }
+
+        public void SendRotData(float rotation)
+        {
+            NetOutgoingMessage outMsg = client.CreateMessage();
+            outMsg.Write(rotation);
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 

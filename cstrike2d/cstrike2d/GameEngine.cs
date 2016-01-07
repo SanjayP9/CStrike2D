@@ -26,6 +26,8 @@ namespace CStrike2D
         public List<Player> Players { get; private set; }
         private Player clientPlayer;
 
+        private float prevRotation;
+
         public GameEngineState CurState { get; set; }
 
         public GameEngine(CStrike2D driver)
@@ -99,10 +101,19 @@ namespace CStrike2D
                 }
 
 
+
                 if (Players.Count > 0)
                 {
+                    float curRotation = input.MouseRotation(driver.Model.Camera);
+
+                    if (curRotation != prevRotation)
+                    {
+                        network.SendRotData(curRotation);
+                    }
+
                     driver.Model.Camera.Position = clientPlayer.Position;
-                    clientPlayer.SetRot(input.MouseRotation(driver.Model.Camera));
+                    clientPlayer.SetRot(curRotation);
+                    prevRotation = curRotation;
                 }
             }
         }

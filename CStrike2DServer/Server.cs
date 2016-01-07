@@ -128,8 +128,9 @@ namespace CStrike2DServer
                                     outMsg.Write(NetInterface.SYNC_NEW_PLAYER);
                                     outMsg.Write(plyr.PlayerName);
                                     outMsg.Write(plyr.PlayerID);
-                                    outMsg.Write((long) player.GetPosition().X);
-                                    outMsg.Write((long) player.GetPosition().Y);
+                                    outMsg.Write((long)plyr.GetPosition().X);
+                                    outMsg.Write((long)plyr.GetPosition().Y);
+                                    outMsg.Write((long)plyr.Rotation);
                                     server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
                                     Console.WriteLine("Sent data about \"" + player.PlayerName + "\"" +
                                                       " to player \"" + plyr.PlayerName + "\"");
@@ -164,6 +165,11 @@ namespace CStrike2DServer
                                 outMsg.Write(NetInterface.PLAY_SOUND);
                                 outMsg.Write(player.PlayerID);
                                 outMsg.Write(NetInterface.AK47_SHOT);
+                                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+                                break;
+                            case NetInterface.ROTATE:
+                                outMsg.Write(NetInterface.ROTATE);
+                                players.Find(ply => ply.Client == msg.SenderConnection.RemoteUniqueIdentifier).SetRotation(msg.ReadInt64());
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                                 break;
                         }
