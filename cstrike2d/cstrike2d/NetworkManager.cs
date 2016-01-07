@@ -82,6 +82,7 @@ namespace CStrike2D
                                     NetOutgoingMessage outgoing = client.CreateMessage();
                                     outgoing.Write(NetInterface.HANDSHAKE);
                                     outgoing.Write(ClientName);
+                                    outgoing.Write(ClientID());
                                     client.SendMessage(outgoing, NetDeliveryMethod.ReliableOrdered);
                                     CurState = NetState.Connected;
                                 }

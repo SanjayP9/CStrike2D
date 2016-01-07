@@ -99,7 +99,7 @@ namespace CStrike2DServer
                         switch (identifier)
                         {
                             case NetInterface.HANDSHAKE:
-                                player = new Player(msg.ReadString(), msg.SenderConnection.RemoteUniqueIdentifier);
+                                player = new Player(msg.ReadString(), msg.ReadInt64());
                                 player.SetPosition(new Vector2(players.Count * 50, players.Count * 50));
                                 players.Add(player);
 
