@@ -41,7 +41,7 @@ namespace CStrike2D
             client = new NetClient(config);
             CurState = NetState.Disconnected;
             buffer = new NetBuffer();
-            ClientName = "DevHalo";
+            ClientName = "Osama Bin Laden";
             this.engine = engine;
         }
 
@@ -159,7 +159,7 @@ namespace CStrike2D
         {
             NetOutgoingMessage outMsg = client.CreateMessage();
             outMsg.Write(NetInterface.ROTATE);
-            outMsg.Write((long)rotation);
+            outMsg.Write(rotation);
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
