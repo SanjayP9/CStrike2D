@@ -159,7 +159,7 @@ namespace CStrike2D
         {
             NetOutgoingMessage outMsg = client.CreateMessage();
             outMsg.Write(NetInterface.ROTATE);
-            outMsg.Write(rotation);
+            outMsg.Write((long)rotation);
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
