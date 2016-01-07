@@ -78,7 +78,7 @@ namespace CStrike2D
                 new Vector2(16, 16),
                 1f, SpriteEffects.None, 0);
 
-            sb.DrawString(Assets.DefaultFont, Name, new Vector2(position.X, position.Y - 50), Color.White);
+            sb.DrawString(Assets.DefaultFont, Name, new Vector2(position.X, position.Y - 50), Color.White );
         }
     }
 }

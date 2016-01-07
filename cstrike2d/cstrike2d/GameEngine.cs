@@ -95,7 +95,7 @@ namespace CStrike2D
                     network.SendInputData(NetInterface.MOVE_RIGHT);
                 }
 
-                if (input.LeftClick())
+                if (input.ScrollUp())
                 {
                     network.SendInputData(NetInterface.FIRE);
                 }

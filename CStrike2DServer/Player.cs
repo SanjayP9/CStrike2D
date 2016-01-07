@@ -20,11 +20,11 @@ namespace CStrike2DServer
 
         public string PlayerName { get; private set; }
 
-        public long Client { get; private set; }
+        public NetConnection Client { get; private set; }
 
         public short PlayerID { get; private set; }
 
-        public Player(string playerName, long client, short playerID)
+        public Player(string playerName, NetConnection client, short playerID)
         {
             PlayerName = playerName;
             position = new Vector2(0, 0);

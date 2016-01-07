@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using CStrike2D;
@@ -26,14 +27,18 @@ namespace CStrike2DServer
             Vector2 defSpawnPosition = new Vector2(350, 350);
 
             Stopwatch sw = new Stopwatch();
-            string serverVersion = "0.0.1a";            // Server Version
+            string serverVersion = "0.1.0a";            // Server Version
+            int maxPlayers = 32;
             int port = 27015;
+            string buffer = "";
             string serverName = "Global Offensive Server - " + serverVersion;
             players = new List<Player>();
 
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("==================================");
             Console.WriteLine("Global Offensive - Version " + serverVersion);
             Console.WriteLine("==================================");
+            Console.ForegroundColor = ConsoleColor.White;
 
             Console.WriteLine("Loading config file...");
             ReadConfig();
@@ -45,10 +50,16 @@ namespace CStrike2DServer
             server.Start();
             Console.WriteLine("Server is live.");
 
+
             sw.Start();
             int tick = 0;
             while (server.Status == NetPeerStatus.Running)
             {
+                if (Console.KeyAvailable)
+                {
+                    buffer += Console.ReadKey();
+                }
+
                 if (sw.Elapsed.Milliseconds >= 2)
                 {
                     tick++;
@@ -57,6 +68,19 @@ namespace CStrike2DServer
 
                     if (tick == 50)
                     {
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("==================================");
+                        Console.WriteLine("Global Offensive - Version " + serverVersion);
+                        Console.WriteLine("==================================");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine("Players: " + players.Count + "/" + maxPlayers);
+
+                        foreach (Player ply in players)
+                        {
+                            Console.WriteLine("Client: " + ply.PlayerName + " Ping: " + Math.Round(ply.Client.AverageRoundtripTime, 2) + "ms");
+                        }
+                        Console.WriteLine(buffer);
                         SyncServer();
                         tick = 0;
                     }
@@ -98,7 +122,7 @@ namespace CStrike2DServer
                                 msg.SenderConnection.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced, 0);
                                 break;
                             case NetConnectionStatus.Disconnected:
-                                player = players.Find(ply => ply.Client == msg.SenderConnection.RemoteUniqueIdentifier);
+                                player = players.Find(ply => ply.Client.RemoteUniqueIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
 
                                 outMsg.Write(NetInterface.PLAYER_DC);
                                 outMsg.Write(player.PlayerID);
@@ -110,11 +134,11 @@ namespace CStrike2DServer
                         break;
                     case NetIncomingMessageType.Data:
                         byte identifier = msg.ReadByte();
-                        player = players.Find(ply => ply.Client == msg.SenderConnection.RemoteUniqueIdentifier);
+                        player = players.Find(ply => ply.Client.RemoteUniqueIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
                         switch (identifier)
                         {
                             case NetInterface.HANDSHAKE:
-                                player = new Player(msg.ReadString(), msg.SenderConnection.RemoteUniqueIdentifier, playerIdentifier);
+                                player = new Player(msg.ReadString(), msg.SenderConnection, playerIdentifier);
                                 player.SetPosition(new Vector2(players.Count * 50, players.Count * 50));
                                 players.Add(player);
 
@@ -142,6 +166,7 @@ namespace CStrike2DServer
                                 outMsg.Write(NetInterface.MOVE_UP);
                                 outMsg.Write(player.PlayerID);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+                                Console.WriteLine("Player moved up");
                                 break;
                             case NetInterface.MOVE_DOWN:
                                 player.Move(1);
@@ -169,7 +194,7 @@ namespace CStrike2DServer
                                 break;
                             case NetInterface.ROTATE:
                                 outMsg.Write(NetInterface.ROTATE);
-                                player = players.Find(ply => ply.Client == msg.SenderConnection.RemoteUniqueIdentifier);
+                                player = players.Find(ply => ply.Client.RemoteUniqueIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
                                 player.SetRotation(msg.ReadFloat());
                                 outMsg.Write(player.PlayerID);
                                 outMsg.Write(player.Rotation);
