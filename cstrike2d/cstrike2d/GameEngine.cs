@@ -23,7 +23,8 @@ namespace CStrike2D
         private InputManager input;
         private AudioManager audioManager;
         private Assets assets;
-        private List<Player> players;
+        public List<Player> Players { get; private set; }
+        private Player clientPlayer;
 
         public GameEngineState CurState { get; set; }
 
@@ -41,7 +42,7 @@ namespace CStrike2D
                 audioManager = audio;
                 this.input = input;
                 this.assets = assets;
-                players = new List<Player>();
+                Players = new List<Player>();
                 CurState = GameEngineState.Loaded;
             }
         }
@@ -55,7 +56,12 @@ namespace CStrike2D
 
         public void AddPlayer(string name, Vector2 position, short playerID)
         {
-            players.Add(new Player(name, position, playerID, assets));
+            Players.Add(new Player(name, position, playerID, assets));
+        }
+
+        public void SetClientPlayer(Player player)
+        {
+            clientPlayer = player;
         }
 
         public void AddEntity(Entity entity)
@@ -93,10 +99,10 @@ namespace CStrike2D
                 }
 
 
-                if (players.Count > 0)
+                if (Players.Count > 0)
                 {
-                    driver.Model.Camera.Position = players.Find(ply => ply.PlayerID == network.ClientID()).Position;
-                    players[0].SetRot(input.MouseRotation(driver.Model.Camera));
+                    driver.Model.Camera.Position = clientPlayer.Position;
+                    Players[0].SetRot(input.MouseRotation(driver.Model.Camera));
                 }
             }
         }
@@ -105,7 +111,7 @@ namespace CStrike2D
         {
             if (CurState == GameEngineState.Active)
             {
-                foreach (Player ply in players)
+                foreach (Player ply in Players)
                 {
                     ply.Draw(sb);
                 }
@@ -116,14 +122,14 @@ namespace CStrike2D
 
         public void PlaySound(long playerID, short soundID)
         {
-            Player player = players.Find(ply => ply.PlayerID == playerID);
+            Player player = Players.Find(ply => ply.PlayerID == playerID);
 
             if (player != null)
             {
                 switch (soundID)
                 {
                     case NetInterface.AK47_SHOT:
-                        audioManager.PlaySound("ak47shot", audioManager.SoundEffectVolume, players[0].Position,
+                        audioManager.PlaySound("ak47shot", audioManager.SoundEffectVolume, Players[0].Position,
                             player.Position);
                         break;
                 }
@@ -132,7 +138,7 @@ namespace CStrike2D
 
         public void MovePlayer(short playerID, byte direction)
         {
-            Player player = players.Find(ply => ply.PlayerID == playerID);
+            Player player = Players.Find(ply => ply.PlayerID == playerID);
 
             if (player != null)
             {
@@ -142,7 +148,7 @@ namespace CStrike2D
 
         public bool Exists(long playerID)
         {
-            return players.Exists(ply => ply.PlayerID == playerID);
+            return Players.Exists(ply => ply.PlayerID == playerID);
         }
     }
 }

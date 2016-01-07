@@ -100,7 +100,11 @@ namespace CStrike2D
                                         float playerY = msg.ReadInt64();
                                         if (!engine.Exists(playerID))
                                         {
-                                            engine.AddPlayer(name, new Vector2(playerX, playerY), playerID);
+                                            if (engine.Players.Count == 0)
+                                            {
+                                                engine.AddPlayer(name, new Vector2(playerX, playerY), playerID);
+                                                engine.SetClientPlayer(engine.Players[0]);
+                                            }
                                         }
                                         break;
                                     case NetInterface.MOVE_UP:
