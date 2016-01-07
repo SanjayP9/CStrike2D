@@ -49,7 +49,7 @@ namespace CStrike2DServer
             int tick = 0;
             while (server.Status == NetPeerStatus.Running)
             {
-                if (sw.Elapsed.Milliseconds >= 8)
+                if (sw.Elapsed.Milliseconds >= 4)
                 {
                     tick++;
                     Update();
