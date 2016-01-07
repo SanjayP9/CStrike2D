@@ -49,13 +49,13 @@ namespace CStrike2DServer
             int tick = 0;
             while (server.Status == NetPeerStatus.Running)
             {
-                if (sw.Elapsed.Milliseconds >= 15.6)
+                if (sw.Elapsed.Milliseconds >= 2)
                 {
                     tick++;
                     Update();
                     sw.Restart();
 
-                    if (tick == 10)
+                    if (tick == 50)
                     {
                         SyncServer();
                         tick = 0;
