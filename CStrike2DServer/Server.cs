@@ -49,13 +49,13 @@ namespace CStrike2DServer
             int tick = 0;
             while (server.Status == NetPeerStatus.Running)
             {
-                if (sw.Elapsed.Milliseconds >= 4)
+                if (sw.Elapsed.Milliseconds >= 15.6)
                 {
                     tick++;
                     Update();
                     sw.Restart();
 
-                    if (tick == 50)
+                    if (tick == 10)
                     {
                         SyncServer();
                         tick = 0;
@@ -172,7 +172,7 @@ namespace CStrike2DServer
                                 player = players.Find(ply => ply.Client == msg.SenderConnection.RemoteUniqueIdentifier);
                                 player.SetRotation(msg.ReadInt64());
                                 outMsg.Write(player.PlayerID);
-                                outMsg.Write((long)player.Rotation);
+                                outMsg.Write(player.Rotation);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                                 break;
                         }

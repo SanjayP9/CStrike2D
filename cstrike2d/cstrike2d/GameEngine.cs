@@ -140,8 +140,8 @@ namespace CStrike2D
                 switch (soundID)
                 {
                     case NetInterface.AK47_SHOT:
-                        audioManager.PlaySound("ak47shot", audioManager.SoundEffectVolume, Players[0].Position,
-                            player.Position);
+                        audioManager.PlaySound("ak47shot", audioManager.SoundEffectVolume,
+                            player.Position, clientPlayer.Position);
                         break;
                 }
             }
