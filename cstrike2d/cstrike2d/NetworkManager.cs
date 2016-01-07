@@ -95,7 +95,7 @@ namespace CStrike2D
                                 {
                                     case NetInterface.SYNC_NEW_PLAYER:
                                         string name = msg.ReadString();
-                                        long playerID = msg.ReadInt64();
+                                        short playerID = msg.ReadInt16();
                                         float playerX = msg.ReadInt64();
                                         float playerY = msg.ReadInt64();
                                         if (!engine.Exists(playerID))

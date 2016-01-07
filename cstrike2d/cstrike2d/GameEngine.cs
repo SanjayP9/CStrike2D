@@ -53,7 +53,7 @@ namespace CStrike2D
             Active
         }
 
-        public void AddPlayer(string name, Vector2 position, long playerID)
+        public void AddPlayer(string name, Vector2 position, short playerID)
         {
             players.Add(new Player(name, position, playerID, assets));
         }
@@ -117,19 +117,27 @@ namespace CStrike2D
         public void PlaySound(long playerID, short soundID)
         {
             Player player = players.Find(ply => ply.PlayerID == playerID);
-            switch (soundID)
+
+            if (player != null)
             {
-                case NetInterface.AK47_SHOT:
-                    audioManager.PlaySound("ak47shot", audioManager.SoundEffectVolume, players[0].Position,
-                        player.Position);
-                    break;
+                switch (soundID)
+                {
+                    case NetInterface.AK47_SHOT:
+                        audioManager.PlaySound("ak47shot", audioManager.SoundEffectVolume, players[0].Position,
+                            player.Position);
+                        break;
+                }
             }
         }
 
         public void MovePlayer(short playerID, byte direction)
         {
             Player player = players.Find(ply => ply.PlayerID == playerID);
-            player.Move(direction);
+
+            if (player != null)
+            {
+                player.Move(direction);
+            }
         }
 
         public bool Exists(long playerID)

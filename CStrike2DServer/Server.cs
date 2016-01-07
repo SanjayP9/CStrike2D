@@ -17,7 +17,9 @@ namespace CStrike2DServer
         private static NetPeerConfiguration config;
         private static NetIncomingMessage msg;
 
-        static List<Player> players; 
+        static List<Player> players;
+        private static short playerIdentifier = 0;
+
         static void Main(string[] args)
         {
 
@@ -99,9 +101,10 @@ namespace CStrike2DServer
                         switch (identifier)
                         {
                             case NetInterface.HANDSHAKE:
-                                player = new Player(msg.ReadString(), msg.ReadInt64());
+                                player = new Player(msg.ReadString(), msg.SenderConnection.RemoteUniqueIdentifier, playerIdentifier);
                                 player.SetPosition(new Vector2(players.Count * 50, players.Count * 50));
                                 players.Add(player);
+                                playerIdentifier++;
 
                                 Console.WriteLine("Player: \"" + player.PlayerName + "\" Connected.");
                                
