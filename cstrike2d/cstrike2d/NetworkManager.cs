@@ -41,7 +41,7 @@ namespace CStrike2D
             client = new NetClient(config);
             CurState = NetState.Disconnected;
             buffer = new NetBuffer();
-            ClientName = "DevHalo";
+            ClientName = "Olofmeister";
             this.engine = engine;
         }
 
@@ -124,11 +124,16 @@ namespace CStrike2D
                                         engine.PlaySound(playerNum, msg.ReadInt16());
                                         break;
                                     case NetInterface.SYNC_MOVEMENT:
+                                        
                                         playerID = msg.ReadInt16();
                                         playerX = msg.ReadInt64();
                                         playerY = msg.ReadInt64();
 
-                                        engine.Players.Find(ply => ply.PlayerID == playerID).SetPosition(new Vector2(playerX, playerY));
+                                        if (engine.Players.Count > 0)
+                                        {
+                                            engine.Players.Find(ply => ply.PlayerID == playerID)
+                                                .SetPosition(new Vector2(playerX, playerY));
+                                        }
                                         break;
                                 }
                                 break;

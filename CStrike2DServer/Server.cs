@@ -75,7 +75,7 @@ namespace CStrike2DServer
                 syncMsg.Write(ply.PlayerID);
                 syncMsg.Write((long)ply.GetPosition().X);
                 syncMsg.Write((long)ply.GetPosition().Y);
-                server.SendToAll(syncMsg, NetDeliveryMethod.ReliableSequenced);
+                server.SendToAll(syncMsg, NetDeliveryMethod.UnreliableSequenced);
             }
         }
 
@@ -94,14 +94,14 @@ namespace CStrike2DServer
                                 outMsg.Write(NetInterface.HANDSHAKE);
                                 playerIdentifier++;
                                 outMsg.Write(playerIdentifier);
-                                msg.SenderConnection.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+                                msg.SenderConnection.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced, 0);
                                 break;
                             case NetConnectionStatus.Disconnected:
                                 player = players.Find(ply => ply.Client == msg.SenderConnection.RemoteUniqueIdentifier);
 
                                 outMsg.Write(NetInterface.PLAYER_DC);
                                 outMsg.Write(player.PlayerID);
-                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
+                                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                                 Console.WriteLine("\"" + player.PlayerName + "\" has left the server");
                                 players.Remove(player);
                                 break;
