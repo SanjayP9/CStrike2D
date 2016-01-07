@@ -55,7 +55,7 @@ namespace CStrike2DServer
                     Update();
                     sw.Restart();
 
-                    if (tick == 4)
+                    if (tick == 8)
                     {
                         SyncServer();
                         tick = 0;
@@ -66,7 +66,7 @@ namespace CStrike2DServer
 
         public static void SyncServer()
         {
-            NetOutgoingMessage syncMsg = server.CreateMessage();
+            NetOutgoingMessage syncMsg;
 
             foreach (Player ply in players)
             {
@@ -94,6 +94,7 @@ namespace CStrike2DServer
                                 outMsg.Write(NetInterface.HANDSHAKE);
                                 playerIdentifier++;
                                 outMsg.Write(playerIdentifier);
+                                Console.WriteLine("Client given identifier: " + playerIdentifier);
                                 msg.SenderConnection.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced, 0);
                                 break;
                             case NetConnectionStatus.Disconnected:
@@ -117,7 +118,7 @@ namespace CStrike2DServer
                                 player.SetPosition(new Vector2(players.Count * 50, players.Count * 50));
                                 players.Add(player);
 
-                                Console.WriteLine("Player: \"" + player.PlayerName + "\" Connected.");
+                                Console.WriteLine("Player: \"" + player.PlayerName + "\" Connected. Identifier: " + playerIdentifier);
                                
                                 // Send data about the new player to all connected players
                                 foreach (Player plyr in players)

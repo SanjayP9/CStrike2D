@@ -49,16 +49,16 @@ namespace CStrike2D
             switch (direction)
             {
                 case NetInterface.MOVE_UP: // UP
-                    position = Vector2.Lerp(position, new Vector2(position.X, position.Y - 5), 0.6f);
+                    position = Vector2.Lerp(position, new Vector2(position.X, position.Y - 5), 0.8f);
                     break;
                 case NetInterface.MOVE_DOWN: // DOWN
-                    position = Vector2.Lerp(position, new Vector2(position.X, position.Y + 5), 0.6f);
+                    position = Vector2.Lerp(position, new Vector2(position.X, position.Y + 5), 0.8f);
                     break;
                 case NetInterface.MOVE_LEFT: // LEFT
-                    position = Vector2.Lerp(position, new Vector2(position.X - 5, position.Y), 0.6f);
+                    position = Vector2.Lerp(position, new Vector2(position.X - 5, position.Y), 0.8f);
                     break;
                 case NetInterface.MOVE_RIGHT: // RIGHT
-                    position = Vector2.Lerp(position, new Vector2(position.X + 5, position.Y), 0.6f);
+                    position = Vector2.Lerp(position, new Vector2(position.X + 5, position.Y), 0.8f);
                     break;
             }
         }

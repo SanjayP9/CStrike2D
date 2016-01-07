@@ -103,7 +103,7 @@ namespace CStrike2D
 
                                             if (PlayerID == playerID)
                                             {
-                                                engine.SetClientPlayer(engine.Players.Last());
+                                                engine.SetClientPlayer(engine.Players.First());
                                             }
                                         }
                                         break;
