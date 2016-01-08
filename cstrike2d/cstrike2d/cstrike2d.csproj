@@ -47,7 +47,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <PlatformTarget>x86</PlatformTarget>
     <XnaCompressContent>false</XnaCompressContent>
-    <LangVersion>5</LangVersion>
+    <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
@@ -101,6 +101,7 @@
     <Compile Include="TextBox.cs" />
     <Compile Include="UIManager.cs" />
     <Compile Include="Weapon.cs" />
+    <Compile Include="WeaponInfo.cs" />
     <Content Include="Notes.txt" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />

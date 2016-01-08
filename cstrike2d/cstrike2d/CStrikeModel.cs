@@ -362,6 +362,7 @@ namespace CStrike2D
                             {
                                 Address = Input.GetText(Address);
                             }
+                            
                             break;
                         case NetworkManager.NetState.Connected:
                             CurState = State.InGame;

@@ -4,6 +4,10 @@
 // Creation Date: Dec 23rd, 2015
 // Modified Date: Jan 3rd, 2016
 // Description: Stores all assets required in the game and is globally accessible
+
+using System;
+using System.Globalization;
+using System.Windows.Forms.VisualStyles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -40,6 +44,8 @@ namespace CStrike2D
         /// </summary>
         private ContentManager gameContentLoader;
 
+        private Texture2D[,] weaponTextures;
+
         public Assets(CStrike2D instance)
         {
             // Initialize Content Loaders
@@ -71,6 +77,8 @@ namespace CStrike2D
             instance.Model.AudioManager.AddSound(new SoundContainer("ak47shotdistant", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/ak47d")));
             instance.Model.AudioManager.AddSound(new SoundContainer("buttonclick", coreContentLoader.Load<SoundEffect>("sound/sfx/ui/buttonclick")));
             instance.Model.AudioManager.AddSound(new SoundContainer("awpshot", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/awp")));
+
+
         }
 
         /// <summary>
@@ -86,7 +94,16 @@ namespace CStrike2D
         /// </summary>
         public void LoadGameContent()
         {
+            string[] weaponNames = Enum.GetNames(typeof (WeaponInfo.Weapon));
+            weaponTextures = new Texture2D[weaponNames.Length, 3];
 
+            for (int i = 0; i < weaponNames.Length; i++)
+            {
+                string filePath = "texture/weapon/" + weaponNames[i].Remove(0, 7).ToLower();
+                weaponTextures[i, 0] = gameContentLoader.Load<Texture2D>(filePath);
+                weaponTextures[i, 1] = gameContentLoader.Load<Texture2D>(filePath + "_d");
+                weaponTextures[i, 2] = gameContentLoader.Load<Texture2D>(filePath + "_m");
+            }
         }
 
         /// <summary>
@@ -114,6 +131,25 @@ namespace CStrike2D
             coreContentLoader.Unload();
             mapContentLoader.Unload();
             gameContentLoader.Unload();
+        }
+
+        public Texture2D GetWeaponTexture(WeaponInfo.Weapon weapon)
+        {
+            switch (weapon)
+            {
+                case WeaponInfo.Weapon.Weapon_AK47:
+                    
+                    break;
+                case WeaponInfo.Weapon.Weapon_AWP:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("weapon", weapon, null);
+            }
+        }
+
+        public Texture2D[] ReturnWeaponTextures(WeaponInfo.Weapon weapon)
+        {
+            
         }
     }
 }

@@ -27,6 +27,10 @@ namespace CStrike2D
 
         public string Name { get; private set; }
 
+        public Weapon PrimaryWeapon { get; private set; }
+
+        public Weapon SecondaryWeapon { get; private set; }
+
         public Player(string name, Vector2 position, short playerID, Assets assets) : base(assets)
         {
             Position = position;
