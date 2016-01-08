@@ -31,7 +31,7 @@ namespace CStrike2D
         private float animTime;                         // Time the button takes to move from one point to another
         private EasingFunctions.AnimationType animType; // Type of animation the button should use
 
-        private bool debug = false;
+        private bool debug = true;
 
         /// <summary>
         /// Creates a button
@@ -56,11 +56,13 @@ namespace CStrike2D
             this.text = text;
             this.animTime = animTime;
             this.animType = animType;
-            changeRate = 0.1f / animTime;
+            changeRate = 1f / animTime;
             CurState = State.InActive;
             endPosition = new Vector2(dimensions.X, dimensions.Y);
             startPosition = SetStartPosition(animDir);
             this.dimensions.Location = new Point((int)startPosition.X, (int)startPosition.Y);
+            this.dimensions.Width = dimensions.Width;
+            this.dimensions.Height = dimensions.Height;
         }
 
         /// <summary>
@@ -82,7 +84,7 @@ namespace CStrike2D
             this.text = text;
             this.animTime = animTime;
             this.animType = animType;
-            changeRate = 0.1f / animTime;
+            changeRate = 1f / animTime;
             CurState = State.InActive;
             endPosition = new Vector2(dimensions.X, dimensions.Y);
             startPosition = SetStartPosition(animDir);
@@ -142,7 +144,7 @@ namespace CStrike2D
                     // Change the alpha
                     if (alpha <= 1.0f)
                     {
-                        alpha += changeRate;
+                        alpha += changeRate * gameTime;
                     }
                     break;
                 case State.TransitionOut:
@@ -165,7 +167,7 @@ namespace CStrike2D
                     // Change the alpha
                     if (alpha >= 0.0f)
                     {
-                        alpha -= changeRate;
+                        alpha -= changeRate * gameTime;
                     }
                     break;
             }

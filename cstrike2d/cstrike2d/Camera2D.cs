@@ -23,7 +23,7 @@ namespace CStrike2D
         {
             Transform = Matrix.CreateTranslation(new Vector3(-Position.X, -Position.Y, 0))*
                      Matrix.CreateRotationX(0)*
-                     Matrix.CreateScale(new Vector3(1, 1, 0))*
+                     Matrix.CreateScale(new Vector3(1.2f, 1.2f, 0))*
                      Matrix.CreateTranslation(new Vector3(graphics.Viewport.Width*0.5f, graphics.Viewport.Height*0.5f, 0));
 
             return Transform;

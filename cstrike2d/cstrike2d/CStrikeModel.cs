@@ -115,7 +115,8 @@ namespace CStrike2D
             // Initialize Random number generator
             NumGen = new Random();
 
-            GameEngine = new GameEngine(driver);
+            GameEngine = new GameEngine(DriverInstance);
+
             NetworkManager = new NetworkManager(GameEngine);
         }
 
@@ -207,6 +208,47 @@ namespace CStrike2D
                 Position = new Vector2((NewMap.TileMap.GetLength(0) / 2) * 64 + 32,
                     (NewMap.TileMap.GetLength(1) / 2) * 64 + 32)
             };
+
+            InterfaceManager.AddComponent(new Bar("buyMenuBar", new Rectangle(90, 20, 1100, 650), 0.4f,
+                0.8f, Color.Black, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Right,
+                DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new TextBox("buyMenuTitle", new Vector2(94, 20), "Buy Menu", Color.White, 0.4f,
+                EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down, DriverInstance.Assets));
+
+
+            InterfaceManager.FormPage("buyMenu");
+
+
+            InterfaceManager.AddComponent(new Button("pistolMenuButton", new Rectangle(100, 80, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "PISTOLS", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("heavyMenuButton", new Rectangle(100, 160, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "HEAVY", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("smgMenuButton", new Rectangle(100, 240, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "SMGs", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("rifleMenuButton", new Rectangle(100, 320, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "RIFLES", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("gearMenuButton", new Rectangle(100, 400, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "GEAR", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("grenadeMenuButton", new Rectangle(100, 480, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "GRENADES", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+
+
+            InterfaceManager.FormPage("buyButtonMenu");
+
+
         }
 
         public void Update(float gameTime)

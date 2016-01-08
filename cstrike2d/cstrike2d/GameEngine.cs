@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LightEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -27,6 +28,8 @@ namespace CStrike2D
         private Player clientPlayer;
 
         private float prevRotation;
+
+        private bool showMenu = false;
 
         public GameEngineState CurState { get; set; }
 
@@ -76,6 +79,21 @@ namespace CStrike2D
             if (CurState == GameEngineState.Active)
             {
 
+                if (input.Tapped(Keys.B))
+                {
+                    showMenu = !showMenu;
+                }
+
+                if (showMenu)
+                {
+                    driver.Model.InterfaceManager.ShowPage("buyMenu");
+                    driver.Model.InterfaceManager.ShowPage("buyButtonMenu");
+                }
+                else
+                {
+                    driver.Model.InterfaceManager.HidePage("buyMenu");
+                    driver.Model.InterfaceManager.HidePage("buyButtonMenu");
+                }
 
                 if (input.Tapped(Keys.W) || input.Held(Keys.W))
                 {
