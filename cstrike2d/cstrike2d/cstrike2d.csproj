@@ -84,7 +84,6 @@
     <Compile Include="Bar.cs" />
     <Compile Include="Button.cs" />
     <Compile Include="Camera2D.cs" />
-    <Compile Include="Collision.cs" />
     <Compile Include="Console.cs" />
     <Compile Include="CStrikeModel.cs" />
     <Compile Include="EasingFunctions.cs" />
