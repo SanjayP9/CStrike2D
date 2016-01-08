@@ -68,13 +68,13 @@ namespace CStrike2DServer
                     buffer += Console.ReadKey();
                 }
 
-                if (sw.Elapsed.Milliseconds >= 2)
+                if (sw.Elapsed.Milliseconds >= 16)
                 {
                     tick++;
                     Update();
                     sw.Restart();
 
-                    if (tick == 50)
+                    if (tick == 20)
                     {
                         Console.SetCursorPosition(0, 0);
                         Console.ForegroundColor = ConsoleColor.Red;
