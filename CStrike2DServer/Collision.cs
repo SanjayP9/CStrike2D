@@ -32,5 +32,16 @@ namespace CStrike2D
 
             return (radius <= distance);
         }
+        public bool BulletToP(Vector2 playerOrigin, float playerAngle)
+        {
+            int playerH = 32;
+            int playerHd2 = 16;
+
+            // Solve for P.O.I
+            // Create line y = ax + b
+            float a = (float)Math.Tan(playerAngle);
+            float b = playerOrigin.Y + (a * (playerOrigin.X)); //maybe minus
+            return false;
+        }
     }
 }
