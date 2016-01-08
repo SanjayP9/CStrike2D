@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CStrike2D;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
@@ -47,20 +48,20 @@ namespace CStrike2DServer
             Rotation = rotation;
         }
 
-        public void Move(int direction)
+        public void Move(byte direction)
         {
             switch (direction)
             {
-                case 0: // UP
+                case NetInterface.MOVE_UP: // UP
                     position.Y -= 5f;
                     break;
-                case 1: // DOWN
+                case NetInterface.MOVE_DOWN: // DOWN
                     position.Y += 5f;
                     break;
-                case 2: // LEFT
+                case NetInterface.MOVE_LEFT: // LEFT
                     position.X -= 5f;
                     break;
-                case 3: // RIGHT
+                case NetInterface.MOVE_RIGHT: // RIGHT
                     position.X += 5f;
                     break;
             }

@@ -87,10 +87,12 @@ namespace CStrike2D
                 if (showMenu)
                 {
                     driver.Model.InterfaceManager.ShowPage("buyMenu");
+                    driver.Model.InterfaceManager.ShowPage("buyButtonMenu");
                 }
                 else
                 {
                     driver.Model.InterfaceManager.HidePage("buyMenu");
+                    driver.Model.InterfaceManager.HidePage("buyButtonMenu");
                 }
 
                 if (input.Tapped(Keys.W) || input.Held(Keys.W))

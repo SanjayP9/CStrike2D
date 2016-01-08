@@ -218,6 +218,12 @@ namespace CStrike2D
 
 
             InterfaceManager.FormPage("buyMenu");
+
+            InterfaceManager.AddComponent(new Button("pistolMenuButton", new Rectangle(150, 80, 150, 20), Color.DarkGray,
+                Color.White, Color.White, "Pistols", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.FormPage("buyButtonMenu");
         }
 
         public void Update(float gameTime)

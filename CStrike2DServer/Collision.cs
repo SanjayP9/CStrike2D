@@ -7,13 +7,15 @@ using System.Threading.Tasks;
 
 namespace CStrike2D
 {
-    class Collision
+    public static class Collision
     {
-        public bool PlayerToPlayer(Vector2 player1, Vector2 player2, float playerRadius)
+
+        public static bool PlayerToPlayer(Vector2 player1, Vector2 player2, float playerRadius)
         {
             return Vector2.Distance(player1, player2) <= playerRadius;
         }
-        public bool BulletToPlayer(Vector2 playerOrigin, float angle, float radius)
+
+        public static bool BulletToPlayer(Vector2 playerOrigin, float angle, float radius)
         {
             // Solve for P.O.I
             // Create line y = ax + b
@@ -32,7 +34,8 @@ namespace CStrike2D
 
             return (radius <= distance);
         }
-        public bool BulletToP(Vector2 playerOrigin, float playerAngle)
+
+        public static bool BulletToP(Vector2 playerOrigin, float playerAngle)
         {
             int playerH = 32;
             int playerHd2 = 16;
