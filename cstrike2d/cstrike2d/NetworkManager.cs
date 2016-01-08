@@ -85,64 +85,68 @@ namespace CStrike2D
                                 }
                                 break;
                             case NetState.Connected:
-                                byte message = msg.ReadByte();
-                                byte playerNum;
-                                short playerID;
-                                float playerX;
-                                float playerY;
-                                switch (message)
+                                if (engine.CurState == GameEngine.GameEngineState.Active)
                                 {
-                                    case NetInterface.SYNC_NEW_PLAYER:
-                                        string name = msg.ReadString();
-                                        playerID = msg.ReadInt16();
-                                        playerX = msg.ReadFloat();
-                                        playerY = msg.ReadFloat();
-                                        if (!engine.Exists(playerID))
-                                        {
-                                            engine.AddPlayer(name, new Vector2(playerX, playerY), playerID);
-
-                                            if (PlayerID == playerID)
+                                    byte message = msg.ReadByte();
+                                    byte playerNum;
+                                    short playerID;
+                                    float playerX;
+                                    float playerY;
+                                    switch (message)
+                                    {
+                                        case NetInterface.SYNC_NEW_PLAYER:
+                                            string name = msg.ReadString();
+                                            playerID = msg.ReadInt16();
+                                            playerX = msg.ReadFloat();
+                                            playerY = msg.ReadFloat();
+                                            if (!engine.Exists(playerID))
                                             {
-                                                engine.SetClientPlayer(engine.Players.Find(ply => ply.PlayerID == PlayerID));
-                                            }
-                                        }
-                                        break;
-                                    case NetInterface.MOVE_UP:
-                                        engine.MovePlayer(msg.ReadInt16(), NetInterface.MOVE_UP);
-                                        break;
-                                    case NetInterface.MOVE_DOWN:
-                                        engine.MovePlayer(msg.ReadInt16(), NetInterface.MOVE_DOWN);
-                                        break;
-                                    case NetInterface.MOVE_LEFT:
-                                        engine.MovePlayer(msg.ReadInt16(), NetInterface.MOVE_LEFT);
-                                        break;
-                                    case NetInterface.MOVE_RIGHT:
-                                        engine.MovePlayer(msg.ReadInt16(), NetInterface.MOVE_RIGHT);
-                                        break;
-                                    case NetInterface.PLAY_SOUND:
-                                        playerNum = msg.ReadByte();
-                                        engine.PlaySound(playerNum, msg.ReadInt16());
-                                        break;
-                                    case NetInterface.SYNC_MOVEMENT:
-                                        
-                                        playerID = msg.ReadInt16();
-                                        playerX = msg.ReadFloat();
-                                        playerY = msg.ReadFloat();
+                                                engine.AddPlayer(name, new Vector2(playerX, playerY), playerID);
 
-                                        if (engine.Players.Count > 0)
-                                        {
-                                            engine.Players.Find(ply => ply.PlayerID == playerID)
-                                                .SetPosition(new Vector2(playerX, playerY));
-                                        }
-                                        break;
-                                    case NetInterface.ROTATE:
-                                        playerID = msg.ReadInt16();
-                                        engine.Players.Find(ply => ply.PlayerID == playerID).SetRot(msg.ReadFloat());
-                                        break;
-                                    case NetInterface.PLAYER_DC:
-                                        playerID = msg.ReadInt16();
-                                        engine.Players.Remove(engine.Players.Find(ply => ply.PlayerID == playerID));
-                                        break;
+                                                if (PlayerID == playerID)
+                                                {
+                                                    engine.SetClientPlayer(
+                                                        engine.Players.Find(ply => ply.PlayerID == PlayerID));
+                                                }
+                                            }
+                                            break;
+                                        case NetInterface.MOVE_UP:
+                                            engine.MovePlayer(msg.ReadInt16(), NetInterface.MOVE_UP);
+                                            break;
+                                        case NetInterface.MOVE_DOWN:
+                                            engine.MovePlayer(msg.ReadInt16(), NetInterface.MOVE_DOWN);
+                                            break;
+                                        case NetInterface.MOVE_LEFT:
+                                            engine.MovePlayer(msg.ReadInt16(), NetInterface.MOVE_LEFT);
+                                            break;
+                                        case NetInterface.MOVE_RIGHT:
+                                            engine.MovePlayer(msg.ReadInt16(), NetInterface.MOVE_RIGHT);
+                                            break;
+                                        case NetInterface.PLAY_SOUND:
+                                            playerNum = msg.ReadByte();
+                                            engine.PlaySound(playerNum, msg.ReadInt16());
+                                            break;
+                                        case NetInterface.SYNC_MOVEMENT:
+
+                                            playerID = msg.ReadInt16();
+                                            playerX = msg.ReadFloat();
+                                            playerY = msg.ReadFloat();
+
+                                            if (engine.Players.Count > 0)
+                                            {
+                                                engine.Players.Find(ply => ply.PlayerID == playerID)
+                                                    .SetPosition(new Vector2(playerX, playerY));
+                                            }
+                                            break;
+                                        case NetInterface.ROTATE:
+                                            playerID = msg.ReadInt16();
+                                            engine.Players.Find(ply => ply.PlayerID == playerID).SetRot(msg.ReadFloat());
+                                            break;
+                                        case NetInterface.PLAYER_DC:
+                                            playerID = msg.ReadInt16();
+                                            engine.Players.Remove(engine.Players.Find(ply => ply.PlayerID == playerID));
+                                            break;
+                                    }
                                 }
                                 break;
                         }

@@ -76,7 +76,7 @@ namespace CStrike2DServer
 
                     if (tick == 50)
                     {
-                        Console.SetCursorPosition(0, 0);
+                        Console.Clear();
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("==================================");
                         Console.WriteLine("Global Offensive - Version " + serverVersion);

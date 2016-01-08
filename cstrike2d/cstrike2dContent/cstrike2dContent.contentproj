@@ -65,6 +65,7 @@
   <ItemGroup>
     <Folder Include="sound\sfx\player\" />
     <Folder Include="sound\sfx\radio\" />
+    <Folder Include="texture\weapon\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="sound\sfx\weapon\ak47d.wav">

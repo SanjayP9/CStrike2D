@@ -69,13 +69,13 @@ namespace CStrike2D
             switch (animDir)
             {
                 case AnimationDirection.Left:
-                    return new Vector2(endPosition.X + 1366, endPosition.Y);
+                    return new Vector2(endPosition.X + 1280, endPosition.Y);
                 case AnimationDirection.Right:
-                    return new Vector2(endPosition.X - 1366, endPosition.Y);
+                    return new Vector2(endPosition.X - 1280, endPosition.Y);
                 case AnimationDirection.Up:
-                    return new Vector2(endPosition.X, endPosition.Y + 768);
+                    return new Vector2(endPosition.X, endPosition.Y + 720);
                 case AnimationDirection.Down:
-                    return new Vector2(endPosition.X, endPosition.Y - 768);
+                    return new Vector2(endPosition.X, endPosition.Y - 720);
                 default:
                     return endPosition;
             }
@@ -138,15 +138,6 @@ namespace CStrike2D
             {
                 // Draw Text
                 sb.DrawString(Assets.DefaultFont, text + " " + data, position, textColour);
-            }
-        }
-
-        public override void Show()
-        {
-            base.Show();
-            if (position.X <= -100)
-            {
-                timer = 0;
             }
         }
     }
