@@ -140,11 +140,20 @@ namespace CStrike2D
                                             break;
                                         case NetInterface.ROTATE:
                                             playerID = msg.ReadInt16();
-                                            engine.Players.Find(ply => ply.PlayerID == playerID).SetRot(msg.ReadFloat());
+
+                                            if (engine.Players.Count > 0)
+                                            {
+                                                engine.Players.Find(ply => ply.PlayerID == playerID)
+                                                    .SetRot(msg.ReadFloat());
+                                            }
                                             break;
                                         case NetInterface.PLAYER_DC:
                                             playerID = msg.ReadInt16();
-                                            engine.Players.Remove(engine.Players.Find(ply => ply.PlayerID == playerID));
+                                            if (engine.Players.Count > 0)
+                                            {
+                                                engine.Players.Remove(
+                                                    engine.Players.Find(ply => ply.PlayerID == playerID));
+                                            }
                                             break;
                                     }
                                 }
