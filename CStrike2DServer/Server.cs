@@ -280,8 +280,8 @@ namespace CStrike2DServer
                     {
                         if (ply.PlayerID != player.PlayerID)
                         {
-                            if (!Collision.PlayerToPlayer(new Vector2(player.GetPosition().X,
-                                player.GetPosition().Y - 5f), ply.GetPosition(), 32f))
+                            if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X,
+                                player.GetPosition().Y - 5f), ply.GetPosition(), 16f))
                             {
                                 return false;
                             }
@@ -293,8 +293,8 @@ namespace CStrike2DServer
                     {
                         if (ply.PlayerID != player.PlayerID)
                         {
-                            if (!Collision.PlayerToPlayer(new Vector2(player.GetPosition().X,
-                                player.GetPosition().Y + 5f), ply.GetPosition(), 32f))
+                            if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X,
+                                player.GetPosition().Y + 5f), ply.GetPosition(), 16f))
                             {
                                 return false;
                             }
@@ -306,8 +306,8 @@ namespace CStrike2DServer
                     {
                         if (ply.PlayerID != player.PlayerID)
                         {
-                            if (!Collision.PlayerToPlayer(new Vector2(player.GetPosition().X - 5f,
-                                player.GetPosition().Y), ply.GetPosition(), 32f))
+                            if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X - 5f,
+                                player.GetPosition().Y), ply.GetPosition(), 16f))
                             {
                                 return false;
                             }
@@ -319,8 +319,8 @@ namespace CStrike2DServer
                     {
                         if (ply.PlayerID != player.PlayerID)
                         {
-                            if (!Collision.PlayerToPlayer(new Vector2(player.GetPosition().X + 5f,
-                                player.GetPosition().Y), ply.GetPosition(), 32f))
+                            if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X + 5f,
+                                player.GetPosition().Y), ply.GetPosition(), 16f))
                             {
                                 return false;
                             }
