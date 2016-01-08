@@ -73,6 +73,19 @@
         // Sounds currently implemented in the game
         public const short AK47_SHOT = 0;
         public const short AK47_SHOT_DISTANT = 1;
+        public const short AWP_SHOT = 2;
+
+        public const byte SPAWN_WEAPON = 24;    // Used for notifying the client that a weapon was bought
+                                                // and must be spawned into the game. This will be followed by
+                                                // an identifier byte letting the client know what weapon was
+                                                // spawned.
+
+        // Weapons
+        public const short WEAPON_AK47 = 100;
+        public const short WEAPON_M4A1_SILENCER = 101;
+        public const short WEAPON_GLOCK = 102;
+        public const short WEAPON_USP_SILENCER = 103;
+        public const short WEAPON_BOMB = 104;
 
     }
 }

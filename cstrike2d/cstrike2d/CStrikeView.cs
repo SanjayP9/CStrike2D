@@ -141,7 +141,8 @@ namespace CStrike2D
                 case CStrikeModel.State.Options:
                     break;
                 case CStrikeModel.State.Lobby:
-                    sb.Begin();
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
+
                     
                     sb.DrawString(assets.DefaultFont, "Connect to Server: " + model.Address, Vector2.Zero, Color.White);
 
@@ -151,6 +152,18 @@ namespace CStrike2D
                 case CStrikeModel.State.InGame:
                     sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, model.Camera.GetTransform(model.DriverInstance.GraphicsDevice));
                     model.GameEngine.Draw(sb);
+                    sb.End();
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null,
+                        cullableRasterizer, null);
+
+                    sb.GraphicsDevice.ScissorRectangle = new Rectangle(90, 20, 1100, 650);
+
+                    model.InterfaceManager.Draw(sb);
+
+                    sb.End();
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
+
+                    sb.DrawString(assets.DefaultFont, "Camera Pos: " + model.Camera.Position, new Vector2(model.Dimensions.X - 200, 30),  Color.White);
                     break;
             }
 
@@ -224,7 +237,6 @@ namespace CStrike2D
 
             // FPS
             sb.DrawString(assets.DefaultFont, "FPS: " + model.DriverInstance.FPS, new Vector2(model.Dimensions.X - (assets.DefaultFont.MeasureString("FPS: " + model.DriverInstance.FPS).X), 0), Color.White);
-
 
             sb.End();
         }

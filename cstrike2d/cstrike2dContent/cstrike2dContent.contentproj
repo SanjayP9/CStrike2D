@@ -65,6 +65,7 @@
   <ItemGroup>
     <Folder Include="sound\sfx\player\" />
     <Folder Include="sound\sfx\radio\" />
+    <Folder Include="texture\weapon\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="sound\sfx\weapon\ak47d.wav">
@@ -116,6 +117,13 @@
       <Name>t2</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="sound\sfx\weapon\awp.wav">
+      <Name>awp</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

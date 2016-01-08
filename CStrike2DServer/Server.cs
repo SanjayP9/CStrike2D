@@ -18,8 +18,15 @@ namespace CStrike2DServer
         private static NetPeerConfiguration config;
         private static NetIncomingMessage msg;
 
-        static List<Player> players;
+        private static List<Player> players;
         private static short playerIdentifier = 0;
+        private static string serverVersion = "0.1.0a";            // Server Version
+        private static int maxPlayers = 32;
+        private static int port = 27015;
+        private static string buffer = "";
+        private static string serverName = "Global Offensive Server - " + serverVersion;
+        private static bool forceConfigRewrite = true;
+        static int curRow = 3;
 
         static void Main(string[] args)
         {
@@ -27,11 +34,7 @@ namespace CStrike2DServer
             Vector2 defSpawnPosition = new Vector2(350, 350);
 
             Stopwatch sw = new Stopwatch();
-            string serverVersion = "0.1.0a";            // Server Version
-            int maxPlayers = 32;
-            int port = 27015;
-            string buffer = "";
-            string serverName = "Global Offensive Server - " + serverVersion;
+
             players = new List<Player>();
 
             Console.ForegroundColor = ConsoleColor.Red;
@@ -41,6 +44,12 @@ namespace CStrike2DServer
             Console.ForegroundColor = ConsoleColor.White;
 
             Console.WriteLine("Loading config file...");
+
+            if (forceConfigRewrite)
+            {
+                WriteFile();
+            }
+
             ReadConfig();
 
             Console.WriteLine("Booting up server...");
@@ -49,7 +58,6 @@ namespace CStrike2DServer
             server = new NetServer(config);
             server.Start();
             Console.WriteLine("Server is live.");
-
 
             sw.Start();
             int tick = 0;
@@ -80,7 +88,9 @@ namespace CStrike2DServer
                         {
                             Console.WriteLine("Client: " + ply.PlayerName + " Ping: " + Math.Round(ply.Client.AverageRoundtripTime, 2) + "ms");
                         }
+
                         Console.WriteLine(buffer);
+
                         SyncServer();
                         tick = 0;
                     }
@@ -97,8 +107,8 @@ namespace CStrike2DServer
                 syncMsg = server.CreateMessage();
                 syncMsg.Write(NetInterface.SYNC_MOVEMENT);
                 syncMsg.Write(ply.PlayerID);
-                syncMsg.Write((long)ply.GetPosition().X);
-                syncMsg.Write((long)ply.GetPosition().Y);
+                syncMsg.Write(ply.GetPosition().X);
+                syncMsg.Write(ply.GetPosition().Y);
                 server.SendToAll(syncMsg, NetDeliveryMethod.UnreliableSequenced);
             }
         }
@@ -166,7 +176,6 @@ namespace CStrike2DServer
                                 outMsg.Write(NetInterface.MOVE_UP);
                                 outMsg.Write(player.PlayerID);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                                Console.WriteLine("Player moved up");
                                 break;
                             case NetInterface.MOVE_DOWN:
                                 player.Move(1);
@@ -201,15 +210,6 @@ namespace CStrike2DServer
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                                 break;
                         }
-
-                        /*
-                        for (int i = 0; i < players.Count; i++)
-                        {
-                            outMsg.Write("PLYMOVE" + i);
-                            outMsg.Write(players[i].GetPosition().X + "," + players[i].GetPosition().Y);
-                            
-                        }
-                        */
                         break;
                 }
             }
@@ -221,8 +221,18 @@ namespace CStrike2DServer
             // If the config file exists, open it and process it
             if (File.Exists("config.txt"))
             {
-                string[] commmands = File.ReadAllLines("config.txt");
+                string[] commands = File.ReadAllLines("config.txt");
 
+                foreach (string command in commands)
+                {
+                    string[] cmd = command.Split('=');
+
+                    switch (cmd[0])
+                    {
+                        case "servername=":
+                            break;
+                    }
+                }
 
                 Console.WriteLine("Configuration Successfully Loaded.");
             }
@@ -241,6 +251,10 @@ namespace CStrike2DServer
             StreamWriter writer = File.CreateText("config.txt");
 
             // Default settings
+            writer.WriteLine("cstrikeserverconfig=" + serverVersion);
+            writer.WriteLine("servername=" + serverName);
+            writer.WriteLine("port=" + port);
+            writer.WriteLine("maxplayers=" + maxPlayers);
 
             writer.Close();
 

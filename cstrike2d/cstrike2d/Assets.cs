@@ -70,6 +70,7 @@ namespace CStrike2D
             instance.Model.AudioManager.AddSound(new SoundContainer("ak47shot", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/ak47")));
             instance.Model.AudioManager.AddSound(new SoundContainer("ak47shotdistant", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/ak47d")));
             instance.Model.AudioManager.AddSound(new SoundContainer("buttonclick", coreContentLoader.Load<SoundEffect>("sound/sfx/ui/buttonclick")));
+            instance.Model.AudioManager.AddSound(new SoundContainer("awpshot", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/awp")));
         }
 
         /// <summary>

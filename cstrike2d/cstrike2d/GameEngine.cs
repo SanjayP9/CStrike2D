@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LightEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -27,6 +28,8 @@ namespace CStrike2D
         private Player clientPlayer;
 
         private float prevRotation;
+
+        private bool showMenu = false;
 
         public GameEngineState CurState { get; set; }
 
@@ -76,6 +79,19 @@ namespace CStrike2D
             if (CurState == GameEngineState.Active)
             {
 
+                if (input.Tapped(Keys.B))
+                {
+                    showMenu = !showMenu;
+                }
+
+                if (showMenu)
+                {
+                    driver.Model.InterfaceManager.ShowPage("buyMenu");
+                }
+                else
+                {
+                    driver.Model.InterfaceManager.HidePage("buyMenu");
+                }
 
                 if (input.Tapped(Keys.W) || input.Held(Keys.W))
                 {
@@ -99,6 +115,8 @@ namespace CStrike2D
                 {
                     network.SendInputData(NetInterface.FIRE);
                 }
+                
+                
 
 
 
@@ -120,6 +138,7 @@ namespace CStrike2D
 
         public void Draw(SpriteBatch sb)
         {
+            sb.Draw(assets.PixelTexture, new Rectangle(0, 0, (int)driver.Model.Dimensions.X, (int)driver.Model.Dimensions.Y), Color.White);
             if (CurState == GameEngineState.Active)
             {
                 foreach (Player ply in Players)
@@ -140,7 +159,11 @@ namespace CStrike2D
                 switch (soundID)
                 {
                     case NetInterface.AK47_SHOT:
-                        audioManager.PlaySound("ak47shot", audioManager.SoundEffectVolume,
+                        audioManager.PlaySound("awpshot", audioManager.SoundEffectVolume,
+                            clientPlayer.Position, player.Position);
+                        break;
+                    case NetInterface.AWP_SHOT:
+                        audioManager.PlaySound("awpshot", audioManager.SoundEffectVolume,
                             clientPlayer.Position, player.Position);
                         break;
                 }
