@@ -219,11 +219,36 @@ namespace CStrike2D
 
             InterfaceManager.FormPage("buyMenu");
 
-            InterfaceManager.AddComponent(new Button("pistolMenuButton", new Rectangle(150, 80, 150, 20), Color.DarkGray,
-                Color.White, Color.White, "Pistols", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+
+            InterfaceManager.AddComponent(new Button("pistolMenuButton", new Rectangle(100, 80, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "PISTOLS", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
                 GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
 
+            InterfaceManager.AddComponent(new Button("heavyMenuButton", new Rectangle(100, 160, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "HEAVY", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("smgMenuButton", new Rectangle(100, 240, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "SMGs", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("rifleMenuButton", new Rectangle(100, 320, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "RIFLES", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("gearMenuButton", new Rectangle(100, 400, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "GEAR", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("grenadeMenuButton", new Rectangle(100, 480, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "GRENADES", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+
+
             InterfaceManager.FormPage("buyButtonMenu");
+
+
         }
 
         public void Update(float gameTime)

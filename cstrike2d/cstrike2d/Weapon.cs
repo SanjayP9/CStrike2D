@@ -10,7 +10,9 @@ namespace CStrike2D
 {
     class Weapon : Entity
     {
-        public Weapon(Assets assets) : base(assets)
+        public Texture2D WeaponTexture { get; private set; }
+
+        public Weapon(byte weaponID, Texture2D weaponTexture, Assets assets) : base(assets)
         {
 
         }
