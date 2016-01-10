@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CStrike2D;
+﻿using CStrike2D;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
@@ -25,12 +20,22 @@ namespace CStrike2DServer
 
         public short PlayerID { get; private set; }
 
+        public short CurrentWeapon { get; private set; }
+
+        public NetInterface.Team Team { get; private set; }
+
         public Player(string playerName, NetConnection client, short playerID)
         {
             PlayerName = playerName;
             position = new Vector2(0, 0);
             Client = client;
             PlayerID = playerID;
+            Team = NetInterface.Team.Spectator;
+        }
+
+        public void ChangeTeam(NetInterface.Team newTeam)
+        {
+            Team = newTeam;
         }
 
         public Vector2 GetPosition()
@@ -64,8 +69,23 @@ namespace CStrike2DServer
                 case NetInterface.MOVE_RIGHT: // RIGHT
                     position.X += 5f;
                     break;
+                case NetInterface.MOVE_UPRIGHT:
+                    position.X += 5f;
+                    position.Y -= 5f;
+                    break;
+                case NetInterface.MOVE_DOWNRIGHT:
+                    position.X += 5f;
+                    position.Y += 5f;
+                    break;
+                case NetInterface.MOVE_DOWNLEFT:
+                    position.X -= 5f;
+                    position.Y += 5f;
+                    break;
+                case NetInterface.MOVE_UPLEFT:
+                    position.X -= 5f;
+                    position.Y -= 5f;
+                    break;
             }
         }
-
     }
 }

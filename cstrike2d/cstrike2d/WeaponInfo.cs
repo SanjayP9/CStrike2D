@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
 {
@@ -16,6 +11,9 @@ namespace CStrike2D
             Weapon_AWP
         }
 
+        public static readonly string[] WeaponStrings = Enum.GetNames(typeof (Weapon));
+        public static readonly Weapon[] WeaponEnums = (Weapon[])Enum.GetValues(typeof(Weapon));
+        
         public enum WeaponType
         {
             Primary,
@@ -58,6 +56,20 @@ namespace CStrike2D
                 default:
                     throw new ArgumentOutOfRangeException("weapon", weapon, null);
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="weaponID"></param>
+        /// <returns></returns>
+        public static Weapon GetWeapon(short weaponID)
+        {
+            if (weaponID >= 100)
+            {
+                return WeaponEnums[100 - weaponID];
+            }
+            throw new NotImplementedException("Weapon does not exist");
         }
     }
 }

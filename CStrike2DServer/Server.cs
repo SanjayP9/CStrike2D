@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 using CStrike2D;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
@@ -19,18 +15,18 @@ namespace CStrike2DServer
         private static NetIncomingMessage msg;
 
         private static List<Player> players = new List<Player>();
-        private static short playerIdentifier = 0;
-        private static string serverVersion = "0.1.0a";            // Server Version
+        private static short playerIdentifier;
+        private static string serverVersion = "0.1.6b";            // Server Version
         private static int maxPlayers = 32;
         private static int port = 27015;
         private static string buffer = "";
         private static string serverName = "Global Offensive Server - " + serverVersion;
         private static bool forceConfigRewrite = true;
+        private static NetOutgoingMessage outMsg;
         static int curRow = 3;
 
         static void Main(string[] args)
         {
-
             Vector2 defSpawnPosition = new Vector2(350, 350);
 
             Stopwatch sw = new Stopwatch();
@@ -72,7 +68,7 @@ namespace CStrike2DServer
                     Update();
                     sw.Restart();
 
-                    if (tick == 20)
+                    if (tick == 60)
                     {
                         Console.Clear();
                         Console.ForegroundColor = ConsoleColor.Red;
@@ -115,7 +111,7 @@ namespace CStrike2DServer
         {
             while ((msg = server.ReadMessage()) != null)
             {
-                NetOutgoingMessage outMsg = server.CreateMessage();
+                outMsg = server.CreateMessage();
                 Player player;
                 switch (msg.MessageType)
                 {
@@ -155,14 +151,15 @@ namespace CStrike2DServer
                                 // Send data about the new player to all connected players
                                 foreach (Player plyr in players)
                                 {
-                                    // If the data we are sending is not the player themself
                                     outMsg = server.CreateMessage();
                                     outMsg.Write(NetInterface.SYNC_NEW_PLAYER);
                                     outMsg.Write(plyr.PlayerName);
                                     outMsg.Write(plyr.PlayerID);
-                                    outMsg.Write((long)plyr.GetPosition().X);
-                                    outMsg.Write((long)plyr.GetPosition().Y);
-                                    outMsg.Write((long)plyr.Rotation);
+                                    outMsg.Write(plyr.GetPosition().X);
+                                    outMsg.Write(plyr.GetPosition().Y);
+                                    outMsg.Write(plyr.Rotation);
+                                    outMsg.Write(NetInterface.GetTeamByte(plyr.Team));
+
                                     server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
                                     Console.WriteLine("Sent data about \"" + player.PlayerName + "\"" +
                                                       " to player \"" + plyr.PlayerName + "\"");
@@ -170,37 +167,17 @@ namespace CStrike2DServer
                                 Console.WriteLine("Sync Complete.");
                                 break;
                             case NetInterface.MOVE_UP:
-                                if (CheckPlayerCollision(player, NetInterface.MOVE_UP))
-                                {
-                                    player.Move(NetInterface.MOVE_UP);
-                                    outMsg.Write(NetInterface.MOVE_UP);
-                                    outMsg.Write(player.PlayerID);
-                                    server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                                }
-                                break;
                             case NetInterface.MOVE_DOWN:
-                                if (CheckPlayerCollision(player, NetInterface.MOVE_DOWN))
-                                {
-                                    player.Move(NetInterface.MOVE_DOWN);
-                                    outMsg.Write(NetInterface.MOVE_DOWN);
-                                    outMsg.Write(player.PlayerID);
-                                    server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                                }
-                                break;
                             case NetInterface.MOVE_LEFT:
-                                if (CheckPlayerCollision(player, NetInterface.MOVE_LEFT))
-                                {
-                                    player.Move(NetInterface.MOVE_LEFT);
-                                    outMsg.Write(NetInterface.MOVE_LEFT);
-                                    outMsg.Write(player.PlayerID);
-                                    server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                                }
-                                break;
                             case NetInterface.MOVE_RIGHT:
-                                if (CheckPlayerCollision(player, NetInterface.MOVE_RIGHT))
+                            case NetInterface.MOVE_UPRIGHT:
+                            case NetInterface.MOVE_DOWNRIGHT:
+                            case NetInterface.MOVE_DOWNLEFT:
+                            case NetInterface.MOVE_UPLEFT:
+                                if (CheckPlayerCollision(player, identifier))
                                 {
-                                    player.Move(NetInterface.MOVE_RIGHT);
-                                    outMsg.Write(NetInterface.MOVE_RIGHT);
+                                    player.Move(identifier);
+                                    outMsg.Write(identifier);
                                     outMsg.Write(player.PlayerID);
                                     server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                                 }
@@ -218,6 +195,9 @@ namespace CStrike2DServer
                                 outMsg.Write(player.PlayerID);
                                 outMsg.Write(player.Rotation);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+                                break;
+                            case NetInterface.PLY_CHANGE_TEAM:
+                                byte team = msg.ReadByte();
                                 break;
                         }
                         break;
@@ -271,8 +251,67 @@ namespace CStrike2DServer
             Console.WriteLine("Configuration written to disk.");
         }
 
+        static void Move(byte direction, Player player)
+        {
+            if (CheckPlayerCollision(player, direction))
+            {
+                player.Move(direction);
+                outMsg.Write(direction);
+                outMsg.Write(player.PlayerID);
+                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+            }
+        }
+
         static bool CheckPlayerCollision(Player player, byte direction)
         {
+            float vectorX = 0f;
+            float vectorY = 0f;
+            switch (direction)
+            {
+                case NetInterface.MOVE_UP:
+                    vectorY = -5f;
+                    break;
+                case NetInterface.MOVE_DOWN:
+                    vectorY = 5f;
+                    break;
+                case NetInterface.MOVE_LEFT:
+                    vectorX = -5f;
+                    break;
+                case NetInterface.MOVE_RIGHT:
+                    vectorX = 5f;
+                    break;
+                case NetInterface.MOVE_UPRIGHT:
+                    vectorX = 5f;
+                    vectorY = -5f;
+                    break;
+                case NetInterface.MOVE_DOWNRIGHT:
+                    vectorX = 5f;
+                    vectorY = 5f;
+                    break;
+                case NetInterface.MOVE_DOWNLEFT:
+                    vectorX = -5f;
+                    vectorY = 5f;
+                    break;
+                case NetInterface.MOVE_UPLEFT:
+                    vectorX = -5f;
+                    vectorY = -5f;
+                    break;
+            }
+
+            foreach (Player ply in players)
+            {
+                if (ply.PlayerID != player.PlayerID)
+                {
+                    if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X + vectorX,
+                        player.GetPosition().Y + vectorY), ply.GetPosition(), 23f))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+
+            /*
             switch (direction)
             {
                 case NetInterface.MOVE_UP:
@@ -327,8 +366,61 @@ namespace CStrike2DServer
                         }
                     }
                     break;
+                case NetInterface.MOVE_UPRIGHT:
+                    foreach (Player ply in players)
+                    {
+                        if (ply.PlayerID != player.PlayerID)
+                        {
+                            if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X + 5f,
+                                player.GetPosition().Y), ply.GetPosition(), 23f))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                    break;
+                case NetInterface.MOVE_DOWNRIGHT:
+                    foreach (Player ply in players)
+                    {
+                        if (ply.PlayerID != player.PlayerID)
+                        {
+                            if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X + 5f,
+                                player.GetPosition().Y), ply.GetPosition(), 23f))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                    break;
+                case NetInterface.MOVE_DOWNLEFT:
+                    foreach (Player ply in players)
+                    {
+                        if (ply.PlayerID != player.PlayerID)
+                        {
+                            if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X + 5f,
+                                player.GetPosition().Y), ply.GetPosition(), 23f))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                    break;
+                case NetInterface.MOVE_UPLEFT:
+                    foreach (Player ply in players)
+                    {
+                        if (ply.PlayerID != player.PlayerID)
+                        {
+                            if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X - 5f,
+                                player.GetPosition().Y - 5f), ply.GetPosition(), 23f))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                    break;
             }
             return true;
+             */
         }
     }
 }

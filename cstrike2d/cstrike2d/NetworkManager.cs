@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO.Ports;
-using System.Linq;
-using System.Net;
-using System.Text;
+﻿using System.Diagnostics;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 
 namespace CStrike2D
 {
@@ -99,9 +92,12 @@ namespace CStrike2D
                                             playerID = msg.ReadInt16();
                                             playerX = msg.ReadFloat();
                                             playerY = msg.ReadFloat();
+                                            float rotation = msg.ReadFloat();
+                                            byte team = msg.ReadByte();
                                             if (!engine.Exists(playerID))
                                             {
-                                                engine.AddPlayer(name, new Vector2(playerX, playerY), playerID);
+                                                engine.AddPlayer(name, new Vector2(playerX, playerY), playerID, rotation, team);
+
 
                                                 if (PlayerID == playerID)
                                                 {
@@ -111,16 +107,14 @@ namespace CStrike2D
                                             }
                                             break;
                                         case NetInterface.MOVE_UP:
-                                            engine.MovePlayer(msg.ReadInt16(), NetInterface.MOVE_UP);
-                                            break;
                                         case NetInterface.MOVE_DOWN:
-                                            engine.MovePlayer(msg.ReadInt16(), NetInterface.MOVE_DOWN);
-                                            break;
                                         case NetInterface.MOVE_LEFT:
-                                            engine.MovePlayer(msg.ReadInt16(), NetInterface.MOVE_LEFT);
-                                            break;
                                         case NetInterface.MOVE_RIGHT:
-                                            engine.MovePlayer(msg.ReadInt16(), NetInterface.MOVE_RIGHT);
+                                        case NetInterface.MOVE_UPRIGHT:
+                                        case NetInterface.MOVE_DOWNRIGHT:
+                                        case NetInterface.MOVE_DOWNLEFT:
+                                        case NetInterface.MOVE_UPLEFT:
+                                            engine.MovePlayer(msg.ReadInt16(), message);
                                             break;
                                         case NetInterface.PLAY_SOUND:
                                             playerNum = msg.ReadByte();

@@ -1,6 +1,8 @@
-﻿namespace CStrike2D
+﻿using System;
+
+namespace CStrike2D
 {
-    static class NetInterface
+    public static class NetInterface
     {
         // Server Update Rate / Tick Rate Summary
         /// The server updates the game logic at a certain rate, Tick Rate.
@@ -30,10 +32,12 @@
         public const byte MOVE_DOWN = 11;       // Used for requesting player movement Down
         public const byte MOVE_LEFT = 12;       // Used for requesting player movement Left
         public const byte MOVE_RIGHT = 13;      // Used for requesting player movement Right
-        public const byte ROTATE = 14;          
+        public const byte ROTATE = 14;
+        public const byte MOVE_UPRIGHT = 16;
+        public const byte MOVE_DOWNRIGHT = 17;
+        public const byte MOVE_DOWNLEFT = 18;
+        public const byte MOVE_UPLEFT = 19;
         public const byte FIRE = 20;            // Used for requesting player left fire button
-
-
 
         // Serverside Send Messages
         public const byte PLAYER_MOVE = 31;     // Used for notifying the client that a movement
@@ -61,6 +65,11 @@
                                                 // from the server. The server also sends their playerID so that
                                                 // it can be deleted from the client's list
 
+        public const byte PLY_CHANGE_TEAM = 24;
+        public const byte PLY_CT = 25;
+        public const byte PLY_T = 26;
+        public const byte PLY_SP = 27;
+
         // Bytes 100 to 131 are reserved for identifying player indexes
         // This implies that the maximum number of players in a server is 32.
 
@@ -82,10 +91,61 @@
 
         // Weapons
         public const short WEAPON_AK47 = 100;
-        public const short WEAPON_M4A1_SILENCER = 101;
-        public const short WEAPON_GLOCK = 102;
-        public const short WEAPON_USP_SILENCER = 103;
-        public const short WEAPON_BOMB = 104;
+        public const short WEAPON_AWP = 101;
+        public const short WEAPON_M4A1_SILENCER = -1;
+        public const short WEAPON_GLOCK = -1;
+        public const short WEAPON_USP_SILENCER = -1;
+        public const short WEAPON_BOMB = -1;
 
+        /// <summary>
+        /// Possible teams a player could be in
+        /// </summary>
+        public enum Team
+        {
+            CT,
+            T,
+            Spectator
+        }
+
+        /// <summary>
+        /// Returns the enum value of a team given the
+        /// network byte identifier
+        /// </summary>
+        /// <param name="team"></param>
+        /// <returns></returns>
+        public static Team GetTeam(byte team)
+        {
+            switch (team)
+            {
+                case PLY_CT:
+                    return Team.CT;
+                case PLY_T:
+                    return Team.T;
+                case PLY_SP:
+                    return Team.Spectator;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        /// <summary>
+        /// Returns the network byte identifier for a team
+        /// </summary>
+        /// <param name="team"></param>
+        /// <returns></returns>
+        public static byte GetTeamByte(Team team)
+        {
+            switch (team)
+            {
+                case Team.CT:
+                    return PLY_CT;
+                case Team.T:
+                    return PLY_T;
+                case Team.Spectator:
+                    return PLY_SP;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
@@ -31,11 +32,14 @@ namespace CStrike2D
 
         public Weapon SecondaryWeapon { get; private set; }
 
-        public Player(string name, Vector2 position, short playerID, Assets assets) : base(assets)
+        public NetInterface.Team Team { get; private set; }
+
+        public Player(string name, Vector2 position, short playerID, byte team, Assets assets) : base(assets)
         {
             Position = position;
             Name = name;
             PlayerID = playerID;
+            Team = NetInterface.GetTeam(team);
         }
 
         public void SetPosition(Vector2 newPosition)
@@ -53,20 +57,32 @@ namespace CStrike2D
             switch (direction)
             {
                 case NetInterface.MOVE_UP: // UP
-                    //position = Vector2.Lerp(position, new Vector2(position.X, position.Y - 5), 0.4f);
                     position.Y -= 5f;
                     break;
                 case NetInterface.MOVE_DOWN: // DOWN
-                    //position = Vector2.Lerp(position, new Vector2(position.X, position.Y + 5), 0.4f);
                     position.Y += 5f;
                     break;
                 case NetInterface.MOVE_LEFT: // LEFT
-                    //position = Vector2.Lerp(position, new Vector2(position.X - 5, position.Y), 0.4f);
                     position.X -= 5f;
                     break;
                 case NetInterface.MOVE_RIGHT: // RIGHT
-                    //position = Vector2.Lerp(position, new Vector2(position.X + 5, position.Y), 0.4f);
                     position.X += 5f;
+                    break;
+                case NetInterface.MOVE_UPRIGHT:
+                    position.X += 5f;
+                    position.Y -= 5f;
+                    break;
+                case NetInterface.MOVE_DOWNRIGHT:
+                    position.X += 5f;
+                    position.Y += 5f;
+                    break;
+                case NetInterface.MOVE_DOWNLEFT:
+                    position.X -= 5f;
+                    position.Y += 5f;
+                    break;
+                case NetInterface.MOVE_UPLEFT:
+                    position.X -= 5f;
+                    position.Y -= 5f;
                     break;
             }
         }
@@ -78,11 +94,15 @@ namespace CStrike2D
 
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(Assets.CTTexture, position, new Rectangle(0, 0, 32, 32), Color.White, 1.57f + rotation,
-                new Vector2(16, 16),
-                1f, SpriteEffects.None, 0);
+            if (Team != NetInterface.Team.Spectator)
+            {
+                sb.Draw(Assets.CTTexture, position, new Rectangle(0, 0, 32, 32), Color.White, 1.57f + rotation,
+                    new Vector2(16, 16),
+                    1f, SpriteEffects.None, 0);
 
-            sb.DrawString(Assets.DefaultFont, Name, new Vector2(position.X, position.Y - 50), Color.White );
+                sb.DrawString(Assets.DefaultFont, Name, new Vector2(position.X, position.Y - 50),
+                    Team == NetInterface.Team.CT ? Color.Blue : Color.Red);
+            }
         }
     }
 }

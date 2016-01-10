@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
@@ -14,14 +9,18 @@ namespace CStrike2D
 
         public Texture2D WeaponTexture { get; private set; }
 
-        public Weapon(byte weaponID, Texture2D weaponTexture, Assets assets) : base(assets)
+        public Weapon(short entityID, short weaponID, Vector2 spawnPosition, Assets assets) : base(assets)
         {
-
+            EntityID = entityID;
+            WeaponName = WeaponInfo.GetWeapon(weaponID);
+            Position = spawnPosition;
         }
 
         public override int DrawOrder { get; protected set; }
         public override Vector2 Position { get; protected set; }
         public override Rectangle Dimensions { get; protected set; }
+
+        public short EntityID { get; private set; }
 
         public bool Firing { get; private set; }
 
@@ -54,6 +53,9 @@ namespace CStrike2D
             WeaponName = newWeapon;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Fire()
         {
             if (!Firing)
@@ -63,6 +65,19 @@ namespace CStrike2D
             }    
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="position"></param>
+        public void SetPosition(Vector2 position)
+        {
+            Position = position;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="gameTime"></param>
         public override void Update(float gameTime)
         {
             if (Firing)
@@ -78,9 +93,13 @@ namespace CStrike2D
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sb"></param>
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(Assets.);
+            sb.Draw(Assets.GetWeaponTexture(WeaponName), Position, Color.White);
         }
     }
 }
