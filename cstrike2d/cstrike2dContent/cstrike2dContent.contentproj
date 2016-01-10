@@ -65,6 +65,13 @@
   <ItemGroup>
     <Folder Include="sound\sfx\player\" />
     <Folder Include="sound\sfx\radio\" />
+    <Folder Include="texture\weapon\aug\" />
+    <Folder Include="texture\weapon\famas\" />
+    <Folder Include="texture\weapon\glock\" />
+    <Folder Include="texture\weapon\m4a1\" />
+    <Folder Include="texture\weapon\mp7\" />
+    <Folder Include="texture\weapon\p90\" />
+    <Folder Include="texture\weapon\usp\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="sound\sfx\weapon\ak47d.wav">
@@ -138,6 +145,23 @@
     </Compile>
     <Compile Include="texture\weapon\awp\awp_m.png">
       <Name>awp_m</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="texture\weapon\ak47\ak47.png">
+      <Name>ak47</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="texture\weapon\ak47\ak47_d.png">
+      <Name>ak47_d</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="texture\weapon\ak47\ak47_m.png">
+      <Name>ak47_m</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
