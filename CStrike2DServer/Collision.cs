@@ -35,16 +35,22 @@ namespace CStrike2D
             return (radius <= distance);
         }
 
-        public static bool BulletToP(Vector2 playerOrigin, float playerAngle)
+        public static bool BulletToPerson(Vector2 shootingPlayer, Vector2 enemyPlayer, float shotAngle, float playerRadius)
         {
-            int playerH = 32;
-            int playerHd2 = 16;
+            Vector2 fixOffset = new Vector2(playerRadius, playerRadius);
+            shootingPlayer += fixOffset;
+            enemyPlayer += fixOffset;
 
-            // Solve for P.O.I
-            // Create line y = ax + b
-            float a = (float)Math.Tan(playerAngle);
-            float b = playerOrigin.Y + (a * (playerOrigin.X)); //maybe minus
-            return false;
+            float mPlayer = (float)Math.Tan(shotAngle);
+            float bPlayer = shootingPlayer.Y - mPlayer * shootingPlayer.X;
+            float bEnemy = enemyPlayer.Y + mPlayer * shootingPlayer.X;
+
+            float poiX = (bEnemy - bPlayer) / (2 * mPlayer);
+            float poiY = mPlayer* poiX + bPlayer;
+
+            Vector2 poi = new Vector2(poiX, poiY);
+
+            return Vector2.Distance(poi, enemyPlayer) <= playerRadius;
         }
     }
 }
