@@ -46,11 +46,32 @@ namespace CStrike2D
             float bEnemy = enemyPlayer.Y + mPlayer * shootingPlayer.X;
 
             float poiX = (bEnemy - bPlayer) / (2 * mPlayer);
-            float poiY = mPlayer* poiX + bPlayer;
+            float poiY = mPlayer * poiX + bPlayer;
 
             Vector2 poi = new Vector2(poiX, poiY);
 
             return Vector2.Distance(poi, enemyPlayer) <= playerRadius;
+        }
+        
+        public static bool CircleToRectangle(Vector2 circle, Rectangle rect, float radius)
+        {
+            Vector2 circleDistance = new Vector2(Math.Abs(circle.X - rect.X), Math.Abs(circle.Y - rect.Y));
+
+            if (circleDistance.X > (rect.Width * 0.5f + radius) || circleDistance.Y > (rect.Height * 0.5f + radius)) 
+            {
+                return false; 
+            }
+
+            if (circleDistance.X <= (rect.Width * 0.5f) || circleDistance.Y <= (rect.Height * 0.5f)) 
+            {
+                return true; 
+            }
+
+
+            float cornerDistance_sq = (circleDistance.X - rect.Width / 2) * (circleDistance.X - rect.Width / 2) +
+                                      (circleDistance.Y - rect.Height / 2) * (circleDistance.Y - rect.Height / 2);
+
+            return (cornerDistance_sq <= (radius * radius));
         }
     }
 }
