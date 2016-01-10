@@ -16,7 +16,7 @@ namespace CStrike2DServer
 
         private static List<Player> players = new List<Player>();
         private static short playerIdentifier;
-        private static string serverVersion = "0.1.6b";            // Server Version
+        private static string serverVersion = "0.1.8b";            // Server Version
         private static int maxPlayers = 32;
         private static int port = 27015;
         private static string buffer = "";
@@ -24,9 +24,37 @@ namespace CStrike2DServer
         private static bool forceConfigRewrite = true;
         private static NetOutgoingMessage outMsg;
         static int curRow = 3;
+        private static int tickCount;
+        private static int bytesIn;
+        private static int bytesOut;
 
         static void Main(string[] args)
         {
+            /* Ballpark estimates for bandwidth usage
+             * - Each command requires 1 byte for the identifier.
+             * - Each player sends input requests of the following:
+             * - Direction (2 Bytes)
+             * - Rotation (3 Bytes)
+             * - Player Updates at 60Hz
+             * - 5 bytes * 60 times a second = 0.3kb/s Upload
+             * - The server must send this to every player on the server on demand
+             * - Direction (3 Bytes)
+             * - Rotation (5 Bytes)
+             * - Server Updates at 64Hz up to 128Hz
+             * - At 64Hz
+             * - 8 bytes * 64 times a second * 32 players = 16kb/s Upload
+             * - At 128Hz
+             * - 8 bytes * 128 times a second * 32 players = 32kb/s Upload
+             * - The server syncs everyone's postion and rotation every 60 ticks or ~930ms
+             * - Direction (4 Bytes)
+             * - Rotation (5 Bytes)
+             * - PlayerID (2 Bytes)
+             * - At 64 Hz
+             * - 11 bytes * 64 times a second * 32 players = 22kb/s Upload
+             * - At 128 Hz
+             * - 11 bytes * 128 times a second * 32 players = 44kb/s Upload
+             */
+
             Vector2 defSpawnPosition = new Vector2(350, 350);
 
             Stopwatch sw = new Stopwatch();
@@ -62,10 +90,13 @@ namespace CStrike2DServer
                     buffer += Console.ReadKey();
                 }
 
-                if (sw.Elapsed.Milliseconds >= 16)
+                if (sw.Elapsed.TotalMilliseconds >= 15.625)
                 {
                     tick++;
                     Update();
+                    bytesIn += server.Statistics.ReceivedBytes;
+                    bytesOut += server.Statistics.SentBytes;
+
                     sw.Restart();
 
                     if (tick == 60)
@@ -82,7 +113,9 @@ namespace CStrike2DServer
                         {
                             Console.WriteLine("Client: " + ply.PlayerName + " Ping: " + Math.Round(ply.Client.AverageRoundtripTime, 2) + "ms");
                         }
-
+                        Console.WriteLine("KB In: " + bytesIn / 1024d + " KB Out: " + bytesOut / 1024d);
+                        bytesIn = 0;
+                        bytesOut = 0;
                         Console.WriteLine(buffer);
 
                         SyncServer();

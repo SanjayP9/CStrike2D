@@ -14,6 +14,8 @@ namespace CStrike2D
         private NetClient client;
         private NetBuffer buffer;
         private NetIncomingMessage msg;
+        private int counter;
+        private int byteCount;
 
         GameEngine engine;
 
@@ -55,6 +57,14 @@ namespace CStrike2D
 
         public void Update()
         {
+            counter++;
+
+            if (counter == 60)
+            {
+                counter = 0;
+                Debug.WriteLine("Kb/s: " + ((double)byteCount / 1024d));
+                byteCount = 0;
+            }
             while ((msg = client.ReadMessage()) != null)
             {
                 switch (msg.MessageType)
@@ -156,6 +166,7 @@ namespace CStrike2D
                         break;
                 }
             }
+            
             client.Recycle(msg);
         }
 
@@ -163,6 +174,7 @@ namespace CStrike2D
         {
             NetOutgoingMessage outMsg = client.CreateMessage();
             outMsg.Write(code);
+            byteCount += outMsg.LengthBytes;
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
@@ -171,6 +183,7 @@ namespace CStrike2D
             NetOutgoingMessage outMsg = client.CreateMessage();
             outMsg.Write(NetInterface.ROTATE);
             outMsg.Write(rotation);
+            byteCount += outMsg.LengthBytes;
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 

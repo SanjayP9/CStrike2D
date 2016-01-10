@@ -329,6 +329,12 @@ namespace CStrike2D
                     {
                         driver.Model.Camera.Position.X += 5f;
                     }
+
+                    if (driver.Model.InterfaceManager.Clicked(input, "teamSelectMenu", "ctButton"))
+                    {
+                        teamSelect = false;
+                        driver.Model.InterfaceManager.HideAll();
+                    }
                 }
             }
         }
