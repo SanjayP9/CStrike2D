@@ -342,6 +342,19 @@ namespace CStrike2D
 
             #endregion
 
+            #region Scoreboard Menu
+
+            InterfaceManager.AddComponent(new Bar("scoreboardBar", new Rectangle(90, 20, 1100, 650), 0.4f,
+                0.8f, Color.Black, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Right,
+                DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new TextBox("scoreboardTitle", new Vector2(94, 20), "Scoreboard", Color.White, 0.4f,
+                EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down, DriverInstance.Assets));
+
+            InterfaceManager.FormPage("scoreboard");
+
+            #endregion
+
             #endregion
 
             // Show the menu

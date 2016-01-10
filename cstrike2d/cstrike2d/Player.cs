@@ -42,6 +42,11 @@ namespace CStrike2D
             Team = NetInterface.GetTeam(team);
         }
 
+        public void SetTeam(NetInterface.Team team)
+        {
+            Team = team;
+        }
+
         public void SetPosition(Vector2 newPosition)
         {
             position = newPosition;

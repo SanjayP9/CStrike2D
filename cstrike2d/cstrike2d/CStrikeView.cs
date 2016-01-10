@@ -151,7 +151,7 @@ namespace CStrike2D
                     break;
                 case CStrikeModel.State.InGame:
                     sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, model.Camera.GetTransform(model.DriverInstance.GraphicsDevice));
-                    model.GameEngine.Draw(sb);
+                    model.GameEngine.DrawWorld(sb);
                     sb.End();
                     sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null,
                         cullableRasterizer, null);
@@ -162,7 +162,7 @@ namespace CStrike2D
 
                     sb.End();
                     sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
-
+                    model.GameEngine.DrawUI(sb);
                     sb.DrawString(assets.DefaultFont, "Camera Pos: " + model.Camera.Position, new Vector2(model.Dimensions.X - 200, 30),  Color.White);
                     break;
             }

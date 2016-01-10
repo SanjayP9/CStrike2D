@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace CStrike2D
 {
@@ -20,6 +21,13 @@ namespace CStrike2D
         /// addition to an increased Tick Rate, as more logic updates are conducted per second,
         /// and more states are sent out in a second. 
 
+
+        public static readonly Color CT_Color = new Color(0, 81, 200);
+
+        public static readonly Color T_Color = new Color(255, 0, 25);
+
+        public static readonly Color S_Color = new Color(40, 40, 40);
+
         // Byte Headers for Message Type
 
         // Clientside Send Messages
@@ -40,11 +48,6 @@ namespace CStrike2D
         public const byte FIRE = 20;            // Used for requesting player left fire button
 
         // Serverside Send Messages
-        public const byte PLAYER_MOVE = 31;     // Used for notifying the client that a movement
-                                                // call was initiated. This will be followed
-                                                // by an identifer byte letting the client know
-                                                // which player to move, as well as their intended
-                                                // direction.
 
         public const byte SYNC_MOVEMENT = 21;   // Used for notifying the client that a movement
                                                 // synchronization call was initiated. This will
@@ -69,6 +72,19 @@ namespace CStrike2D
         public const byte PLY_CT = 25;
         public const byte PLY_T = 26;
         public const byte PLY_SP = 27;
+        
+        public const byte SPAWN_WEAPON = 28;    // Used for notifying the client that a weapon was bought
+                                                // and must be spawned into the game. This will be followed by
+                                                // an identifier byte letting the client know what weapon was
+                                                // spawned.
+
+        public const byte PLAYER_MOVE = 31;     // Used for notifying the client that a movement
+                                                // call was initiated. This will be followed
+                                                // by an identifer byte letting the client know
+                                                // which player to move, as well as their intended
+                                                // direction.
+
+
 
         // Bytes 100 to 131 are reserved for identifying player indexes
         // This implies that the maximum number of players in a server is 32.
@@ -84,10 +100,6 @@ namespace CStrike2D
         public const short AK47_SHOT_DISTANT = 1;
         public const short AWP_SHOT = 2;
 
-        public const byte SPAWN_WEAPON = 24;    // Used for notifying the client that a weapon was bought
-                                                // and must be spawned into the game. This will be followed by
-                                                // an identifier byte letting the client know what weapon was
-                                                // spawned.
 
         // Weapons
         public const short WEAPON_AK47 = 100;
