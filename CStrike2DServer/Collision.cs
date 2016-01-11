@@ -49,10 +49,17 @@ namespace CStrike2D
             float poiY = mPlayer * poiX + bPlayer;
 
             Vector2 poi = new Vector2(poiX, poiY);
-            //float distance = ((poi.X - enemyPlayer.X)*(poi.X - enemyPlayer.X)) +
-              //               ((poi.Y - enemyPlayer.Y)*(poi.Y - enemyPlayer.Y));
+            float poiA = (float)(Math.Atan((double)((poiY - shootingPlayer.Y) / (poiX - shootingPlayer.X))));
 
-            //float vectD = Vector2.Distance(enemyPlayer, poi);
+            if (poiA > Math.PI)
+            {
+                poiA = (float)Math.PI * 2f + poiA;
+            }
+
+            if(poiA != shotAngle)
+            {
+                return false;
+            }
 
             return Vector2.Distance(poi, enemyPlayer) <= playerRadius;
         }
