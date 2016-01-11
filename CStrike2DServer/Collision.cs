@@ -56,7 +56,7 @@ namespace CStrike2D
                 poiA = (float)Math.PI * 2f + poiA;
             }
 
-            if(poiA != shotAngle)
+            if(poiA + 0.05f > shotAngle && poiA - 0.05f < shotAngle)
             {
                 return false;
             }
