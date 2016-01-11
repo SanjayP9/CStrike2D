@@ -49,7 +49,7 @@ namespace CStrike2D
             float poiY = mPlayer * poiX + bPlayer;
 
             Vector2 poi = new Vector2(poiX, poiY);
-            double poiA = Math.Atan((double)((poiY - shootingPlayer.Y) / (poiX - shootingPlayer.X)));
+            float poiA = (float)(Math.Atan((double)((poiY - shootingPlayer.Y) / (poiX - shootingPlayer.X))));
 
             if (poiA > Math.PI)
             {
