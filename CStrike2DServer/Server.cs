@@ -181,8 +181,9 @@ namespace CStrike2DServer
                             case NetInterface.HANDSHAKE:
                                 player = new Player(msg.ReadString(), msg.SenderConnection, playerIdentifier);
                                 player.SetPosition(new Vector2(players.Count * 50, players.Count * 50));
+                                player.SetCurrentWeapon(NetInterface.WEAPON_KNIFE, entityCounter);
                                 players.Add(player);
-
+                                entityCounter++;
                                 Console.WriteLine("Player: \"" + player.PlayerName + "\" Connected. Identifier: " + playerIdentifier);
                                
                                 // Send data about the new player to all connected players
