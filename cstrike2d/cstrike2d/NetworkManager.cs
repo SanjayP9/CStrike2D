@@ -159,6 +159,15 @@ namespace CStrike2D
                                                     engine.Players.Find(ply => ply.PlayerID == playerID));
                                             }
                                             break;
+                                        case NetInterface.PLY_CHANGE_TEAM:
+                                            playerID = msg.ReadInt16();
+
+                                            if (engine.Players.Count > 0)
+                                            {
+                                                engine.Players.Find(ply => ply.PlayerID == playerID)
+                                                    .SetTeam(NetInterface.GetTeam(msg.ReadByte()));
+                                            }
+                                            break;
                                     }
                                 }
                                 break;
@@ -185,6 +194,15 @@ namespace CStrike2D
             outMsg.Write(rotation);
             byteCount += outMsg.LengthBytes;
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
+        }
+
+        public void SendChangeTeam(byte team)
+        {
+            NetOutgoingMessage outMsg = client.CreateMessage();
+            outMsg.Write(NetInterface.PLY_CHANGE_TEAM);
+            outMsg.Write(team);
+            byteCount += outMsg.LengthBytes;
+            client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered);
         }
 
         public void ShutDown()

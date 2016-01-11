@@ -16,7 +16,7 @@ namespace CStrike2DServer
 
         private static List<Player> players = new List<Player>();
         private static short playerIdentifier;
-        private static string serverVersion = "0.1.8b";            // Server Version
+        private static string serverVersion = "0.2.0a";            // Server Version
         private static int maxPlayers = 32;
         private static int port = 27015;
         private static string buffer = "";
@@ -27,6 +27,9 @@ namespace CStrike2DServer
         private static int tickCount;
         private static int bytesIn;
         private static int bytesOut;
+        private static int maxCTs = 16;
+        private static int maxTs = 16;
+        private static bool enableCollision = true;
 
         static void Main(string[] args)
         {
@@ -209,10 +212,7 @@ namespace CStrike2DServer
                             case NetInterface.MOVE_UPLEFT:
                                 if (CheckPlayerCollision(player, identifier))
                                 {
-                                    player.Move(identifier);
-                                    outMsg.Write(identifier);
-                                    outMsg.Write(player.PlayerID);
-                                    server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+                                    Move(identifier, player);
                                 }
                                 break;
                             case NetInterface.FIRE:
@@ -230,7 +230,12 @@ namespace CStrike2DServer
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                                 break;
                             case NetInterface.PLY_CHANGE_TEAM:
-                                byte team = msg.ReadByte();
+                                player = players.Find(ply => ply.Client.RemoteUniqueIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
+                                player.ChangeTeam(NetInterface.GetTeam(msg.ReadByte()));
+                                outMsg.Write(NetInterface.PLY_CHANGE_TEAM);
+                                outMsg.Write(player.PlayerID);
+                                outMsg.Write(NetInterface.GetTeamByte(player.Team));
+                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
                                 break;
                         }
                         break;
@@ -297,52 +302,58 @@ namespace CStrike2DServer
 
         static bool CheckPlayerCollision(Player player, byte direction)
         {
-            float vectorX = 0f;
-            float vectorY = 0f;
-            switch (direction)
+            if (player.Team != NetInterface.Team.Spectator && enableCollision)
             {
-                case NetInterface.MOVE_UP:
-                    vectorY = -5f;
-                    break;
-                case NetInterface.MOVE_DOWN:
-                    vectorY = 5f;
-                    break;
-                case NetInterface.MOVE_LEFT:
-                    vectorX = -5f;
-                    break;
-                case NetInterface.MOVE_RIGHT:
-                    vectorX = 5f;
-                    break;
-                case NetInterface.MOVE_UPRIGHT:
-                    vectorX = 5f;
-                    vectorY = -5f;
-                    break;
-                case NetInterface.MOVE_DOWNRIGHT:
-                    vectorX = 5f;
-                    vectorY = 5f;
-                    break;
-                case NetInterface.MOVE_DOWNLEFT:
-                    vectorX = -5f;
-                    vectorY = 5f;
-                    break;
-                case NetInterface.MOVE_UPLEFT:
-                    vectorX = -5f;
-                    vectorY = -5f;
-                    break;
-            }
-
-            foreach (Player ply in players)
-            {
-                if (ply.PlayerID != player.PlayerID)
+                float vectorX = 0f;
+                float vectorY = 0f;
+                switch (direction)
                 {
-                    if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X + vectorX,
-                        player.GetPosition().Y + vectorY), ply.GetPosition(), 23f))
+                    case NetInterface.MOVE_UP:
+                        vectorY = -5f;
+                        break;
+                    case NetInterface.MOVE_DOWN:
+                        vectorY = 5f;
+                        break;
+                    case NetInterface.MOVE_LEFT:
+                        vectorX = -5f;
+                        break;
+                    case NetInterface.MOVE_RIGHT:
+                        vectorX = 5f;
+                        break;
+                    case NetInterface.MOVE_UPRIGHT:
+                        vectorX = 5f;
+                        vectorY = -5f;
+                        break;
+                    case NetInterface.MOVE_DOWNRIGHT:
+                        vectorX = 5f;
+                        vectorY = 5f;
+                        break;
+                    case NetInterface.MOVE_DOWNLEFT:
+                        vectorX = -5f;
+                        vectorY = 5f;
+                        break;
+                    case NetInterface.MOVE_UPLEFT:
+                        vectorX = -5f;
+                        vectorY = -5f;
+                        break;
+                }
+
+                foreach (Player ply in players)
+                {
+                    if (ply.PlayerID != player.PlayerID)
                     {
-                        return false;
+                        if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X + vectorX,
+                            player.GetPosition().Y + vectorY), ply.GetPosition(), 23f))
+                        {
+                            return false;
+                        }
                     }
                 }
+                return true;
             }
             return true;
+
+            #region Old Code
 
             /*
             switch (direction)
@@ -454,6 +465,8 @@ namespace CStrike2DServer
             }
             return true;
              */
+
+            #endregion
         }
     }
 }
