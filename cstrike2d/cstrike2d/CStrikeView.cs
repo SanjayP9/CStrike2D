@@ -77,8 +77,8 @@ namespace CStrike2D
             switch (model.CurState)
             {
                 case CStrikeModel.State.Menu:
-                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
-
+                    model.Shader.BeginRender();
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null);
                     // Show counter-terrorist background if true, terrorist background if false
                     sb.Draw(model.MenuBackgroundType ? assets.CTMenuBackground : assets.TMenuBackground, Vector2.Zero,
                         Color.White);
@@ -137,6 +137,11 @@ namespace CStrike2D
                                 break;
                         }
                     }
+
+                    sb.End();
+                    model.Shader.Draw(sb);
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
+
                     break;
                 case CStrikeModel.State.Options:
                     break;

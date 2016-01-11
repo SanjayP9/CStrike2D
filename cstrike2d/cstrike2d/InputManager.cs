@@ -117,6 +117,12 @@ namespace CStrike2D
                    mouseState.LeftButton == ButtonState.Released;
         }
 
+        public bool LeftClickImmediate()
+        {
+            return prevMouseState.LeftButton == ButtonState.Released &&
+                   mouseState.LeftButton == ButtonState.Pressed;
+        }
+
         /// <summary>
         /// Checks if the user clicked the right mouse button
         /// </summary>

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Threading;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
@@ -48,10 +49,6 @@ namespace CStrike2D
                 client.Start();
                 client.Connect(address, 27015);
                 CurState = NetState.Handshake;
-                Stopwatch sw = new Stopwatch();
-                sw.Start();
-                
-                sw.Stop();
             }
         }
 
@@ -76,6 +73,7 @@ namespace CStrike2D
                             case NetState.Disconnected:
                                 break;
                             case NetState.Handshake:
+                                Thread.Sleep(100);
                                 byte acknowledge = msg.ReadByte();
                                 if (acknowledge == NetInterface.HANDSHAKE)
                                 {
@@ -109,11 +107,12 @@ namespace CStrike2D
                                                 engine.AddPlayer(name, new Vector2(playerX, playerY), playerID, rotation, team);
 
 
-                                                if (PlayerID == playerID)
-                                                {
-                                                    engine.SetClientPlayer(
-                                                        engine.Players.Find(ply => ply.PlayerID == PlayerID));
-                                                }
+
+                                            }
+                                            if (PlayerID == playerID)
+                                            {
+                                                engine.SetClientPlayer(
+                                                    engine.Players.Find(ply => ply.PlayerID == PlayerID));
                                             }
                                             break;
                                         case NetInterface.MOVE_UP:
@@ -168,6 +167,32 @@ namespace CStrike2D
                                                     .SetTeam(NetInterface.GetTeam(msg.ReadByte()));
                                             }
                                             break;
+                                        case NetInterface.SPAWN_WEAPON:
+                                            playerID = msg.ReadInt16();
+                                            short entityID = msg.ReadInt16();
+                                            short weaponID = msg.ReadInt16();
+                                            if (engine.Players.Count > 0)
+                                            {
+                                                Player player = engine.Players.Find(ply => ply.PlayerID == playerID);
+
+                                                if (player.PlayerID == PlayerID)
+                                                {
+                                                    switch (WeaponInfo.GetWeaponType(WeaponInfo.GetWeapon(weaponID)))
+                                                    {
+                                                        case WeaponInfo.WeaponType.Primary:
+                                                            player.SetPrimaryWeapon(entityID, weaponID);
+                                                            break;
+                                                        case WeaponInfo.WeaponType.Secondary:
+                                                            player.SetSecondaryWeapon(entityID, weaponID);
+                                                            break;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    player.SetWeapon(entityID, weaponID);
+                                                }
+                                            }
+                                            break;
                                     }
                                 }
                                 break;
@@ -203,6 +228,15 @@ namespace CStrike2D
             outMsg.Write(team);
             byteCount += outMsg.LengthBytes;
             client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered);
+        }
+
+        public void RequestBuy(short weapon)
+        {
+            NetOutgoingMessage outMsg = client.CreateMessage();
+            outMsg.Write(NetInterface.SPAWN_WEAPON);
+            outMsg.Write(weapon);
+            byteCount += outMsg.LengthBytes;
+            client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
         public void ShutDown()

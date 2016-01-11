@@ -100,10 +100,10 @@ namespace CStrike2D
         public const short AK47_SHOT_DISTANT = 1;
         public const short AWP_SHOT = 2;
 
-
         // Weapons
         public const short WEAPON_AK47 = 100;
         public const short WEAPON_AWP = 101;
+        public const short WEAPON_KNIFE = 102;
         public const short WEAPON_M4A1_SILENCER = -1;
         public const short WEAPON_GLOCK = -1;
         public const short WEAPON_USP_SILENCER = -1;

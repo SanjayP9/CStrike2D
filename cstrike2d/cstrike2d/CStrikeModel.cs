@@ -47,8 +47,6 @@ namespace CStrike2D
         /// 
         /// </summary>
         public Map NewMap { get; private set; }
-        
-
 
         /// <summary>
         /// 
@@ -82,6 +80,8 @@ namespace CStrike2D
         public Vector2 Center { get; private set; }
 
         public Vector2 Dimensions { get; private set; }
+
+        public ShaderRenderer Shader { get; private set; }
 
         private const float SPRAY_TIMER = 0.1f;
         private float shotTimer = 0.0f;
@@ -118,6 +118,8 @@ namespace CStrike2D
             GameEngine = new GameEngine(DriverInstance);
 
             NetworkManager = new NetworkManager(GameEngine);
+
+            Shader = new ShaderRenderer(driver);
         }
 
         /// <summary>
@@ -128,6 +130,8 @@ namespace CStrike2D
             DriverInstance.Assets.LoadCoreContent(DriverInstance);
 
             CurState = State.Menu;
+
+            Shader.Load();
 
             // Intialize all UI elements in the game
             #region UI Interface Initialization
@@ -391,6 +395,10 @@ namespace CStrike2D
             switch (CurState)
             {
                 case State.Menu:
+                    if (Shader.BlurAmount >= 0f)
+                    {
+                        Shader.ChangeBlurAmount(Shader.BlurAmount - 0.2f);
+                    }
                     AudioManager.PlaySound("menuMusic", AudioManager.MusicVolume);
 
                     //AudioManager.PlaySound("menuMusic", AudioManager.MusicVolume, Center, new Vector2(Center.X, Center.Y + 100));

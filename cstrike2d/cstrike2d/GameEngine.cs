@@ -216,19 +216,38 @@ namespace CStrike2D
                                              driver.Model.InterfaceManager.Clicked(input, "buyButtonMenu",
                                                  "pistolMenuButton"))
                                     {
-                                        driver.Model.InterfaceManager.ShowPage("pistolMenuButton");
+                                        if (clientPlayer.Team == NetInterface.Team.CT)
+                                        {
+                                            driver.Model.InterfaceManager.ShowPage("pistolMenuButton");
+                                        }
+                                        else
+                                        {
+                                            
+                                        }
                                     }
                                     else if (input.Tapped(Keys.D2) ||
                                              driver.Model.InterfaceManager.Clicked(input, "buyButtonMenu",
                                                  "heavyMenuButton"))
                                     {
-
+                                        if (clientPlayer.Team == NetInterface.Team.CT)
+                                        {
+                                        }
+                                        else
+                                        {
+                                            
+                                        }
                                     }
                                     else if (input.Tapped(Keys.D3) ||
                                              driver.Model.InterfaceManager.Clicked(input, "buyButtonMenu",
                                                  "smgMenuButton"))
                                     {
-
+                                        if (clientPlayer.Team == NetInterface.Team.CT)
+                                        {
+                                        }
+                                        else
+                                        {
+                                            
+                                        }
                                     }
                                     else if (input.Tapped(Keys.D4) ||
                                              driver.Model.InterfaceManager.Clicked(input, "buyButtonMenu",
@@ -245,11 +264,25 @@ namespace CStrike2D
                                 case MenuState.Smgs:
                                     break;
                                 case MenuState.Rifles:
-                                    driver.Model.InterfaceManager.ShowPage("ctRifleButtonMenu");
+                                                                        
                                     if (input.Tapped(Keys.Escape))
                                     {
                                         driver.Model.InterfaceManager.HidePage("ctRifleButtonMenu");
                                         CurMenuState = MenuState.MainMenu;
+                                    }
+                                    if (clientPlayer.Team == NetInterface.Team.CT)
+                                    {
+                                        driver.Model.InterfaceManager.ShowPage("ctRifleButtonMenu");
+                                    }
+                                    else
+                                    {
+                                        driver.Model.InterfaceManager.ShowPage("tRifleButtonMenu");
+
+                                        if (driver.Model.InterfaceManager.Clicked(input, "tRifleButtonMenu", "ak47MenuButton"))
+                                        {
+                                            network.RequestBuy(NetInterface.WEAPON_AK47);
+                                            driver.Model.InterfaceManager.HidePage("tRifleButtonMenu");
+                                        }
                                     }
                                     break;
                                 case MenuState.Gear:
@@ -257,6 +290,11 @@ namespace CStrike2D
                                 case MenuState.Grenades:
                                     break;
                             }
+                        }
+
+                        if (input.Tapped(Keys.D1) && !showMenu)
+                        {
+                            clientPlayer.SwitchWeapon(WeaponInfo.WeaponType.Primary);
                         }
 
                         if (input.Tapped(Keys.W) || input.Held(Keys.W))
@@ -305,7 +343,7 @@ namespace CStrike2D
                                 break;
                         }
 
-                        if (input.LeftClick() && !showMenu)
+                        if (input.LeftClickImmediate() && !showMenu)
                         {
                             network.SendInputData(NetInterface.FIRE);
                         }
@@ -344,6 +382,12 @@ namespace CStrike2D
                             driver.Model.Camera.Position.X += 5f;
                         }
                     }
+
+                    foreach (Player ply in Players)
+                    {
+                        ply.Update(gameTime);
+                    }
+
                 }
                 else
                 {

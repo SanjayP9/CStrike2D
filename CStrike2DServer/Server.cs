@@ -16,7 +16,7 @@ namespace CStrike2DServer
 
         private static List<Player> players = new List<Player>();
         private static short playerIdentifier;
-        private static string serverVersion = "0.2.0a";            // Server Version
+        private static string serverVersion = "0.2.1a";            // Server Version
         private static int maxPlayers = 32;
         private static int port = 27015;
         private static string buffer = "";
@@ -30,6 +30,7 @@ namespace CStrike2DServer
         private static int maxCTs = 16;
         private static int maxTs = 16;
         private static bool enableCollision = true;
+        private static short entityCounter;
 
         static void Main(string[] args)
         {
@@ -159,14 +160,14 @@ namespace CStrike2DServer
                                 playerIdentifier++;
                                 outMsg.Write(playerIdentifier);
                                 Console.WriteLine("Client given identifier: " + playerIdentifier);
-                                msg.SenderConnection.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced, 0);
+                                msg.SenderConnection.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
                                 break;
                             case NetConnectionStatus.Disconnected:
                                 player = players.Find(ply => ply.Client.RemoteUniqueIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
 
                                 outMsg.Write(NetInterface.PLAYER_DC);
                                 outMsg.Write(player.PlayerID);
-                                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
                                 Console.WriteLine("\"" + player.PlayerName + "\" has left the server");
                                 players.Remove(player);
                                 break;
@@ -216,6 +217,17 @@ namespace CStrike2DServer
                                 }
                                 break;
                             case NetInterface.FIRE:
+                                foreach (Player ply in players)
+                                {
+                                    if (player.PlayerID != ply.PlayerID)
+                                    {
+                                        if (Collision.BulletToPerson(player.GetPosition(), ply.GetPosition(),
+                                                player.Rotation, 32))
+                                        {
+                                            throw new Exception("Shots Fired.");
+                                        }
+                                    }
+                                }
                                 outMsg.Write(NetInterface.PLAY_SOUND);
                                 outMsg.Write(player.PlayerID);
                                 outMsg.Write(NetInterface.AK47_SHOT);
@@ -236,6 +248,25 @@ namespace CStrike2DServer
                                 outMsg.Write(player.PlayerID);
                                 outMsg.Write(NetInterface.GetTeamByte(player.Team));
                                 server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
+                                break;
+                            case NetInterface.SPAWN_WEAPON:
+                                short weapon = msg.ReadInt16();
+                                player = players.Find(ply => ply.Client.RemoteUniqueIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
+                                if (WeaponInfo.GetWeaponType(WeaponInfo.GetWeapon(weapon)) ==
+                                    WeaponInfo.WeaponType.Primary)
+                                {
+                                    player.SetPrimaryWeapon(weapon);
+                                }
+                                else
+                                {
+                                    player.SetSecondaryWeapon(weapon);
+                                }
+                                outMsg.Write(NetInterface.SPAWN_WEAPON);
+                                outMsg.Write(player.PlayerID);
+                                outMsg.Write(entityCounter);
+                                outMsg.Write(weapon);
+                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
+                                entityCounter++;
                                 break;
                         }
                         break;

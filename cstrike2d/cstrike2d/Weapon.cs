@@ -20,6 +20,8 @@ namespace CStrike2D
         public override Vector2 Position { get; protected set; }
         public override Rectangle Dimensions { get; protected set; }
 
+        public float Rotation { get; private set; }
+
         public short EntityID { get; private set; }
 
         public bool Firing { get; private set; }
@@ -74,6 +76,11 @@ namespace CStrike2D
             Position = position;
         }
 
+        public void SetDirection(float rotation)
+        {
+            Rotation = rotation;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -99,7 +106,7 @@ namespace CStrike2D
         /// <param name="sb"></param>
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(Assets.GetWeaponTexture(WeaponName), Position, Color.White);
+            sb.Draw(Assets.GetWeaponTexture(WeaponName), Position, null, Color.White, Rotation, Vector2.Zero, 1f, SpriteEffects.None, 0f);
         }
     }
 }

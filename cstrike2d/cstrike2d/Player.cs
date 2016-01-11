@@ -32,7 +32,13 @@ namespace CStrike2D
 
         public Weapon SecondaryWeapon { get; private set; }
 
+        public Weapon Knife { get; private set; }
+
+        public Weapon CurrentWeapon { get; private set; }
+
         public NetInterface.Team Team { get; private set; }
+
+        private Assets assets;
 
         public Player(string name, Vector2 position, short playerID, byte team, Assets assets) : base(assets)
         {
@@ -40,6 +46,47 @@ namespace CStrike2D
             Name = name;
             PlayerID = playerID;
             Team = NetInterface.GetTeam(team);
+            this.assets = assets;
+            Knife = new Weapon(-1, NetInterface.WEAPON_KNIFE, position, assets);
+            CurrentWeapon = Knife;
+        }
+
+        /// <summary>
+        /// Switches the current weapon to the target one
+        /// </summary>
+        /// <param name="weapon"></param>
+        public void SwitchWeapon(WeaponInfo.WeaponType weapon)
+        {
+            switch (weapon)
+            {
+                case WeaponInfo.WeaponType.Primary:
+                    CurrentWeapon = PrimaryWeapon;
+                    break;
+                case WeaponInfo.WeaponType.Secondary:
+                    CurrentWeapon = SecondaryWeapon;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Used by the network to set another player's
+        /// current weapon
+        /// </summary>
+        /// <param name="entityID"></param>
+        /// <param name="weaponID"></param>
+        public void SetWeapon(short entityID, short weaponID)
+        {
+            CurrentWeapon = new Weapon(entityID, weaponID, position, assets);
+        }
+
+        public void SetPrimaryWeapon(short entityID, short weapon)
+        {
+            PrimaryWeapon = new Weapon(entityID, weapon, position, assets);
+        }
+
+        public void SetSecondaryWeapon(short entityID, short weapon)
+        {
+            SecondaryWeapon = new Weapon(entityID, weapon, position, assets);
         }
 
         public void SetTeam(NetInterface.Team team)
@@ -55,6 +102,11 @@ namespace CStrike2D
         public void SetRot(float rotation)
         {
             this.rotation = rotation;
+        }
+
+        public void Fire()
+        {
+            
         }
 
         public void Move(byte direction)
@@ -94,7 +146,9 @@ namespace CStrike2D
 
         public override void Update(float gameTime)
         {
-             
+            CurrentWeapon.Update(gameTime);
+            CurrentWeapon.SetDirection(rotation);
+            CurrentWeapon.SetPosition(position);
         }
 
         public override void Draw(SpriteBatch sb)
@@ -107,6 +161,8 @@ namespace CStrike2D
 
                 sb.DrawString(Assets.DefaultFont, Name, new Vector2(position.X, position.Y - 50),
                     Team == NetInterface.Team.CT ? Color.Blue : Color.Red);
+
+                CurrentWeapon.Draw(sb);
             }
         }
     }

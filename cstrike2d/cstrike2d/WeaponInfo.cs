@@ -8,7 +8,8 @@ namespace CStrike2D
         public enum Weapon
         {
             Weapon_AK47,
-            Weapon_AWP
+            Weapon_AWP,
+            Weapon_Knife,
         }
 
         public static readonly string[] WeaponStrings = Enum.GetNames(typeof (Weapon));
@@ -17,7 +18,10 @@ namespace CStrike2D
         public enum WeaponType
         {
             Primary,
-            Secondary
+            Secondary,
+            Knife,
+            Grenade,
+            Bomb
         }
 
 
@@ -50,7 +54,6 @@ namespace CStrike2D
             switch (weapon)
             {
                 case Weapon.Weapon_AK47:
-                    return WeaponType.Primary;
                 case Weapon.Weapon_AWP:
                     return WeaponType.Primary;
                 default:
@@ -67,7 +70,7 @@ namespace CStrike2D
         {
             if (weaponID >= 100)
             {
-                return WeaponEnums[100 - weaponID];
+                return WeaponEnums[weaponID - 100];
             }
             throw new NotImplementedException("Weapon does not exist");
         }
