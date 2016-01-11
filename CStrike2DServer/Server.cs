@@ -196,7 +196,7 @@ namespace CStrike2DServer
                                     outMsg.Write(plyr.GetPosition().Y);
                                     outMsg.Write(plyr.Rotation);
                                     outMsg.Write(NetInterface.GetTeamByte(plyr.Team));
-
+                                    outMsg.Write(plyr.CurrentWeapon);
                                     server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
                                     Console.WriteLine("Sent data about \"" + player.PlayerName + "\"" +
                                                       " to player \"" + plyr.PlayerName + "\"");
@@ -261,12 +261,21 @@ namespace CStrike2DServer
                                 {
                                     player.SetSecondaryWeapon(weapon);
                                 }
+                                player.SetCurrentWeapon(weapon);
                                 outMsg.Write(NetInterface.SPAWN_WEAPON);
                                 outMsg.Write(player.PlayerID);
                                 outMsg.Write(entityCounter);
                                 outMsg.Write(weapon);
                                 server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
                                 entityCounter++;
+                                break;
+                            case NetInterface.SWITCH_WEAPON:
+                                player = players.Find(ply => ply.Client.RemoteUniqueIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
+                                player.SetCurrentWeapon(msg.ReadInt16());
+                                outMsg.Write(NetInterface.SWITCH_WEAPON);
+                                outMsg.Write(player.PlayerID);
+                                outMsg.Write(player.CurrentWeapon);
+                                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                                 break;
                         }
                         break;

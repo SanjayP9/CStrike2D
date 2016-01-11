@@ -291,11 +291,25 @@ namespace CStrike2D
                                     break;
                             }
                         }
-
-                        if (input.Tapped(Keys.D1) && !showMenu)
+                        else
                         {
-                            clientPlayer.SwitchWeapon(WeaponInfo.WeaponType.Primary);
+                            if (input.Tapped(Keys.D1))
+                            {
+                                clientPlayer.SwitchWeapon(WeaponInfo.WeaponType.Primary);
+                                network.SwitchWeapon(NetInterface.SWITCH_PRIMARY);
+                            }
+                            else if (input.Tapped(Keys.D2))
+                            {
+                                clientPlayer.SwitchWeapon(WeaponInfo.WeaponType.Secondary);
+                                network.SwitchWeapon(NetInterface.SWITCH_SECONDARY);
+                            }
+                            else if (input.Tapped(Keys.D3))
+                            {
+                                clientPlayer.SwitchWeapon(WeaponInfo.WeaponType.Knife);
+                                network.SwitchWeapon(NetInterface.SWITCH_KNIFE);
+                            }
                         }
+
 
                         if (input.Tapped(Keys.W) || input.Held(Keys.W))
                         {

@@ -102,7 +102,6 @@ namespace CStrike2D
                                             playerY = msg.ReadFloat();
                                             float rotation = msg.ReadFloat();
                                             byte team = msg.ReadByte();
-                                            if (!engine.Exists(playerID))
                                             {
                                                 engine.AddPlayer(name, new Vector2(playerX, playerY), playerID, rotation, team);
                                             }
@@ -190,6 +189,32 @@ namespace CStrike2D
                                                 }
                                             }
                                             break;
+                                        case NetInterface.SWITCH_WEAPON:
+                                            playerID = msg.ReadInt16();
+                                            weaponID = msg.ReadInt16();
+                                            entityID = msg.ReadInt16();
+                                            if (engine.Players.Count > 0)
+                                            {
+                                                Player player = engine.Players.Find(ply => ply.PlayerID == playerID);
+
+                                                if (player.PlayerID == PlayerID)
+                                                {
+                                                    switch (WeaponInfo.GetWeaponType(WeaponInfo.GetWeapon(weaponID)))
+                                                    {
+                                                        case WeaponInfo.WeaponType.Primary:
+                                                            player.SetPrimaryWeapon(entityID, weaponID);
+                                                            break;
+                                                        case WeaponInfo.WeaponType.Secondary:
+                                                            player.SetSecondaryWeapon(entityID, weaponID);
+                                                            break;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    player.SetWeapon(entityID, weaponID);
+                                                }
+                                            }
+                                            break;
                                     }
                                 }
                                 break;
@@ -225,6 +250,15 @@ namespace CStrike2D
             outMsg.Write(team);
             byteCount += outMsg.LengthBytes;
             client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered);
+        }
+
+        public void SwitchWeapon(byte weaponSwitch)
+        {
+            NetOutgoingMessage outMsg = client.CreateMessage();
+            outMsg.Write(NetInterface.SWITCH_WEAPON);
+            outMsg.Write(weaponSwitch);
+            byteCount += outMsg.LengthBytes;
+            client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
         public void RequestBuy(short weapon)

@@ -21,7 +21,6 @@ namespace CStrike2D
         /// addition to an increased Tick Rate, as more logic updates are conducted per second,
         /// and more states are sent out in a second. 
 
-
         public static readonly Color CT_Color = new Color(0, 81, 200);
 
         public static readonly Color T_Color = new Color(255, 0, 25);
@@ -78,13 +77,14 @@ namespace CStrike2D
                                                 // an identifier byte letting the client know what weapon was
                                                 // spawned.
 
+
         public const byte PLAYER_MOVE = 31;     // Used for notifying the client that a movement
                                                 // call was initiated. This will be followed
                                                 // by an identifer byte letting the client know
                                                 // which player to move, as well as their intended
                                                 // direction.
 
-
+            
 
         // Bytes 100 to 131 are reserved for identifying player indexes
         // This implies that the maximum number of players in a server is 32.
@@ -94,6 +94,15 @@ namespace CStrike2D
                                                 // was initiated. This will be followed by an
                                                 // identifer byte letting the client know
                                                 // which player to play the sound from
+        public const byte SWITCH_WEAPON = 33;
+        public const byte SWITCH_PRIMARY = 34;
+        public const byte SWITCH_SECONDARY = 35;
+        public const byte SWITCH_FRAG = 36;
+        public const byte SWITCH_FLASHBANG = 37;
+        public const byte SWITCH_SMOKE = 38;
+        public const byte SWITCH_INCEND = 39;
+        public const byte SWITCH_BOMB = 40;
+        public const byte SWITCH_KNIFE = 41;
 
         // Sounds currently implemented in the game
         public const short AK47_SHOT = 0;

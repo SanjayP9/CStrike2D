@@ -80,7 +80,8 @@ namespace CStrike2D
             float tarShoAngle = (float)Math.Atan2(delta.Y, delta.X);
             float deltaAngle = angle - tarShoAngle;
             float tangentAngle = (float)((Math.PI*0.5f) - deltaAngle);
-            Math.Atan2()
+
+            return false;
         }
     }
 }

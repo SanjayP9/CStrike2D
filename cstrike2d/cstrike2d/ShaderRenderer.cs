@@ -16,7 +16,7 @@ namespace CStrike2D
         public ShaderRenderer(CStrike2D instance)
         {
             driver = instance;
-            BlurAmount = 10f;
+            BlurAmount = 12f;
 
             PresentationParameters pp = driver.GraphicsDevice.PresentationParameters;
             SurfaceFormat format = pp.BackBufferFormat;

@@ -20,6 +20,8 @@ namespace CStrike2DServer
 
         public short PlayerID { get; private set; }
 
+        public short CurrentWeapon { get; private set; }
+
         public short PrimaryWeapon { get; private set; }
 
         public short SecondaryWeapon { get; private set; }
@@ -33,6 +35,11 @@ namespace CStrike2DServer
             Client = client;
             PlayerID = playerID;
             Team = NetInterface.Team.Spectator;
+        }
+
+        public void SetCurrentWeapon(short weapon)
+        {
+            CurrentWeapon = weapon;
         }
 
         public void SetPrimaryWeapon(short weapon)
