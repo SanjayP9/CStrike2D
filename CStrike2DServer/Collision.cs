@@ -37,14 +37,18 @@ namespace CStrike2D
 
         public static bool BulletToPerson(Vector2 shootingPlayer, Vector2 enemyPlayer, float shotAngle, float playerRadius)
         {
-            float mPlayer = (float)Math.Tan(shotAngle);
+            float mPlayer = (float)Math.Atan(-shotAngle);
             float bPlayer = shootingPlayer.Y - mPlayer * shootingPlayer.X;
-            float bEnemy = enemyPlayer.Y + mPlayer * shootingPlayer.X;
+            float bEnemy = enemyPlayer.Y + mPlayer * enemyPlayer.X;
 
             float poiX = (bEnemy - bPlayer) / (2 * mPlayer);
             float poiY = mPlayer * poiX + bPlayer;
 
             Vector2 poi = new Vector2(poiX, poiY);
+            float distance = ((poi.X - enemyPlayer.X)*(poi.X - enemyPlayer.X)) +
+                             ((poi.Y - enemyPlayer.Y)*(poi.Y - enemyPlayer.Y));
+
+            float vectD = Vector2.Distance(enemyPlayer, poi);
 
             return Vector2.Distance(poi, enemyPlayer) <= playerRadius;
         }
@@ -68,6 +72,15 @@ namespace CStrike2D
                                       (circleDistance.Y - rect.Height / 2) * (circleDistance.Y - rect.Height / 2);
 
             return (cornerDistance_sq <= (radius * radius));
+        }
+
+        public static bool BtP(Vector2 shooter, Vector2 target, float angle, float radius)
+        {
+            Vector2 delta = target - shooter;
+            float tarShoAngle = (float)Math.Atan2(delta.Y, delta.X);
+            float deltaAngle = angle - tarShoAngle;
+            float tangentAngle = (float)((Math.PI*0.5f) - deltaAngle);
+            Math.Atan2()
         }
     }
 }

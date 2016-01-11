@@ -16,7 +16,7 @@ namespace CStrike2DServer
 
         private static List<Player> players = new List<Player>();
         private static short playerIdentifier;
-        private static string serverVersion = "0.2.1a";            // Server Version
+        private static string serverVersion = "0.2.3a";            // Server Version
         private static int maxPlayers = 32;
         private static int port = 27015;
         private static string buffer = "";
@@ -221,10 +221,10 @@ namespace CStrike2DServer
                                 {
                                     if (player.PlayerID != ply.PlayerID)
                                     {
-                                        if (Collision.BulletToPerson(player.GetPosition(), ply.GetPosition(),
-                                                player.Rotation, 32))
+                                        if (Collision.BtP(player.GetPosition(), ply.GetPosition(),
+                                                player.Rotation, 23f))
                                         {
-                                            throw new Exception("Shots Fired.");
+                                            Console.WriteLine("Collision");
                                         }
                                     }
                                 }

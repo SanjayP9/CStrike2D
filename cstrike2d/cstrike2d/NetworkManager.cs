@@ -105,9 +105,6 @@ namespace CStrike2D
                                             if (!engine.Exists(playerID))
                                             {
                                                 engine.AddPlayer(name, new Vector2(playerX, playerY), playerID, rotation, team);
-
-
-
                                             }
                                             if (PlayerID == playerID)
                                             {
