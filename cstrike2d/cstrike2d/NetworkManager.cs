@@ -102,8 +102,9 @@ namespace CStrike2D
                                             playerY = msg.ReadFloat();
                                             float rotation = msg.ReadFloat();
                                             byte team = msg.ReadByte();
+                                            if (!engine.Exists(playerID))
                                             {
-                                                engine.AddPlayer(name, new Vector2(playerX, playerY), playerID, rotation, team);
+                                                engine.AddPlayer(name, new Vector2(playerX, playerY), playerID, rotation, team, msg.ReadInt16(), msg.ReadInt16());
                                             }
                                             if (PlayerID == playerID)
                                             {

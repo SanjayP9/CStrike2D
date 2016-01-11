@@ -196,6 +196,7 @@ namespace CStrike2DServer
                                     outMsg.Write(plyr.GetPosition().Y);
                                     outMsg.Write(plyr.Rotation);
                                     outMsg.Write(NetInterface.GetTeamByte(plyr.Team));
+                                    outMsg.Write(entityCounter);
                                     outMsg.Write(plyr.CurrentWeapon);
                                     server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
                                     Console.WriteLine("Sent data about \"" + player.PlayerName + "\"" +
@@ -221,7 +222,7 @@ namespace CStrike2DServer
                                 {
                                     if (player.PlayerID != ply.PlayerID)
                                     {
-                                        if (Collision.BtP(player.GetPosition(), ply.GetPosition(),
+                                        if (Collision.BulletToPerson(player.GetPosition(), ply.GetPosition(),
                                                 player.Rotation, 23f))
                                         {
                                             Console.WriteLine("Collision");
@@ -255,13 +256,15 @@ namespace CStrike2DServer
                                 if (WeaponInfo.GetWeaponType(WeaponInfo.GetWeapon(weapon)) ==
                                     WeaponInfo.WeaponType.Primary)
                                 {
-                                    player.SetPrimaryWeapon(weapon);
+                                    player.SetPrimaryWeapon(weapon, entityCounter);
+                                    player.SetCurrentWeapon(weapon, player.PrimaryWepEntID);
+
                                 }
                                 else
                                 {
-                                    player.SetSecondaryWeapon(weapon);
+                                    player.SetSecondaryWeapon(weapon, entityCounter);
+                                    player.SetCurrentWeapon(weapon, player.PrimaryWepEntID);
                                 }
-                                player.SetCurrentWeapon(weapon);
                                 outMsg.Write(NetInterface.SPAWN_WEAPON);
                                 outMsg.Write(player.PlayerID);
                                 outMsg.Write(entityCounter);
@@ -271,7 +274,7 @@ namespace CStrike2DServer
                                 break;
                             case NetInterface.SWITCH_WEAPON:
                                 player = players.Find(ply => ply.Client.RemoteUniqueIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
-                                player.SetCurrentWeapon(msg.ReadInt16());
+                                player.SetCurrentWeapon(msg.ReadInt16(), msg.ReadInt16());
                                 outMsg.Write(NetInterface.SWITCH_WEAPON);
                                 outMsg.Write(player.PlayerID);
                                 outMsg.Write(player.CurrentWeapon);

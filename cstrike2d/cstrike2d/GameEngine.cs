@@ -88,10 +88,11 @@ namespace CStrike2D
         /// <param name="playerID"></param>
         /// <param name="rotation"></param>
         /// <param name="team"></param>
-        public void AddPlayer(string name, Vector2 position, short playerID, float rotation, byte team)
+        public void AddPlayer(string name, Vector2 position, short playerID, float rotation, byte team, short entityID, short curWeapon)
         {
             Player ply = new Player(name, position, playerID, team, assets);
             ply.SetRot(rotation);
+            ply.SetWeapon(entityID, curWeapon);
             Players.Add(ply);
         }
 

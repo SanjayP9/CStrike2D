@@ -21,10 +21,13 @@ namespace CStrike2DServer
         public short PlayerID { get; private set; }
 
         public short CurrentWeapon { get; private set; }
+        public short CurWeaponEntID { get; private set; }
 
         public short PrimaryWeapon { get; private set; }
+        public short PrimaryWepEntID { get; private set; }
 
         public short SecondaryWeapon { get; private set; }
+        public short SecondaryWepEntID { get; private set; }
 
         public NetInterface.Team Team { get; private set; }
 
@@ -37,17 +40,17 @@ namespace CStrike2DServer
             Team = NetInterface.Team.Spectator;
         }
 
-        public void SetCurrentWeapon(short weapon)
+        public void SetCurrentWeapon(short weapon, short entityID)
         {
             CurrentWeapon = weapon;
         }
 
-        public void SetPrimaryWeapon(short weapon)
+        public void SetPrimaryWeapon(short weapon, short entityID)
         {
             PrimaryWeapon = weapon;
         }
 
-        public void SetSecondaryWeapon(short weapon)
+        public void SetSecondaryWeapon(short weapon, short entityID)
         {
             SecondaryWeapon = weapon;
         }
