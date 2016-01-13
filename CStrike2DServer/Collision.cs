@@ -52,16 +52,16 @@ namespace CStrike2D
             //{
             //    poiA = (float)Math.PI * 2f + poiA;
             //}
-            if (shotAngle < Math.PI/2 && poiX < 0)
+            if (shotAngle < Math.PI/2 && poiX - shootingPlayer.X < 0)
             {
                 return false;
             }
-            if (shotAngle > Math.PI)
+            if (shotAngle >= Math.PI)
             {
                 shotAngle = (float)Math.PI * 2f + shotAngle;
             }
 
-            if(shotAngle > Math.PI && poiY > 0 || shotAngle < Math.PI && poiY < 0)
+            if (shotAngle > Math.PI && poiY - shootingPlayer.Y > 0 || shotAngle < Math.PI && poiY - shootingPlayer.Y< 0)
             {
                 return false;
             }
