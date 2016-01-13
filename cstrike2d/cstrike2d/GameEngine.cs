@@ -28,6 +28,9 @@ namespace CStrike2D
         private bool teamSelect = true;
         private bool showScoreBoard = false;
 
+        public bool Flashed { get; private set; }
+        private float flashTimer;
+
         public GameEngineState CurState { get; set; }
 
         public enum GameEngineState
@@ -309,8 +312,24 @@ namespace CStrike2D
                                 clientPlayer.SwitchWeapon(WeaponInfo.WeaponType.Knife);
                                 network.SwitchWeapon(NetInterface.SWITCH_KNIFE);
                             }
+
+                            if (input.Tapped(Keys.K))
+                            {
+                                audioManager.PlaySound("flashbang1", audioManager.SoundEffectVolume, clientPlayer.Position,
+                                    clientPlayer.Position);
+                                Flashed = true;
+                                flashTimer = 20f;
+                            }
                         }
 
+                        if (Flashed)
+                        {
+                            if (flashTimer >= 0f)
+                            {
+                                flashTimer -= 0.2f;
+                                driver.Model.Shader.ChangeBlurAmount(flashTimer * 2f);
+                            }
+                        }
 
                         if (input.Tapped(Keys.W) || input.Held(Keys.W))
                         {
@@ -457,6 +476,11 @@ namespace CStrike2D
                 foreach (Player ply in Players)
                 {
                     ply.Draw(sb);
+                }
+
+                if (Flashed)
+                {
+                    sb.Draw(assets.PixelTexture, new Rectangle(0, 0, 1280, 720), Color.White * ((flashTimer * 2) / 20f));
                 }
             }
         }

@@ -73,7 +73,7 @@ namespace CStrike2D
                             case NetState.Disconnected:
                                 break;
                             case NetState.Handshake:
-                                Thread.Sleep(100);
+                                Thread.Sleep(250);
                                 byte acknowledge = msg.ReadByte();
                                 if (acknowledge == NetInterface.HANDSHAKE)
                                 {
