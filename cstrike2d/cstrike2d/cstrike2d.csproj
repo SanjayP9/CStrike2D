@@ -96,6 +96,8 @@
     <Compile Include="MathOps.cs" />
     <Compile Include="NetInterface.cs" />
     <Compile Include="NetworkManager.cs" />
+    <Compile Include="ParticleModel.cs" />
+    <Compile Include="ParticleView.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="SoundContainer.cs" />
     <Compile Include="TextBox.cs" />
