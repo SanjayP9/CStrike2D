@@ -167,7 +167,7 @@ namespace CStrike2DServer
 
                                 outMsg.Write(NetInterface.PLAYER_DC);
                                 outMsg.Write(player.PlayerID);
-                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
+                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
                                 Console.WriteLine("\"" + player.PlayerName + "\" has left the server");
                                 players.Remove(player);
                                 break;
@@ -181,7 +181,7 @@ namespace CStrike2DServer
                             case NetInterface.HANDSHAKE:
                                 player = new Player(msg.ReadString(), msg.SenderConnection, playerIdentifier);
                                 player.SetPosition(new Vector2(players.Count * 50, players.Count * 50));
-                                player.SetCurrentWeapon(NetInterface.WEAPON_KNIFE, entityCounter);
+                                player.SetCurrentWeapon(NetInterface.SWITCH_KNIFE, entityCounter);
                                 players.Add(player);
                                 entityCounter++;
                                 Console.WriteLine("Player: \"" + player.PlayerName + "\" Connected. Identifier: " + playerIdentifier);
@@ -199,7 +199,7 @@ namespace CStrike2DServer
                                     outMsg.Write(NetInterface.GetTeamByte(plyr.Team));
                                     outMsg.Write(entityCounter);
                                     outMsg.Write(plyr.CurrentWeapon);
-                                    server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
+                                    server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
                                     Console.WriteLine("Sent data about \"" + player.PlayerName + "\"" +
                                                       " to player \"" + plyr.PlayerName + "\"");
                                 }
@@ -249,7 +249,7 @@ namespace CStrike2DServer
                                 outMsg.Write(NetInterface.PLY_CHANGE_TEAM);
                                 outMsg.Write(player.PlayerID);
                                 outMsg.Write(NetInterface.GetTeamByte(player.Team));
-                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
+                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
                                 break;
                             case NetInterface.SPAWN_WEAPON:
                                 short weapon = msg.ReadInt16();
@@ -270,7 +270,7 @@ namespace CStrike2DServer
                                 outMsg.Write(player.PlayerID);
                                 outMsg.Write(entityCounter);
                                 outMsg.Write(weapon);
-                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
+                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
                                 entityCounter++;
                                 break;
                             case NetInterface.SWITCH_WEAPON:
