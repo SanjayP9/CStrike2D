@@ -41,6 +41,7 @@ namespace CStrike2D
             double enemytoPlayerA = Math.Atan((double)((enemyPlayer.Y - shootingPlayer.Y)/(enemyPlayer.X - shootingPlayer.X));
             if (0 <= shotAngle && shotAngle < Math.PI)
             {
+                return false;
                 shotAngle = (float)Math.PI * 2f + shotAngle;
             }
             
