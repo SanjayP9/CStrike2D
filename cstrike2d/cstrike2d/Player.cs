@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -102,6 +103,7 @@ namespace CStrike2D
         public void SetRot(float rotation)
         {
             this.rotation = rotation;
+            Debug.WriteLine(rotation);
         }
 
         public void Fire()

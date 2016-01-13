@@ -5,6 +5,7 @@
 // Modified Date: Jan 3rd, 2016
 // Description: Handles all logic and drawing of the in-game components
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -195,16 +196,19 @@ namespace CStrike2D
                         {
                             showMenu = !showMenu;
 
-                            if (showMenu)
-                            {
-                                driver.Model.InterfaceManager.ShowPage("buyMenu");
-                                driver.Model.InterfaceManager.ShowPage("buyButtonMenu");
-                            }
-                            else
-                            {
-                                driver.Model.InterfaceManager.HideAll();
-                            }
+
                         }
+
+                        if (showMenu)
+                        {
+                            driver.Model.InterfaceManager.ShowPage("buyMenu");
+                            driver.Model.InterfaceManager.ShowPage("buyButtonMenu");
+                        }
+                        else
+                        {
+                            driver.Model.InterfaceManager.HideAll();
+                        }
+
 
                         if (showMenu)
                         {

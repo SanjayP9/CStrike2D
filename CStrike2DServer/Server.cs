@@ -224,7 +224,7 @@ namespace CStrike2DServer
                                     if (player.PlayerID != ply.PlayerID)
                                     {
                                         if (Collision.BulletToPerson(player.GetPosition(), ply.GetPosition(),
-                                                player.Rotation, 23f))
+                                                player.Rotation, 128f))
                                         {
                                             Console.WriteLine("Collision");
                                         }

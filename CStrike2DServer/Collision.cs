@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,8 +38,13 @@ namespace CStrike2D
 
         public static bool BulletToPerson(Vector2 shootingPlayer, Vector2 enemyPlayer, float shotAngle, float playerRadius)
         {
+            /*
+            if (shotAngle < 0)
+            {
+                shotAngle = (float)Math.PI * 2f + shotAngle;
+            }
+            */
             float mPlayer = (float)Math.Tan(shotAngle);
-            
             float bPlayer = shootingPlayer.Y - mPlayer * shootingPlayer.X;
             float bEnemy = enemyPlayer.Y + mPlayer * enemyPlayer.X;
 
@@ -46,25 +52,7 @@ namespace CStrike2D
             float poiY = mPlayer * poiX + bPlayer;
 
             Vector2 poi = new Vector2(poiX, poiY);
-            //float poiA = (float)(Math.Atan((double)((poiY - shootingPlayer.Y) / (poiX - shootingPlayer.X))));
-
-            //if (poiA > Math.PI)
-            //{
-            //    poiA = (float)Math.PI * 2f + poiA;
-            //}
-            if (shotAngle > Math.PI)
-            {
-                shotAngle = (float)Math.PI * 2f + shotAngle;
-            }
-            if (shotAngle < Math.PI/2 && poiX - shootingPlayer.X < 0)
-            {
-                return false;
-            }
-           
-            if (shotAngle > Math.PI && poiY - shootingPlayer.Y > 0 || shotAngle < Math.PI && poiY - shootingPlayer.Y< 0)
-            {
-                return false;
-            }
+            
 
             return Vector2.Distance(poi, enemyPlayer) <= playerRadius;
         }
