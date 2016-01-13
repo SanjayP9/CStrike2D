@@ -21,7 +21,7 @@ namespace CStrike2D
             sb.Draw(particleImg,
                     Model.ParticlePosition,
                     null,//Model.SourceRect,
-                    Model.ParticleColor * Model.ParticleTransparency,
+                    Model.ReturnColor() * Model.ParticleTransparency,
                     0f,
                     new Vector2(particleImg.Width * 0.5f, particleImg.Width * 0.5f),
                     Model.ParticleScale,
