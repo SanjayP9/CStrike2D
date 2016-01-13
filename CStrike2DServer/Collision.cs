@@ -61,7 +61,7 @@ namespace CStrike2D
                 shotAngle = (float)Math.PI * 2f + shotAngle;
             }
 
-            if(shotAngle > Math.PI && poiY - shootingPlayer.Y > 0 || shotAngle < Math.PI && poiY - shootingPlayer.Y< 0)
+            if (shotAngle > Math.PI && poiY - shootingPlayer.Y > 0 || shotAngle < Math.PI && poiY - shootingPlayer.Y< 0)
             {
                 return false;
             }
