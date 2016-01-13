@@ -46,12 +46,15 @@ namespace CStrike2DServer
             {
                 case NetInterface.SWITCH_PRIMARY:
                     CurrentWeapon = PrimaryWeapon;
+                    CurWeaponEntID = PrimaryWepEntID;
                     break;
                 case NetInterface.SWITCH_SECONDARY:
                     CurrentWeapon = SecondaryWeapon;
+                    CurWeaponEntID = SecondaryWepEntID;
                     break;
                 case NetInterface.SWITCH_KNIFE:
-                    CurrentWeapon = NetInterface.SWITCH_KNIFE;
+                    CurrentWeapon = NetInterface.WEAPON_KNIFE;
+                    CurWeaponEntID = entityID;
                     break;
             }
         }
