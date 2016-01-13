@@ -65,7 +65,13 @@
   <ItemGroup>
     <Folder Include="sound\sfx\player\" />
     <Folder Include="sound\sfx\radio\" />
-    <Folder Include="texture\weapon\" />
+    <Folder Include="texture\weapon\aug\" />
+    <Folder Include="texture\weapon\famas\" />
+    <Folder Include="texture\weapon\glock\" />
+    <Folder Include="texture\weapon\m4a1\" />
+    <Folder Include="texture\weapon\mp7\" />
+    <Folder Include="texture\weapon\p90\" />
+    <Folder Include="texture\weapon\usp\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="sound\sfx\weapon\ak47d.wav">
@@ -122,6 +128,66 @@
   <ItemGroup>
     <Compile Include="sound\sfx\weapon\awp.wav">
       <Name>awp</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="texture\weapon\awp\awp.png">
+      <Name>awp</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="texture\weapon\awp\awp_d.png">
+      <Name>awp_d</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="texture\weapon\awp\awp_m.png">
+      <Name>awp_m</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="texture\weapon\ak47\ak47.png">
+      <Name>ak47</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="texture\weapon\ak47\ak47_d.png">
+      <Name>ak47_d</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="texture\weapon\ak47\ak47_m.png">
+      <Name>ak47_m</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="texture\weapon\knife\knife.png">
+      <Name>knife</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="fx\blur.fx">
+      <Name>blur</Name>
+      <Importer>EffectImporter</Importer>
+      <Processor>EffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="sound\sfx\weapon\flashbang_explode1.wav">
+      <Name>flashbang_explode1</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="sound\sfx\weapon\flashbang_explode2.wav">
+      <Name>flashbang_explode2</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>

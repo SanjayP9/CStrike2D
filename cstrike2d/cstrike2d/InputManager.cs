@@ -48,6 +48,26 @@ namespace CStrike2D
         }
 
         /// <summary>
+        /// Check if a key is up
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool IsKeyUp(Keys key)
+        {
+            return keyboardState.IsKeyUp(key);
+        }
+
+        /// <summary>
+        /// Check if a key is down
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool IsKeyDown(Keys key)
+        {
+            return keyboardState.IsKeyDown(key);
+        }
+
+        /// <summary>
         /// Checks if a key was tapped
         /// </summary>
         /// <param name="key"></param>
@@ -95,6 +115,12 @@ namespace CStrike2D
         {
             return prevMouseState.LeftButton == ButtonState.Pressed &&
                    mouseState.LeftButton == ButtonState.Released;
+        }
+
+        public bool LeftClickImmediate()
+        {
+            return prevMouseState.LeftButton == ButtonState.Released &&
+                   mouseState.LeftButton == ButtonState.Pressed;
         }
 
         /// <summary>

@@ -4,6 +4,8 @@
 // Creation Date: Dec 23rd, 2015
 // Modified Date: Jan 3rd, 2016
 // Description: Stores all assets required in the game and is globally accessible
+
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -25,6 +27,8 @@ namespace CStrike2D
 
         public Texture2D CTTexture { get; private set; }
 
+        public Effect BlurEffect { get; private set; }
+
         /// <summary>
         /// Loads assets that are required at the start of the application (fonts, UI)
         /// </summary>
@@ -40,6 +44,10 @@ namespace CStrike2D
         /// </summary>
         private ContentManager gameContentLoader;
 
+        public bool GameContentLoaded { get; private set; }
+
+        private Texture2D[,] weaponTextures;
+
         public Assets(CStrike2D instance)
         {
             // Initialize Content Loaders
@@ -50,6 +58,8 @@ namespace CStrike2D
             coreContentLoader.RootDirectory = "Content";
             mapContentLoader.RootDirectory = "Content";
             gameContentLoader.RootDirectory = "Content";
+
+            GameContentLoaded = false;
         }
 
         /// <summary>
@@ -71,6 +81,10 @@ namespace CStrike2D
             instance.Model.AudioManager.AddSound(new SoundContainer("ak47shotdistant", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/ak47d")));
             instance.Model.AudioManager.AddSound(new SoundContainer("buttonclick", coreContentLoader.Load<SoundEffect>("sound/sfx/ui/buttonclick")));
             instance.Model.AudioManager.AddSound(new SoundContainer("awpshot", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/awp")));
+            instance.Model.AudioManager.AddSound(new SoundContainer("flashbang1", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/flashbang_explode1")));
+            instance.Model.AudioManager.AddSound(new SoundContainer("flashbang2", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/flashbang_explode2")));
+            
+            BlurEffect = coreContentLoader.Load<Effect>("fx/blur");
         }
 
         /// <summary>
@@ -86,7 +100,28 @@ namespace CStrike2D
         /// </summary>
         public void LoadGameContent()
         {
+            string[] weaponNames = Enum.GetNames(typeof (WeaponInfo.Weapon));
+            weaponTextures = new Texture2D[weaponNames.Length, 3];
 
+            for (int i = 0; i < weaponNames.Length; i++)
+            {
+                if (weaponNames[i].Contains("Weapon_Knife"))
+                {
+                    string filePath = "texture/weapon/" + weaponNames[i].Remove(0, 7).ToLower() + "/" +
+                                      weaponNames[i].Remove(0, 7).ToLower();
+                    weaponTextures[i, 0] = gameContentLoader.Load<Texture2D>(filePath);
+                }
+                else
+                {
+                    string filePath = "texture/weapon/" + weaponNames[i].Remove(0, 7).ToLower() + "/" +
+                                      weaponNames[i].Remove(0, 7).ToLower();
+                    weaponTextures[i, 0] = gameContentLoader.Load<Texture2D>(filePath);
+                    weaponTextures[i, 1] = gameContentLoader.Load<Texture2D>(filePath + "_d");
+                    weaponTextures[i, 2] = gameContentLoader.Load<Texture2D>(filePath + "_m");
+                }
+            }
+
+            GameContentLoaded = true;
         }
 
         /// <summary>
@@ -114,6 +149,27 @@ namespace CStrike2D
             coreContentLoader.Unload();
             mapContentLoader.Unload();
             gameContentLoader.Unload();
+        }
+
+        public Texture2D GetWeaponTexture(WeaponInfo.Weapon weapon)
+        {
+            int index = Array.FindIndex((WeaponInfo.WeaponEnums), wepEnum => wepEnum == weapon);
+            switch (weapon)
+            {
+                case WeaponInfo.Weapon.Weapon_AK47:
+                    return weaponTextures[index, 0];
+                case WeaponInfo.Weapon.Weapon_AWP:
+                    return weaponTextures[0, 1];
+                case WeaponInfo.Weapon.Weapon_Knife:
+                    return weaponTextures[2, 0];
+                default:
+                    throw new ArgumentOutOfRangeException("weapon", weapon, null);
+            }
+        }
+
+        public Texture2D[] ReturnWeaponTextures(WeaponInfo.Weapon weapon)
+        {
+            throw new NotImplementedException();
         }
     }
 }

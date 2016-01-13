@@ -47,8 +47,6 @@ namespace CStrike2D
         /// 
         /// </summary>
         public Map NewMap { get; private set; }
-        
-
 
         /// <summary>
         /// 
@@ -82,6 +80,8 @@ namespace CStrike2D
         public Vector2 Center { get; private set; }
 
         public Vector2 Dimensions { get; private set; }
+
+        public ShaderRenderer Shader { get; private set; }
 
         private const float SPRAY_TIMER = 0.1f;
         private float shotTimer = 0.0f;
@@ -118,6 +118,8 @@ namespace CStrike2D
             GameEngine = new GameEngine(DriverInstance);
 
             NetworkManager = new NetworkManager(GameEngine);
+
+            Shader = new ShaderRenderer(driver);
         }
 
         /// <summary>
@@ -128,6 +130,13 @@ namespace CStrike2D
             DriverInstance.Assets.LoadCoreContent(DriverInstance);
 
             CurState = State.Menu;
+
+            Shader.Load();
+
+            // Intialize all UI elements in the game
+            #region UI Interface Initialization
+
+            #region Menu Buttons
 
             InterfaceManager.AddComponent(new Bar("menuTopBar", new Rectangle(0, 20, (int)Dimensions.X, 80), 1.0f, 0.65f,
                 Color.Black, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down,
@@ -151,6 +160,9 @@ namespace CStrike2D
 
             InterfaceManager.FormPage("defaultMenu");
 
+            #endregion
+
+            #region Play Menu
 
             InterfaceManager.AddComponent(new Bar("playBar", new Rectangle(0, 100, (int)Dimensions.X, 600), 1.0f, 0.8f,
                 Color.Black, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down,
@@ -160,10 +172,11 @@ namespace CStrike2D
                 "Connect", 1.0f, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.None,
                 DriverInstance.Assets));
 
-
             InterfaceManager.FormPage("playMenu");
 
+            #endregion
 
+            #region Options Menu
 
             InterfaceManager.AddComponent(new Bar("optionsBar", new Rectangle(0, 100, (int)Dimensions.X, 600), 1.0f, 0.8f,
                 Color.Black, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down,
@@ -191,8 +204,167 @@ namespace CStrike2D
 
             InterfaceManager.FormPage("optionsMenu");
 
+            #endregion
+
+            #region Buy Menu
+
+            InterfaceManager.AddComponent(new Bar("buyMenuBar", new Rectangle(90, 20, 1100, 650), 0.4f,
+                0.8f, Color.Black, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Right,
+                DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new TextBox("buyMenuTitle", new Vector2(94, 20), "Buy Menu", Color.White, 0.4f,
+                EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down, DriverInstance.Assets));
+
+            InterfaceManager.FormPage("buyMenu");
+
+            #endregion
+
+            #region Team Select Menu
+
+            InterfaceManager.AddComponent(new TextBox("teamSelectTitle", new Vector2(94, 20), "Buy Menu", Color.White, 0.4f,
+                EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("ctButton", new Rectangle(90, 50, 549, 630), new Color(0, 81, 200),
+                Color.DarkBlue, Color.Gray,
+                "Counter-Terrorists", 0.8f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Up, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("tButton", new Rectangle(639, 50, 549, 630), new Color(255, 0, 25),
+                Color.DarkRed, Color.Gray,
+                "Terrorists", 0.8f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Up, DriverInstance.Assets));
+
+            InterfaceManager.FormPage("teamSelectMenu");
+
+            #endregion
+
+            #region Buy Menu Buttons
+
+            InterfaceManager.AddComponent(new Button("pistolMenuButton", new Rectangle(100, 80, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "1. PISTOLS", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("heavyMenuButton", new Rectangle(100, 160, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "2.  HEAVY", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("smgMenuButton", new Rectangle(100, 240, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "3.  SMGs", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("rifleMenuButton", new Rectangle(100, 320, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "4. RIFLES", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("gearMenuButton", new Rectangle(100, 400, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "5.  GEAR", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("grenadeMenuButton", new Rectangle(100, 480, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "6. GRENADES", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.FormPage("buyButtonMenu");
+
+            #endregion
+
+            #region Pistol Menu Buttons
+
+            InterfaceManager.AddComponent(new Button("uspMenuButton", new Rectangle(100, 80, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "USP-S", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("dualMenuButton", new Rectangle(100, 160, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "Dual Berettas", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("p250menuButton", new Rectangle(100, 240, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "P250", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("57menuButton", new Rectangle(100, 320, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "Five-SeveN", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("deagleMenuButton", new Rectangle(100, 400, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "Desert Eagle", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.FormPage("pistolButtonMenu");
+
+            #endregion
+
+            #region CT Rifle Menu Buttons
+
+            InterfaceManager.AddComponent(new Button("famasMenuButton", new Rectangle(100, 80, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "Famas", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("m4a1MenuButton", new Rectangle(100, 160, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "M4A1", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("ssgMenuButton", new Rectangle(100, 240, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "SSG 08", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("augMenuButton", new Rectangle(100, 320, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "AUG", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("awpMenuButton", new Rectangle(100, 400, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "AWP", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.FormPage("ctRifleButtonMenu");
+
+            #endregion
+
+            #region T Rifle Menu Buttons
+
+            InterfaceManager.AddComponent(new Button("galilMenuButton", new Rectangle(100, 80, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "Galil", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("ak47MenuButton", new Rectangle(100, 160, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "AK47", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("ssgMenuButton", new Rectangle(100, 240, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "SSG 08", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("sg558MenuButton", new Rectangle(100, 320, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "SG558", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new Button("awpMenuButton", new Rectangle(100, 400, 200, 40), Color.Gray,
+                Color.White, Color.DarkGray, "AWP", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
+                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.FormPage("tRifleButtonMenu");
+
+            #endregion
+
+            #region Scoreboard Menu
+
+            InterfaceManager.AddComponent(new Bar("scoreboardBar", new Rectangle(90, 20, 1100, 650), 0.4f,
+                0.8f, Color.Black, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Right,
+                DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new TextBox("scoreboardTitle", new Vector2(94, 20), "Scoreboard", Color.White, 0.4f,
+                EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down, DriverInstance.Assets));
+
+            InterfaceManager.FormPage("scoreboard");
+
+            #endregion
+
+            #endregion
+
+            // Show the menu
             InterfaceManager.ShowPage("defaultMenu");
 
+            // Set the default address to empty
             Address = string.Empty;
 
             // Determine menu background, true if the number is not 0
@@ -208,22 +380,6 @@ namespace CStrike2D
                 Position = new Vector2((NewMap.TileMap.GetLength(0) / 2) * 64 + 32,
                     (NewMap.TileMap.GetLength(1) / 2) * 64 + 32)
             };
-
-            InterfaceManager.AddComponent(new Bar("buyMenuBar", new Rectangle(90, 20, 1100, 650), 0.4f,
-                0.8f, Color.Black, EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Right,
-                DriverInstance.Assets));
-
-            InterfaceManager.AddComponent(new TextBox("buyMenuTitle", new Vector2(94, 20), "Buy Menu", Color.White, 0.4f,
-                EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down, DriverInstance.Assets));
-
-
-            InterfaceManager.FormPage("buyMenu");
-
-            InterfaceManager.AddComponent(new Button("pistolMenuButton", new Rectangle(150, 80, 150, 20), Color.DarkGray,
-                Color.White, Color.White, "Pistols", 0.4f, EasingFunctions.AnimationType.QuinticInOut,
-                GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
-
-            InterfaceManager.FormPage("buyButtonMenu");
         }
 
         public void Update(float gameTime)
@@ -239,6 +395,10 @@ namespace CStrike2D
             switch (CurState)
             {
                 case State.Menu:
+                    if (Shader.BlurAmount >= 0f)
+                    {
+                        Shader.ChangeBlurAmount(Shader.BlurAmount - 0.2f);
+                    }
                     AudioManager.PlaySound("menuMusic", AudioManager.MusicVolume);
 
                     //AudioManager.PlaySound("menuMusic", AudioManager.MusicVolume, Center, new Vector2(Center.X, Center.Y + 100));
@@ -337,10 +497,19 @@ namespace CStrike2D
                             {
                                 Address = Input.GetText(Address);
                             }
+                            
                             break;
                         case NetworkManager.NetState.Connected:
-                            CurState = State.InGame;
-                            GameEngine.CurState = GameEngine.GameEngineState.Active;
+                            if (DriverInstance.Assets.GameContentLoaded)
+                            {
+                                CurState = State.InGame;
+                                GameEngine.CurState = GameEngine.GameEngineState.Active;
+                                InterfaceManager.ShowPage("teamSelectMenu");
+                            }
+                            else
+                            {
+                                DriverInstance.Assets.LoadGameContent();
+                            }
                             break;
                     }
                     break;

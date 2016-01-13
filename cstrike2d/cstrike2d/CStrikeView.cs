@@ -77,8 +77,8 @@ namespace CStrike2D
             switch (model.CurState)
             {
                 case CStrikeModel.State.Menu:
-                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
-
+                    model.Shader.BeginRender();
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null);
                     // Show counter-terrorist background if true, terrorist background if false
                     sb.Draw(model.MenuBackgroundType ? assets.CTMenuBackground : assets.TMenuBackground, Vector2.Zero,
                         Color.White);
@@ -137,6 +137,11 @@ namespace CStrike2D
                                 break;
                         }
                     }
+
+                    sb.End();
+                    model.Shader.Draw(sb);
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
+
                     break;
                 case CStrikeModel.State.Options:
                     break;
@@ -150,8 +155,9 @@ namespace CStrike2D
                 case CStrikeModel.State.LevelEditor:
                     break;
                 case CStrikeModel.State.InGame:
+                    model.Shader.BeginRender();
                     sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, model.Camera.GetTransform(model.DriverInstance.GraphicsDevice));
-                    model.GameEngine.Draw(sb);
+                    model.GameEngine.DrawWorld(sb);
                     sb.End();
                     sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null,
                         cullableRasterizer, null);
@@ -161,6 +167,8 @@ namespace CStrike2D
                     model.InterfaceManager.Draw(sb);
 
                     sb.End();
+                                        
+                    model.Shader.Draw(sb);
                     sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
 
                     sb.DrawString(assets.DefaultFont, "Camera Pos: " + model.Camera.Position, new Vector2(model.Dimensions.X - 200, 30),  Color.White);
