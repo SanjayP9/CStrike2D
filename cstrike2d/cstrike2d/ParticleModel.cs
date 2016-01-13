@@ -50,7 +50,8 @@ namespace CStrike2D
             Fire,
             Smoke,
             GunSmoke,
-            Debris
+            Debris,
+            Shell
         };
         // Stores the current particle type
         public ParticleTypes Type { get; private set; }
