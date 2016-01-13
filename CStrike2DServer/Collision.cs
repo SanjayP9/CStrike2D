@@ -38,10 +38,7 @@ namespace CStrike2D
         public static bool BulletToPerson(Vector2 shootingPlayer, Vector2 enemyPlayer, float shotAngle, float playerRadius)
         {
             float mPlayer = (float)Math.Tan(shotAngle);
-            if(shotAngle > Math.PI)
-            {
-                shotAngle = (float)Math.PI * 2f + shotAngle;
-            }
+            
             float bPlayer = shootingPlayer.Y - mPlayer * shootingPlayer.X;
             float bEnemy = enemyPlayer.Y + mPlayer * enemyPlayer.X;
 
@@ -49,14 +46,22 @@ namespace CStrike2D
             float poiY = mPlayer * poiX + bPlayer;
 
             Vector2 poi = new Vector2(poiX, poiY);
-            float poiA = (float)(Math.Atan((double)((poiY - shootingPlayer.Y) / (poiX - shootingPlayer.X))));
+            //float poiA = (float)(Math.Atan((double)((poiY - shootingPlayer.Y) / (poiX - shootingPlayer.X))));
 
-            if (poiA > Math.PI)
+            //if (poiA > Math.PI)
+            //{
+            //    poiA = (float)Math.PI * 2f + poiA;
+            //}
+            if (shotAngle < Math.PI/2 && poiX < 0)
             {
-                poiA = (float)Math.PI * 2f + poiA;
+                return false;
+            }
+            if (shotAngle > Math.PI)
+            {
+                shotAngle = (float)Math.PI * 2f + shotAngle;
             }
 
-            if(poiA + 0.05f > shotAngle && poiA - 0.05f < shotAngle)
+            if(shotAngle > Math.PI && poiY > 0 || shotAngle < Math.PI && poiY < 0)
             {
                 return false;
             }
