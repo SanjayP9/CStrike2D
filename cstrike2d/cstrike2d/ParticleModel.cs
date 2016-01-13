@@ -17,7 +17,7 @@ namespace CStrike2D
     class ParticleModel
     {
         // Used to store the current particle position and the original emit vector
-        public Vector2 ParticlePosition { get; protected set; }
+        public Vector2 ParticlePosition { get; private set; }
         private Vector2 emitVect;
 
         // Properties used for drawing
@@ -26,7 +26,6 @@ namespace CStrike2D
         //Scales the particles texture size 
         public float ParticleScale { get; private set; }
         //Controls particle texture color overlay
-        public Color ParticleColor { get { return particleColor; } private set; }
         private Color particleColor;
         // Stores an instance of particle model. Used to draw particles
         public ParticleView View { get; private set; }
@@ -164,6 +163,7 @@ namespace CStrike2D
                 case ParticleTypes.Fire:
                     break;
                 case ParticleTypes.Smoke:
+                    ParticleTransparency -= 0.007f;
                     break;
                 case ParticleTypes.GunSmoke:
                     break;
@@ -185,11 +185,12 @@ namespace CStrike2D
             switch (Type)
             {
                 case ParticleTypes.Frag:
-                    ParticleColor = new Color(250, 250, 0);
+                    particleColor = new Color(250, 250, 0);
                     break;
                 case ParticleTypes.Fire:
                     break;
                 case ParticleTypes.Smoke:
+
                     break;
                 case ParticleTypes.GunSmoke:
                     break;
@@ -203,6 +204,12 @@ namespace CStrike2D
         public Vector2 CalcDirectionVect(int angle)
         {
             return new Vector2((float)(Math.Cos(angle)), (float)(Math.Sin(angle)));
+        }
+
+
+        public Color ReturnColor()
+        {
+            return particleColor;
         }
     }
 }
