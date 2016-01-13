@@ -73,7 +73,7 @@ namespace CStrike2D
                             case NetState.Disconnected:
                                 break;
                             case NetState.Handshake:
-                                Thread.Sleep(100);
+                                Thread.Sleep(250);
                                 byte acknowledge = msg.ReadByte();
                                 if (acknowledge == NetInterface.HANDSHAKE)
                                 {
@@ -253,11 +253,12 @@ namespace CStrike2D
             client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered);
         }
 
-        public void SwitchWeapon(byte weaponSwitch)
+        public void SwitchWeapon(short entityID, byte weaponSwitch)
         {
             NetOutgoingMessage outMsg = client.CreateMessage();
             outMsg.Write(NetInterface.SWITCH_WEAPON);
             outMsg.Write(weaponSwitch);
+            outMsg.Write(entityID);
             byteCount += outMsg.LengthBytes;
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
