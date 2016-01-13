@@ -42,7 +42,18 @@ namespace CStrike2DServer
 
         public void SetCurrentWeapon(short weapon, short entityID)
         {
-            CurrentWeapon = weapon;
+            switch (weapon)
+            {
+                case NetInterface.SWITCH_PRIMARY:
+                    CurrentWeapon = PrimaryWeapon;
+                    break;
+                case NetInterface.SWITCH_SECONDARY:
+                    CurrentWeapon = SecondaryWeapon;
+                    break;
+                case NetInterface.SWITCH_KNIFE:
+                    CurrentWeapon = NetInterface.SWITCH_KNIFE;
+                    break;
+            }
         }
 
         public void SetPrimaryWeapon(short weapon, short entityID)

@@ -300,17 +300,17 @@ namespace CStrike2D
                             if (input.Tapped(Keys.D1))
                             {
                                 clientPlayer.SwitchWeapon(WeaponInfo.WeaponType.Primary);
-                                network.SwitchWeapon(NetInterface.SWITCH_PRIMARY);
+                                network.SwitchWeapon(clientPlayer.PrimaryWeapon.EntityID, NetInterface.SWITCH_PRIMARY);
                             }
                             else if (input.Tapped(Keys.D2))
                             {
                                 clientPlayer.SwitchWeapon(WeaponInfo.WeaponType.Secondary);
-                                network.SwitchWeapon(NetInterface.SWITCH_SECONDARY);
+                                network.SwitchWeapon(clientPlayer.SecondaryWeapon.EntityID, NetInterface.SWITCH_SECONDARY);
                             }
                             else if (input.Tapped(Keys.D3))
                             {
                                 clientPlayer.SwitchWeapon(WeaponInfo.WeaponType.Knife);
-                                network.SwitchWeapon(NetInterface.SWITCH_KNIFE);
+                                network.SwitchWeapon(clientPlayer.Knife.EntityID, NetInterface.SWITCH_KNIFE);
                             }
 
                             if (input.Tapped(Keys.K))

@@ -512,5 +512,10 @@ namespace CStrike2DServer
 
             #endregion
         }
+
+        static void GiveWeapon(short weaponID, short playerID)
+        {
+            
+        }
     }
 }
