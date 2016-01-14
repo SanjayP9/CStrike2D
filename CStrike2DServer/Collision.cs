@@ -60,7 +60,7 @@ namespace CStrike2D
 
         public static bool LineRectangle(Rectangle enemyPlayer, float shotAngle, float mPlayer, float bPlayer)
         {
-            // Find centre and distance from centre to top right corner
+            // Find centre and distance from centre to top left corner
             Vector2 centre = new Vector2(enemyPlayer.X + enemyPlayer.Width * 0.5f, enemyPlayer.Y - enemyPlayer.Height * 0.5f);
             float distance = Vector2.Distance(new Vector2(enemyPlayer.X, enemyPlayer.Y), centre);
 
@@ -68,9 +68,9 @@ namespace CStrike2D
             float x = enemyPlayer.X;
             float y = enemyPlayer.Y;
 
-            /////////////////////////////////
-            // FIND ROTATION OF EACH CORNER//
-            /////////////////////////////////
+            //////////////////////////////////
+            // FIND ROTATION OF EACH CORNER //
+            //////////////////////////////////
             Vector2 topLeft = new Vector2((float)(x * Math.Cos(shotAngle) - y * Math.Sin(shotAngle)) + centre.X,
                                           (float)(y * Math.Cos(shotAngle) + x * Math.Sin(shotAngle)) + centre.Y);
 
