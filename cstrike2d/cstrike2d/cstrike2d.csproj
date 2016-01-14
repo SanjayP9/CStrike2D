@@ -96,7 +96,8 @@
     <Compile Include="MathOps.cs" />
     <Compile Include="NetInterface.cs" />
     <Compile Include="NetworkManager.cs" />
-    <Compile Include="ClientHandler.cs" />
+    <Compile Include="ParticleEmitterModel.cs" />
+    <Compile Include="ParticleEmitterView.cs" />
     <Compile Include="ParticleModel.cs" />
     <Compile Include="ParticleView.cs" />
     <Compile Include="Player.cs" />

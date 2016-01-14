@@ -16,6 +16,12 @@ namespace CStrike2D
 {
     class ParticleModel
     {
+        // Constants used to store to control the update frequency
+        private const float SMOKE_UPDATE_FREQ = 50.0f;
+
+        private float updateTime = 0.0f;
+        private float updateFreq = 0.0f;
+
         // Used to store the current particle position and the original emit vector
         public Vector2 ParticlePosition { get; private set; }
         private Vector2 emitVect;
@@ -50,7 +56,8 @@ namespace CStrike2D
             Fire,
             Smoke,
             GunSmoke,
-            Debris
+            Debris,
+            Shell
         };
         // Stores the current particle type
         public ParticleTypes Type { get; private set; }
@@ -95,9 +102,12 @@ namespace CStrike2D
 
 
                     break;
+
                 case ParticleTypes.Fire:
                     break;
+
                 case ParticleTypes.Smoke:
+                    updateFreq = SMOKE_UPDATE_FREQ;
 
                     particleColor = Color.Gray;
                     particleDirection = CalcDirectionVect(rand.Next(0, 361));
@@ -126,49 +136,62 @@ namespace CStrike2D
         {
             // Adds elapsed game time to 
             ParticleLifeTime += gameTime;
+            updateTime += gameTime;
 
-            // Adds the direction multiplied by the speed to the current particle position
-            ParticlePosition += particleDirection * particleVelocity;
 
-            switch (Type)
+            if (updateTime > updateFreq)
             {
-                case ParticleTypes.Frag:
+                updateTime = 0.0f;
 
-                    if (particleColor.G > 165)
-                    {
-                        particleColor.G -= 17;
-                    }
-                    else
-                    {
-                        if (particleColor.R > 0)
+                // Adds the direction multiplied by the speed to the current particle position
+                ParticlePosition += particleDirection * particleVelocity;
+
+                if (ParticleTransparency <= 0.0f)
+                {
+                    Respawn();
+                }
+
+
+                switch (Type)
+                {
+                    case ParticleTypes.Frag:
+
+                        if (particleColor.G > 165)
                         {
-                            particleColor.R -= 10;
+                            particleColor.G -= 17;
                         }
-                        if (particleColor.G > 0)
+                        else
                         {
-                            particleColor.G -= 15;
+                            if (particleColor.R > 0)
+                            {
+                                particleColor.R -= 10;
+                            }
+                            if (particleColor.G > 0)
+                            {
+                                particleColor.G -= 15;
+                            }
                         }
-                    }
 
 
-                    ParticleTransparency -= 0.02f;
-                    particleVelocity -= 0.025f;
+                        ParticleTransparency -= 0.02f;
+                        particleVelocity -= 0.025f;
 
-                    if (ParticleScale < 0.4f)
-                    {
-                        ParticleScale += 0.01f;
-                    }
+                        if (ParticleScale < 0.4f)
+                        {
+                            ParticleScale += 0.01f;
+                        }
 
-                    break;
-                case ParticleTypes.Fire:
-                    break;
-                case ParticleTypes.Smoke:
-                    ParticleTransparency -= 0.007f;
-                    break;
-                case ParticleTypes.GunSmoke:
-                    break;
-                case ParticleTypes.Debris:
-                    break;
+                        break;
+                    case ParticleTypes.Fire:
+                        break;
+                    case ParticleTypes.Smoke:
+                        ParticleTransparency -= 0.007f;
+                        break;
+                    case ParticleTypes.GunSmoke:
+                        break;
+                    case ParticleTypes.Debris:
+                        break;
+                }
             }
 
         }
