@@ -38,7 +38,7 @@ namespace CStrike2D
 
         public static bool BulletToPerson(Vector2 shootingPlayer, Vector2 enemyPlayer, float shotAngle, float playerRadius)
         {
-            double enemytoPlayerA = Math.Atan((double)((enemyPlayer.Y - shootingPlayer.Y)/(enemyPlayer.X - shootingPlayer.X));
+            double enemytoPlayerA = Math.Atan((double)((enemyPlayer.Y - shootingPlayer.Y)/(enemyPlayer.X - shootingPlayer.X)));
             if (0 <= shotAngle && shotAngle < Math.PI)
             {
                 return false;
@@ -56,6 +56,51 @@ namespace CStrike2D
             
 
             return Vector2.Distance(poi, enemyPlayer) <= playerRadius;
+        }
+
+        public static bool LineRectangle(Rectangle enemyPlayer, float shotAngle, float mPlayer, float bPlayer)
+        {
+            Vector2 centre = new Vector2(enemyPlayer.X + enemyPlayer.Width * 0.5f, enemyPlayer.Y - enemyPlayer.Height * 0.5f);
+            float distance = Vector2.Distance(new Vector2(enemyPlayer.X, enemyPlayer.Y), centre);
+
+            float x = enemyPlayer.X;
+            float y = enemyPlayer.Y;
+            Vector2 topLeft = new Vector2((float)(x * Math.Cos(shotAngle) - y * Math.Sin(shotAngle)) + centre.X,
+                                          (float)(y * Math.Cos(shotAngle) + x * Math.Sin(shotAngle)) + centre.Y);
+
+            x = enemyPlayer.X + enemyPlayer.Width;
+            y = enemyPlayer.Y;
+            Vector2 topRight = new Vector2((float)(x * Math.Cos(shotAngle) - y * Math.Sin(shotAngle)) + centre.X,
+                                          (float)(y * Math.Cos(shotAngle) + x * Math.Sin(shotAngle)) + centre.Y);
+
+            x = enemyPlayer.X;
+            y = enemyPlayer.Y - enemyPlayer.Height;
+            Vector2 bottomLeft = new Vector2((float)(x * Math.Cos(shotAngle) - y * Math.Sin(shotAngle)) + centre.X,
+                                          (float)(y * Math.Cos(shotAngle) + x * Math.Sin(shotAngle)) + centre.Y);
+
+            x = enemyPlayer.X + enemyPlayer.Width;
+            y = enemyPlayer.Y - enemyPlayer.Height;
+            Vector2 bottomRight = new Vector2((float)(x * Math.Cos(shotAngle) - y * Math.Sin(shotAngle)) + centre.X,
+                                          (float)(y * Math.Cos(shotAngle) + x * Math.Sin(shotAngle)) + centre.Y);
+
+
+            float m1 = ((topLeft.Y - bottomRight.Y) / (topLeft.X - bottomRight.X));
+            float b1 = centre.Y - m1 * centre.X;
+            float poiX1 = (b1 - bPlayer) / (mPlayer - m1);
+            float poiY1 = m1 * poiX1 + b1;
+
+            float m2 = ((topRight.Y - bottomLeft.Y) / (topRight.X - bottomLeft.X));
+            float b2 = centre.Y - m2 * centre.X;
+            float poiX2 = (b2 - bPlayer) / (mPlayer - m2);
+            float poiY2 = m2 * poiX1 + b2;
+
+            if(Vector2.Distance(centre, new Vector2(poiX1,poiY1)) <= distance || 
+               Vector2.Distance(centre, new Vector2(poiX2,poiY2)) <= distance)
+            {
+                return true;
+            }
+
+            return false;
         }
         
         public static bool CircleToRectangle(Vector2 circle, Rectangle rect, float radius)
@@ -77,16 +122,6 @@ namespace CStrike2D
                                       (circleDistance.Y - rect.Height / 2) * (circleDistance.Y - rect.Height / 2);
 
             return (cornerDistance_sq <= (radius * radius));
-        }
-
-        public static bool BtP(Vector2 shooter, Vector2 target, float angle, float radius)
-        {
-            Vector2 delta = target - shooter;
-            float tarShoAngle = (float)Math.Atan2(delta.Y, delta.X);
-            float deltaAngle = angle - tarShoAngle;
-            float tangentAngle = (float)((Math.PI*0.5f) - deltaAngle);
-            //Math.Atan2()
-            return false;
         }
     }
 }
