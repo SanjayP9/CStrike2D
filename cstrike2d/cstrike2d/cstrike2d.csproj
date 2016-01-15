@@ -107,6 +107,7 @@
     <Compile Include="ShaderRenderer.cs" />
     <Compile Include="SoundContainer.cs" />
     <Compile Include="TextBox.cs" />
+    <Compile Include="TileManager.cs" />
     <Compile Include="UIManager.cs" />
     <Compile Include="Weapon.cs" />
     <Compile Include="WeaponInfo.cs" />

@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Raycasting
+namespace CStrike2D
 {
     class RayCastView
     {
+        //Newest Version
         public RayCastModel Model { get; private set; }
 
         public RayCastView(RayCastModel model)
@@ -18,18 +19,16 @@ namespace Raycasting
 
         public void Draw(SpriteBatch sb, Texture2D pixelTexture, Texture2D circleTexture)
         {
-
-
             sb.Draw(pixelTexture,
-                    new Rectangle((int)Model.RayPos.X, (int)Model.RayPos.Y, (int)Model.DifferenceVect.Length(), 2),
+                    new Rectangle((int)Model.EmitPos.X, (int)Model.EmitPos.Y, (int)Model.GetRayLength(), 2),
                     null,
-                    Color.Red,
-                    Model.AngleToIntersect,
+                    Model.RayColor,
+                    Model.Angle,
                     Vector2.Zero,
                     SpriteEffects.None,
                     0);
 
-            sb.Draw(circleTexture, new Vector2(Model.IntersectPos.X - (circleTexture.Width * 0.007f * 0.5f), Model.IntersectPos.Y - (circleTexture.Height * 0.007f * 0.5f)), null, Color.Black, 0.0f, Vector2.Zero, 0.007f, SpriteEffects.None, 0);
+            sb.Draw(circleTexture, new Vector2(Model.CollisionPos.X - (circleTexture.Width * 0.0045f), Model.CollisionPos.Y - (circleTexture.Height * 0.0045f)), null, Color.Black, 0.0f, Vector2.Zero, 0.007f, SpriteEffects.None, 0);
         }
     }
 }

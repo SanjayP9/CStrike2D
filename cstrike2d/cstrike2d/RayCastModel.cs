@@ -1,177 +1,118 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Raycasting
+namespace CStrike2D
 {
     class RayCastModel
     {
+        //Newest Version
         public RayCastView View { get; private set; }
 
-        //private bool doesRayCollide;
-        //private Vector2 position;
+        public Vector2 CollisionPos { get; private set; }
+        public Vector2 EmitPos { get; private set; }
+        public Vector2 DirectionVect { get; private set; }
+        public float RayLength { get; private set; }
+        public float Angle { get; private set; }
 
+        public Color RayColor { get; private set; }
 
-        public Vector2 RayPos { get; private set; }
-        public Vector2 DestinationPos { get; private set; }
-
-        public Vector2 IntersectPos { get; private set; }
-        public float AngleToIntersect { get; private set; }
-
-        public Vector2 DifferenceVect { get; private set; }
+        public RayCastResult RayCastLine { get; private set; }
 
         public RayCastModel()
         {
-           View = new RayCastView(this);
+            View = new RayCastView(this);
+            RayCastLine = new RayCastResult();
         }
 
-
-        public void Update(Vector2 rayPos, Vector2 destinationPos, Tile[,] tiles)
+        public void Update(Vector2 emitPos, Vector2 directionVect, float rayLineLength, Tile[,] tiles, float angle)
         {
-            this.RayPos = rayPos;
-            this.DestinationPos = destinationPos;
+            RayCastLine = RayCastMethod(emitPos, directionVect, rayLineLength, tiles, angle);
+            CollisionPos = RayCastLine.CollisionPos;
 
-            IntersectPos = FindIntersection(GetPointsOnRay(rayPos, destinationPos, tiles), tiles);
-
-            //IntersectPos = DestinationPos;//temp
-
-            DifferenceVect = IntersectPos - RayPos;
-            AngleToIntersect = (float)(Math.Atan2(DifferenceVect.Y, DifferenceVect.X));
-
+            if (GetRayLength() > 400f)
+            {
+                RayColor = Color.Green;
+            }
+            else if (GetRayLength() > 250f)
+            {
+                RayColor = Color.Yellow;
+            }
+            else // if (GetRayLength<100f)
+            {
+                RayColor = Color.Red;
+            }
         }
 
-        /// <summary>
-        /// Uses the Bresham Line algorithm to find each of the points on a line segment
-        /// </summary>
-        /// <param name="tiles"></param>
-        /// <returns></returns>
-        public Vector2[] GetPointsOnRay(Vector2 point1, Vector2 point2, Tile[,] tiles)
+        public RayCastResult RayCastMethod(Vector2 emitPos, Vector2 directionVect, float rayLineLength, Tile[,] tiles, float angle)
         {
-            List<Vector2> pointsOnRay = new List<Vector2>();
+
+            this.EmitPos = emitPos;
+            this.DirectionVect = directionVect;
+            this.RayLength = rayLineLength;
+            this.Angle = angle;
 
 
-            // Checks to see if the slope is >45 degrees or <45 degrees. Bu checkin to see if the y values
-            // are larger than the x values
-            bool isSlopeSteep = (Math.Abs(point2.Y - point1.Y) > Math.Abs(point2.X - point1.X));
+            RayCastResult castResult = new RayCastResult();
 
-
-
-            //Swaps Vectors if the slope is steep because
-            if (isSlopeSteep)
+            if (rayLineLength == 0f)
             {
-                point1 = SwapVectorCoordinates(point1);
-                point2 = SwapVectorCoordinates(point2);
+                castResult.CollisionPos = emitPos;
+                castResult.IsColliding = (IsVectorAccessible(emitPos, tiles));
+
+                return castResult;
             }
 
-            //temp
-            bool isLineRightToLeft = (point1.X > point2.X);
-            //temp
+            // 
+            directionVect.Normalize();
 
-            // Checks to see if the points go from left to right if not it swaps the vectors
-            if (isLineRightToLeft)
+            Vector2[] pointsOnRay = GetPointsOnRay(emitPos, emitPos + (directionVect * rayLineLength));
+
+            if (pointsOnRay.Length > 0)
             {
-                Vector2 temp = point1;
+                int index = 0;
 
-                point1 = point2;
-                point2 = temp;
-            }
-
-            Vector2 differenceVect = new Vector2(point2.X - point1.X, (float)(Math.Abs(point2.Y - point1.Y)));
-
-            float error = 0.0f;
-            int yIncriment;
-            int tempY = (int)point1.Y;
-
-            // If slope is positive the yIncriment is positive 1 and of the slope is negative the yIncriment is -1
-            if (point1.Y < point2.Y)
-            {
-                yIncriment = 1;
-            }
-            else //(point1.Y > point2.Y)
-            {
-                yIncriment = -1;
-            }
-
-            // Loops through every x value from point1 to point2
-            for (int currentX = (int)point1.X; currentX <= point2.X; currentX++)
-            {
-            //    if (isLineRightToLeft)
-            //    {
-            //        Vector2 temp = point1;
-
-            //        point1 = point2;
-            //        point2 = temp;
-            //    }
-
-                if (isSlopeSteep || isLineRightToLeft)
+                if (pointsOnRay[0] != emitPos)
                 {
-                    pointsOnRay.Add(new Vector2(tempY, currentX));
-
-                    //temp
-                //    if (isLineRightToLeft)
-                //    {
-                //        pointsOnRay[pointsOnRay.Count - 1] = SwapVectorCoordinates(pointsOnRay[pointsOnRay.Count - 1]);
-                //    }
-                }
-                else
-                {
-                    pointsOnRay.Add(new Vector2(currentX, tempY));
+                    index = pointsOnRay.Length - 1;
                 }
 
-
-
-                error += differenceVect.Y;
-
-                if (error * 2.0f >= differenceVect.X)
+                while (true)
                 {
-                    tempY += yIncriment;
-                    error -= differenceVect.X;
+                    Vector2 tempPoint = pointsOnRay[index];
+
+                    if (!(IsVectorAccessible(tempPoint, tiles)))
+                    {
+                        castResult.CollisionPos = tempPoint;
+                        castResult.IsColliding = true;
+                        break;
+                    }
+                    if (pointsOnRay[0] != emitPos)
+                    {
+                        index--;
+
+                        if (index < 0)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        index++;
+
+                        if (index >= pointsOnRay.Length)
+                        {
+                            break;
+                        }
+                    }
                 }
 
             }
-
-            return pointsOnRay.ToArray();
+            return castResult;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pointsOnRay"></param>
-        /// <param name="tiles"></param>
-        /// <returns></returns>
-        public Vector2 FindIntersection(Vector2[] pointsOnRay, Tile[,] tiles)
-        {
-            int tileX;
-            int tileY;
-
-            // for loop that goes through all the points until it finds a point that is collidable.
-            // It then returns the vector of that point
-
-            for (int i = 0; i < pointsOnRay.Length; i++)
-            {
-
-                tileX = ((int)(pointsOnRay[i].X / TileManager.TILE_SIDE_LENGTH));
-                tileY = ((int)(pointsOnRay[i].Y / TileManager.TILE_SIDE_LENGTH));
-
-                if ((pointsOnRay[i].X == 0) || (pointsOnRay[i].Y == 0) || (pointsOnRay[i].X >= TileManager.TILE_SIDE_LENGTH * TileManager.TILE_X) || (pointsOnRay[i].Y >= TileManager.TILE_SIDE_LENGTH * TileManager.TILE_Y))
-                {
-                    return pointsOnRay[i];
-                }
-
-                if ((tileX >= tiles.GetLength(0)) || (tileY >= tiles.GetLength(1)) || (tileX < 0) || (tileY < 0))
-                {
-                    return pointsOnRay[i];
-                }
-                else if (tiles[tileX, tileY].IsCollidible)
-                {
-                    return pointsOnRay[i];
-                }
-            }
-            return DestinationPos;
-        }
 
         /// <summary>
         /// Swaps the X and Y coordinates of a Vector
@@ -182,5 +123,118 @@ namespace Raycasting
         {
             return new Vector2(point.Y, point.X);
         }
+
+
+        public bool IsVectorAccessible(Vector2 point, Tile[,] tiles)
+        {
+            // Gets current tile based on the coordinates of the point. Math.Floor was used to
+            // get the tile number because tileX and tileY cannot be decimals.
+            int tileX = (int)Math.Floor(point.X / TileManager.TILE_SIDE_LENGTH);
+            int tileY = (int)Math.Floor(point.Y / TileManager.TILE_SIDE_LENGTH);
+
+            // If the tile is ever outside of the 2D tile array then the point will be assumed inaccessable and will be treated
+            // like a solid tile
+            if ((tileX < 0) || (tileY < 0) || (tileX >= TileManager.TILE_X) || (tileY >= TileManager.TILE_Y))
+            {
+                return false;
+            }
+
+            // Using tileX and tileY checks if the tile stored in the 2D tile array at that location is collidable
+            // If point is collidable it cannot be accessible
+            return !(tiles[tileX, tileY].IsSolid);
+
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="point1"></param>
+        /// <param name="point2"></param>
+        /// <returns></returns>
+        //  public Vector2[] GetPointsOnRayDDA(Vector2 point1, Vector2 point2, Vector2 directionVect)
+        //   {
+        //        Vector2[] pointsOnRay;
+
+
+
+        //        return pointsOnRay;
+        //     }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="point1"></param>
+        /// <param name="point2"></param>
+        /// <returns></returns>
+        public Vector2[] GetPointsOnRay(Vector2 point1, Vector2 point2)
+        {
+
+
+            bool isLineSteep = (Math.Abs(point2.Y - point1.Y) >= Math.Abs(point2.X - point1.X));
+
+            if (isLineSteep)
+            {
+                point1 = SwapVectorCoordinates(point1);
+                point2 = SwapVectorCoordinates(point2);
+            }
+
+            if (point1.X > point2.X)
+            {
+                Vector2 temp = point1;
+                point1 = point2;
+                point2 = temp;
+            }
+
+            Vector2 differenceVect = new Vector2(point2.X - point1.X, Math.Abs(point2.Y - point1.Y));
+            int error = 0;
+            float yChange;
+            float currentY = point1.Y;
+
+            if (point1.Y > point2.Y)
+            {
+                yChange = -1;
+            }
+            else
+            {
+                yChange = 1;
+            }
+
+            Vector2[] pointsOnRay = new Vector2[((int)Math.Ceiling(Math.Abs(point2.X - point1.X))) + 1];
+
+            for (int currentX = 0; currentX <= (Math.Abs(point2.X - point1.X)); currentX++)
+            {
+                if (isLineSteep == true)
+                {
+                    pointsOnRay[currentX] = new Vector2(currentY, currentX + point1.X);
+                }
+                else
+                {
+                    pointsOnRay[currentX] = new Vector2(currentX + point1.X, currentY);
+                }
+
+                error += (int)differenceVect.Y;
+
+                if ((error * 2) >= differenceVect.X)
+                {
+                    currentY += yChange;
+                    error -= (int)differenceVect.X;
+                }
+            }
+
+            return pointsOnRay;
+        }
+
+        public float GetRayLength()
+        {
+            return (RayCastLine.CollisionPos - EmitPos).Length();
+        }
+
+    }
+
+    public class RayCastResult
+    {
+        public bool IsColliding { get; set; }
+        public Vector2 CollisionPos { get; set; }
     }
 }
