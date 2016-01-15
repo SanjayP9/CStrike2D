@@ -20,6 +20,8 @@ namespace CStrike2D
         private AudioManager audio;
         private CStrike2D driver;
 
+        Vector2 tileSetOffset = Vector2.Zero;
+
         public LevelEditor(CStrikeModel model)
         {
             driver = model.DriverInstance;
@@ -29,17 +31,12 @@ namespace CStrike2D
 
         public void Update(float gameTime)
         {
-            tiles = new Tile[columns, rows];
-            if(input.MousePosition == (new Vector2(0,0)))
-            {
-                
-            }
-            tiles[0, 0] = selectedTile;
+            //if(input.MousePosition.X)
         }
 
         public void Draw(SpriteBatch sb)
         {
-            
+            sb.Draw(driver.Assets.TileSet, tileSetOffset, Color.White);
         }
     }
 }

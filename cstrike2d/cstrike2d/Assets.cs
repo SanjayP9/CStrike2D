@@ -27,7 +27,10 @@ namespace CStrike2D
 
         public Texture2D CTTexture { get; private set; }
 
+        public Texture2D TileSet { get; private set; }
+
         public Effect BlurEffect { get; private set; }
+
 
         /// <summary>
         /// Loads assets that are required at the start of the application (fonts, UI)
@@ -75,6 +78,7 @@ namespace CStrike2D
             CTMenuBackground = coreContentLoader.Load<Texture2D>("texture/bg/ctmenu");
             TMenuBackground = coreContentLoader.Load<Texture2D>("texture/bg/tmenu");
             CTTexture = coreContentLoader.Load<Texture2D>("texture/player/ct1");
+            TileSet = coreContentLoader.Load<Texture2D>("texture/map/dustTileSet");
 
             instance.Model.AudioManager.AddSound(new SoundContainer("menuMusic", coreContentLoader.Load<SoundEffect>("sound/music/mainmenu")));
             instance.Model.AudioManager.AddSound(new SoundContainer("ak47shot", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/ak47")));

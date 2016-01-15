@@ -35,7 +35,7 @@ namespace CStrike2D
         {
             StreamWriter outFile = File.CreateText(fileName);
 
-            //in the homework he had tile size we prob will max tile size a constant
+            in the homework he had tile size we prob will max tile size a constant
             outFile.WriteLine(tileSize);
 
             outFile.WriteLine(MaxRow);
