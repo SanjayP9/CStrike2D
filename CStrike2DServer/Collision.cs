@@ -68,9 +68,9 @@ namespace CStrike2D
             float x = enemyPlayer.X;
             float y = enemyPlayer.Y;
 
-            //////////////////////////////////
-            // FIND ROTATION OF EACH CORNER //
-            //////////////////////////////////
+            /////////////////////////////////////////////
+            // FIND ROTATED COORDINATES OF EACH CORNER //
+            /////////////////////////////////////////////
             Vector2 topLeft = new Vector2((float)(x * Math.Cos(shotAngle) - y * Math.Sin(shotAngle)) + centre.X,
                                           (float)(y * Math.Cos(shotAngle) + x * Math.Sin(shotAngle)) + centre.Y);
 
