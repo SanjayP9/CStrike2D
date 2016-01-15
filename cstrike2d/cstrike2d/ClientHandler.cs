@@ -13,7 +13,8 @@ namespace CStrike2D
 
         public static void Serialize(NetOutgoingMessage msg, NetClient client)
         {
-            client.SendMessage(msg, NetDeliveryMethod.UnreliableSequenced)
+            client.SendMessage(msg, NetDeliveryMethod.UnreliableSequenced);
+
            
         }
 

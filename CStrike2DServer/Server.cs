@@ -31,6 +31,8 @@ namespace CStrike2DServer
         private static int maxTs = 16;
         private static bool enableCollision = true;
         private static short entityCounter;
+        private static double updateTimer;
+        public const double UPDATE_RATE = 7d;
 
         static void Main(string[] args)
         {
@@ -74,6 +76,7 @@ namespace CStrike2DServer
             if (forceConfigRewrite)
             {
                 WriteFile();
+                
             }
 
             ReadConfig();
@@ -86,6 +89,14 @@ namespace CStrike2DServer
             Console.WriteLine("Server is live.");
 
             sw.Start();
+            while (server.Status == NetPeerStatus.Running)
+            {
+                if (sw.Elapsed.TotalMilliseconds > UPDATE_RATE)
+                {
+                    Simulate();
+                }
+            }
+            /*
             int tick = 0;
             while (server.Status == NetPeerStatus.Running)
             {
@@ -126,6 +137,7 @@ namespace CStrike2DServer
                     }
                 }
             }
+            */
         }
 
         #region Old Code
