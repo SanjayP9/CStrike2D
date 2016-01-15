@@ -99,6 +99,8 @@ sent to the SERVER, along with any of the following bytes
 If a round is currently in progress, the player will start as PlayerState.Dead and must wait
 until StartRound occurs.
 
+7. If SERVER was empty, EndRound is called and the server will reset all entities 
+
 
 
 
@@ -118,4 +120,13 @@ for (int i = 0; i < terrorists; i++)
 
 	spawnPoints.RemoveAt(index);
 }
+}
+
+EndRound()
+{
+	// Calculate money
+	foreach (ServerPlayer[] team in teams)
+	{
+		foreach (player)
+	}
 }

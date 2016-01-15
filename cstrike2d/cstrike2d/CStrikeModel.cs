@@ -1,13 +1,11 @@
 ﻿// Author: Mark Voong
 // File Name: CStrikeModel.cs
-// Project Name: CStrike2D
+// Project Name: Global Offensive
 // Creation Date: Dec 21st, 2015
-// Modified Date: Jan 3rd, 2016
+// Modified Date: Jan 15th, 2016
 // Description: Handles all logic processing of the game
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using LightEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
