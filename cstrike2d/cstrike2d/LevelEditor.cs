@@ -34,9 +34,14 @@ namespace CStrike2D
             //if(input.MousePosition.X)
         }
 
-        public void Draw(SpriteBatch sb)
+        public void DrawWorld(SpriteBatch sb)
         {
             sb.Draw(driver.Assets.TileSet, tileSetOffset, Color.White);
+        }
+
+        public void DrawUI(SpriteBatch sb)
+        {
+            
         }
     }
 }
