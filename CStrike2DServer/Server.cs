@@ -121,13 +121,14 @@ namespace CStrike2DServer
                         bytesIn = 0;
                         bytesOut = 0;
                         Console.WriteLine(buffer);
-
                         SyncServer();
                         tick = 0;
                     }
                 }
             }
         }
+
+        #region Old Code
 
         public static void SyncServer()
         {
@@ -513,9 +514,55 @@ namespace CStrike2DServer
             #endregion
         }
 
-        static void GiveWeapon(short weaponID, short playerID)
+
+        #endregion
+
+        #region New Code
+
+        public static void Simulate()
         {
-            
+            // TODO: Runs all server based logic
         }
+
+        public static void UpdateNetwork()
+        {
+            // TODO : Updates the network, recieves input.
+        }
+
+        public static void SyncWorld()
+        {
+            // TODO: Sends a snapshot of the world to all players to ensure
+            // TODO: everyone is viewing the same thing
+        }
+
+        public static void StartRound()
+        {
+            // TODO: Spawns all players, sets up all timers, etc
+        }
+
+        public static void EndRound()
+        {
+            // TODO: Processes kills, calculates money, etc
+        }
+
+        public static void SpawnWeapon(long playerIdentifier, ServerWeapon weapon)
+        {
+            // TODO: Gives a weapon to a player
+        }
+
+        public static void SpawnPlayer(long playerIdentifier, Vector2 location)
+        {
+            // TODO: Spawns a player onto the map
+        }
+
+        public static void PlantBomb(long playerIdentifier, Vector2 location, bool aSite)
+        {
+            // TODO: Spawns a bomb at a site
+
+            
+            Console.WriteLine("Player planted the bomb at " + (aSite? "A Site" : "B Site"));
+        }
+
+        #endregion
     }
 }

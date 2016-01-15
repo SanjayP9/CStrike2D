@@ -1,13 +1,11 @@
 ﻿// Author: Mark Voong
 // File Name: CStrikeModel.cs
-// Project Name: CStrike2D
+// Project Name: Global Offensive
 // Creation Date: Dec 21st, 2015
-// Modified Date: Jan 3rd, 2016
+// Modified Date: Jan 15th, 2016
 // Description: Handles all logic processing of the game
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using LightEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -35,6 +33,8 @@ namespace CStrike2D
         /// 
         /// </summary>
         public NetworkManager NetworkManager { get; private set; }
+
+        public LevelEditor Editor { get; private set; }
 
         public GameEngine GameEngine { get; private set; }
 
@@ -120,6 +120,8 @@ namespace CStrike2D
             NetworkManager = new NetworkManager(GameEngine);
 
             Shader = new ShaderRenderer(driver);
+
+            Editor = new LevelEditor(this);
         }
 
         /// <summary>
@@ -146,8 +148,8 @@ namespace CStrike2D
                 "Play", 1.5f, EasingFunctions.AnimationType.QuinticOut, GUIComponent.AnimationDirection.Up,
                 DriverInstance.Assets));
 
-            InterfaceManager.AddComponent(new Button("loadoutButton", new Rectangle(400, 20, 200, 80), Color.White,
-                "Loadout", 1.5f, EasingFunctions.AnimationType.QuinticOut, GUIComponent.AnimationDirection.Up,
+            InterfaceManager.AddComponent(new Button("mapEditorButton", new Rectangle(400, 20, 200, 80), Color.White,
+                "Editor", 1.5f, EasingFunctions.AnimationType.QuinticOut, GUIComponent.AnimationDirection.Up,
                 DriverInstance.Assets));
 
             InterfaceManager.AddComponent(new Button("optionsButton", new Rectangle(750, 20, 200, 80), Color.White,
@@ -372,13 +374,9 @@ namespace CStrike2D
 
             FadeIn = true;
 
-            LoadMap("default");
-            WriteMap("bigmap");
-
             Camera = new Camera2D
             {
-                Position = new Vector2((NewMap.TileMap.GetLength(0) / 2) * 64 + 32,
-                    (NewMap.TileMap.GetLength(1) / 2) * 64 + 32)
+                Position = Vector2.Zero
             };
         }
 
@@ -417,6 +415,12 @@ namespace CStrike2D
                     else if (InterfaceManager.Clicked(Input, "defaultMenu", "quitButton"))
                     {
                         DriverInstance.Exit();
+                    }
+                    else if (InterfaceManager.Clicked(Input, "defaultMenu", "mapEditorButton"))
+                    {
+                        InterfaceManager.HideAll();
+                        AudioManager.PlaySound("buttonclick", AudioManager.UiVolume);
+                        CurState = State.LevelEditor;
                     }
 
                     if (InterfaceManager.Clicked(Input, "playMenu", "connectButton"))
@@ -514,6 +518,7 @@ namespace CStrike2D
                     }
                     break;
                 case State.LevelEditor:
+                    Editor.Update(gameTime);
                     break;
                 case State.InGame:
                     GameEngine.Update(gameTime);
@@ -526,7 +531,7 @@ namespace CStrike2D
                 Input.Tock();
             }
         }
-
+        /*
         public void LoadMap(string mapFolder)
         {
             if (File.Exists("map/" + mapFolder + "/tileData.txt"))
@@ -585,6 +590,7 @@ namespace CStrike2D
             LoadMap("bigmap");
         }
 
+        
         public int[] GetCollidableTiles(int origin)
         {
             List<int> tiles = new List<int>();
@@ -600,7 +606,7 @@ namespace CStrike2D
             }
             return tiles.ToArray();
         }
-
+        
         public int SearchTile(int origin, int direction)
         {
             // Left Down Right Up
@@ -700,7 +706,7 @@ namespace CStrike2D
             }
             return -1;
         }
-
+        
         public int[] GetWalls(int origin, float angle)
         {
             angle = MathHelper.Clamp(angle, 0, 6);
@@ -770,5 +776,6 @@ namespace CStrike2D
 
             return tiles.ToArray();
         }
+         */
     }
 }

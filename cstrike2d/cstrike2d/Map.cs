@@ -13,7 +13,7 @@ namespace CStrike2D
         private byte[,] tiles;
         private byte[,] tileProperties;
         int tileSize;
-
+        /*
         public Map(int[,] tileData)
         {
             TileMap = new Tile[tileData.GetLength(0), tileData.GetLength(1)];
@@ -61,7 +61,7 @@ namespace CStrike2D
 
             outFile.Close();
         }
-
+        
         public void LoadFile(string fileName)
         {
             StreamReader inFile = File.OpenText(fileName);
@@ -131,6 +131,7 @@ namespace CStrike2D
         {
             return (row * MaxCol) + col;
         }
+        */
     }
 
     static class TileFunctions
