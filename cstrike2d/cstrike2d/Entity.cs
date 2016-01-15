@@ -1,6 +1,6 @@
 ﻿// Author: Mark Voong
 // File Name: Entity.cs
-// Project: CStrike2D
+// Project: Global Offensive
 // Date Created: Dec 6th 2015
 // Date Modified: Dec 23rd 2015
 // Description: An object that is able to interact with the world

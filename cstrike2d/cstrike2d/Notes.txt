@@ -30,3 +30,103 @@
 -- 1. coreContentLoader - Contains assets such as fonts and UI elements. This is loaded immediately at the start and is never unloaded
 -- 2. mapContentLoader - Contains assets such as tilesets, minimap displays, and map sounds. This is loaded when the player connects
 -- 3. gameContentLoader - Contains assets such as weapons, playermodels, particles
+
+
+
+Server:
+
+Network Related:
+SyncObjects()
+
+
+ServerWeapon
+ServerPlayer
+ServerGrenade
+ServerBomb
+
+SpawnWeapon(Vector2 location, ServerWeapon weapon)
+SpawnPlayer(Vector2 location, short playerID)
+SpawnGrenade(Vector2 location, ServerGrenade grenade)
+PlantBomb(Vector2 location, bool aSite)
+RoundStart()
+RoundEnd()
+
+
+Client:
+
+ClientWeapon
+ClientPlayer
+ClientGrenade
+ClientBomb
+
+SyncObjects()
+
+
+
+
+Steps:
+1. PLAYER connects to the server, if the server exists sends byte HANDSHAKE
+
+2. SERVER recieves HANDSHAKE byte, gives player unique identifier, sychronizes all
+existing entities on the server with the new player
+Entities Include:
+-Other players
+-Grenades
+-Bomb
+-Player weapons
+-Dropped weapons
+
+The server also creates a new player instance for the connected player, with the default properties
+- Not Collidable
+- Position does not update unless they spawn, default Vector2.Zero
+- Default the team to TEAM_SPECTATOR
+- Associate player with their in-game name which is different from the identifier
+
+when SERVER is done synchronizing, SERVER sends byte HANDSHAKE_COMPLETE
+
+3. PLAYER recieves HANDHAKE_COMPLETE byte, can now change gamestate to 
+connected.
+
+4. if SERVER is empty, does nothing and waits for the PLAYER to select a team
+
+5. PLAYER selects a team CLIENTSIDE, when a team is selected, byte CHANGE_TEAM is
+sent to the SERVER, along with any of the following bytes
+- byte TEAM_COUNTER_TERRORIST
+- byte TEAM_TERRORIST
+- byte TEAM_SPECTATOR
+
+6. SERVER recieves byte CHANGE_TEAM, correctly changes the player to the selected team.
+If a round is currently in progress, the player will start as PlayerState.Dead and must wait
+until StartRound occurs.
+
+7. If SERVER was empty, EndRound is called and the server will reset all entities 
+
+
+
+
+
+
+StartRound()
+{
+Vector2[] tSpawnPoints;
+
+List<Vector2> spawnPoints = tSpawnPoints.ToList();
+
+int index = rand.Next(0, spawnPoints.Count);
+
+for (int i = 0; i < terrorists; i++)
+{
+	SpawnPlayer(spawnPoints[index], playerID);
+
+	spawnPoints.RemoveAt(index);
+}
+}
+
+EndRound()
+{
+	// Calculate money
+	foreach (ServerPlayer[] team in teams)
+	{
+		foreach (player)
+	}
+}
