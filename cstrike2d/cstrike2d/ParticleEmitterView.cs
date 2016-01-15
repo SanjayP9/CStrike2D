@@ -18,9 +18,9 @@ namespace CStrike2D
 
         public void Draw(SpriteBatch sb, Texture2D particleImg)
         {
-            foreach (ParticleModel i in model.Particles)
+            foreach(ParticleModel particle in model.Particles)
             {
-                i.View.Draw(sb, particleImg);
+                particle.View.Draw(sb, particleImg);
             }
         }
     }
