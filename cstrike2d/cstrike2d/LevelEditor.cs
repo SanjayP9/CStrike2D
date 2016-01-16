@@ -14,14 +14,15 @@ namespace CStrike2D
         int selectedTile;
         float tileSize = 32;
 
-        int numRows = 20;
-        int numCols = 20;
+        int numRows = 10;
+        int numCols = 8;
 
         private InputManager input;
         private AudioManager audio;
         private CStrike2D driver;
 
         Rectangle tileSetOffset = new Rectangle(50, 50, 256, 320);
+        Rectangle placementArea = new Rectangle(300, 300, 256, 320);
         Vector2 SelectedTileLoc;
 
         public LevelEditor(CStrikeModel model)
@@ -40,31 +41,37 @@ namespace CStrike2D
                    input.MousePosition.Y > tileSetOffset.Y &&
                    input.MousePosition.Y < tileSetOffset.Y + tileSetOffset.Height)
                 {
-                    //SelectedTileLoc = new Vector2((float)(Math.Floor(input.MousePosition.X - tileSetOffset.X)), (float)(Math.Floor(input.MousePosition.Y - tileSetOffset.Y)));
+                    //SelectedTileLoc = new Vector2((float)((int)(input.MousePosition.X - tileSetOffset.X)), (float)((int)(input.MousePosition.Y - tileSetOffset.Y)));
                     selectedTile = (int)((input.MousePosition.Y - tileSetOffset.Y) / tileSize) * 8 +
                                    (int)((input.MousePosition.X - tileSetOffset.X) / tileSize);
                 }
 
-                if (input.MousePosition.X > tileSetOffset.X &&
-                    input.MousePosition.X < tileSetOffset.X + tileSetOffset.Width &&
-                    input.MousePosition.Y > tileSetOffset.Y &&
-                    input.MousePosition.Y < tileSetOffset.Y + tileSetOffset.Height)
+                if (input.MousePosition.X > placementArea.X &&
+                    input.MousePosition.X < placementArea.X + placementArea.Width &&
+                    input.MousePosition.Y > placementArea.Y &&
+                    input.MousePosition.Y < placementArea.Y + placementArea.Height)
                 {
                     Vector2 placedTileLocation = new Vector2(((input.MousePosition.X - tileSetOffset.X) / tileSize), (input.MousePosition.Y - tileSetOffset.Y) / tileSize);
-                    //tiles[(int)((input.MousePosition.X - tileSetOffset.X) / tileSize), 
-                    //      (int)((input.MousePosition.Y - tileSetOffset.Y) / tileSize)] = selectedTile;
+                    tiles[(int)((input.MousePosition.X - tileSetOffset.X) / tileSize), 
+                          (int)((input.MousePosition.Y - tileSetOffset.Y) / tileSize)] = new Tile(selectedTile);
                 }
             }
-            
         }
 
         public void DrawWorld(SpriteBatch sb)
         {
-            for (int rows = 0; rows < numRows; rows++)
+            for (int x = 0; x < numRows; x++)
             {
-                for (int cols = 0; cols < numCols; cols++)
+                for (int y = 0; y < numCols; y++)
                 {
-                    
+                    int srcX = (int)(tiles[x, y].TileType % 8 * tileSize);
+                    int srcY = (int)(tiles[x, y].TileType / 8 * tileSize);
+
+                    Rectangle tileSrcRec = new Rectangle(srcX, srcY, (int)tileSize, (int)tileSize);
+                    //if (tiles[x, y])
+                    //{
+                        sb.Draw(driver.Assets.TileSet, new Rectangle((int)(x * tileSize + placementArea.X), (int)(y * tileSize + placementArea.Y), (int)tileSize, (int)tileSize), tileSrcRec, Color.White);
+                    //}
                 }
             }
         }
@@ -73,8 +80,8 @@ namespace CStrike2D
         {
             sb.Draw(driver.Assets.TileSet, tileSetOffset, Color.White);
             sb.DrawString(driver.Assets.DefaultFont, "" + selectedTile, new Vector2 (0,0), Color.White );
-            
-            //sb.DrawString(driver.Assets.DefaultFont,"X" , SelectedTileLoc, Color.White);
+
+            //sb.DrawString(driver.Assets.DefaultFont, "X", new Vector2(SelectedTileLoc.X, SelectedTileLoc.Y), Color.White);
         }
     }
 }

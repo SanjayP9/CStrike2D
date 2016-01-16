@@ -37,11 +37,12 @@ namespace CStrike2D
                     }
 
 
-                    Tiles[x, y] = new Tile(new Rectangle(TILE_SIDE_LENGTH * x,
+                    /*Tiles[x, y] = new Tile(new Rectangle(TILE_SIDE_LENGTH * x,
                                             TILE_SIDE_LENGTH * y,
                                             TILE_SIDE_LENGTH,
                                             TILE_SIDE_LENGTH),
-                                            temp);
+                                            temp);*/
+                    Tiles[x, y] = new Tile(1);
                 }
             }
         }
