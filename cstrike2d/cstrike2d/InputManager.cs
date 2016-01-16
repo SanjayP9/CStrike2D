@@ -173,7 +173,7 @@ namespace CStrike2D
 
         public Vector2 ScreenToWorld(Vector2 vector, Camera2D origin, Vector2 center)
         {
-            return (vector + origin.Position - center);
+            return (((vector - center) / 1.2f) + origin.Position);
         }
 
         public int GetRow(Camera2D origin, Vector2 center)
