@@ -35,6 +35,7 @@ namespace CStrike2DServer
             UserName = username;
             UniqueIdentifier = identifier;
             CurrentTeam = Team.Spectator;
+            State = PlayerState.Dead;
         }
 
 
@@ -50,7 +51,25 @@ namespace CStrike2DServer
 
         public void Move(byte direction)
         {
-            
+            switch (direction)
+            {
+                case ServerClientInterface.MOVE_UP:
+                    break;
+                case ServerClientInterface.MOVE_DOWN:
+                    break;
+                case ServerClientInterface.MOVE_LEFT:
+                    break;
+                case ServerClientInterface.MOVE_RIGHT:
+                    break;
+                case ServerClientInterface.MOVE_UPLEFT:
+                    break;
+                case ServerClientInterface.MOVE_UPRIGHT:
+                    break;
+                case ServerClientInterface.MOVE_DOWNRIGHT:
+                    break;
+                case ServerClientInterface.MOVE_DOWNLEFT:
+                    break;
+            }
         }
 
         public void Damage(float health, float armor)

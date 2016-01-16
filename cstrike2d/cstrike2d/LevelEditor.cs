@@ -117,7 +117,6 @@ namespace CStrike2D
             sb.DrawString(driver.Assets.DefaultFont, "" + input.ScreenToWorld(input.MousePosition, driver.Model.Camera, driver.Model.Center), new Vector2(100, 0), Color.White);
             sb.Draw(driver.Assets.TileSet, tileSetOffset, Color.White);
             sb.DrawString(driver.Assets.DefaultFont, "" + selectedTile, new Vector2 (0,0), Color.White );
-
             //sb.DrawString(driver.Assets.DefaultFont, "X", new Vector2(SelectedTileLoc.X, SelectedTileLoc.Y), Color.White);
         }
     }

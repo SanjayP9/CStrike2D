@@ -79,6 +79,9 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\CStrike2DServer\ServerClientInterface.cs">
+      <Link>ServerClientInterface.cs</Link>
+    </Compile>
     <Compile Include="Assets.cs" />
     <Compile Include="AudioManager.cs" />
     <Compile Include="Bar.cs" />
