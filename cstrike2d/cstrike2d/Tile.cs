@@ -10,10 +10,14 @@ namespace CStrike2D
         public int TileType { get; private set; }
         public Rectangle Bounds { get; private set; }
         public bool IsSolid { get; private set; }
+        public bool IsPlantSpot { get; set; }
+        public bool IsSaveSpot { get; set; }
 
-        public Tile(int tileType)
+        public Tile(int tileType, bool isPlantSpot, bool isSaveSpot)
         {
             TileType = tileType;
+            IsPlantSpot = isPlantSpot;
+            IsSaveSpot = isSaveSpot;
 
             if ((tileType == 1) || (tileType == 2))
             {
