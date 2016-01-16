@@ -8,5 +8,9 @@ namespace CStrike2D
 {
     class ParticleManagerModel
     {
+        public ParticleManagerModel()
+        {
+
+        }
     }
 }

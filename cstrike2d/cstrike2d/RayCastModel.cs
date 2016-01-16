@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,28 +10,28 @@ namespace CStrike2D
     class RayCastModel
     {
         //Newest Version
-        public RayCastView View { get; private set; }
 
         public Vector2 CollisionPos { get; private set; }
-        public Vector2 EmitPos { get; private set; }
-        public Vector2 DirectionVect { get; private set; }
-        public float RayLength { get; private set; }
-        public float Angle { get; private set; }
+        private Vector2 emitPos;
+        private Vector2 directionVect;
+        private  float rayLength;
+        private  float angle;
+        private RayCastResult rayCastLine;
 
-        public Color RayColor { get; private set; }
+        public Color RayColor;
 
-        public RayCastResult RayCastLine { get; private set; }
-
+        /// <summary>
+        /// Creates an instance of RayCastModel
+        /// </summary>
         public RayCastModel()
         {
-            View = new RayCastView(this);
-            RayCastLine = new RayCastResult();
+            rayCastLine = new RayCastResult();
         }
 
         public void Update(Vector2 emitPos, Vector2 directionVect, float rayLineLength, Tile[,] tiles, float angle)
         {
-            RayCastLine = RayCastMethod(emitPos, directionVect, rayLineLength, tiles, angle);
-            CollisionPos = RayCastLine.CollisionPos;
+            rayCastLine = RayCastMethod(emitPos, directionVect, rayLineLength, tiles, angle);
+            CollisionPos = rayCastLine.CollisionPos;
 
             if (GetRayLength() > 400f)
             {
@@ -46,13 +47,21 @@ namespace CStrike2D
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="emitPos"></param>
+        /// <param name="directionVect"></param>
+        /// <param name="rayLineLength"></param>
+        /// <param name="tiles"></param>
+        /// <param name="angle"></param>
+        /// <returns></returns>
         public RayCastResult RayCastMethod(Vector2 emitPos, Vector2 directionVect, float rayLineLength, Tile[,] tiles, float angle)
         {
-
-            this.EmitPos = emitPos;
-            this.DirectionVect = directionVect;
-            this.RayLength = rayLineLength;
-            this.Angle = angle;
+            this.emitPos = emitPos;
+            this.directionVect = directionVect;
+            this.rayLength = rayLineLength;
+            this.angle = angle;
 
 
             RayCastResult castResult = new RayCastResult();
@@ -125,6 +134,12 @@ namespace CStrike2D
         }
 
 
+        /// <summary>
+        /// Given a Vector2 point and the tiles that are on the map it will return whether or not the Vector2 is inside or on a wall
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="tiles"></param>
+        /// <returns></returns>
         public bool IsVectorAccessible(Vector2 point, Tile[,] tiles)
         {
             // Gets current tile based on the coordinates of the point. Math.Floor was used to
@@ -162,17 +177,17 @@ namespace CStrike2D
         //     }
 
         /// <summary>
-        /// 
+        /// Gets all of the points in the ray and stores it in a Vector2 array. Using Bersenhams Line Algorithm
         /// </summary>
-        /// <param name="point1"></param>
-        /// <param name="point2"></param>
-        /// <returns></returns>
+        /// <param name="point1"> Starting Vector of ray </param>
+        /// <param name="point2"> Ending Vector of ray </param>
+        /// <returns> Returns array of Vector2 that are on teh ray </returns>
         public Vector2[] GetPointsOnRay(Vector2 point1, Vector2 point2)
         {
-
-
+            // True if the angle of the line is more than 45 degrees
             bool isLineSteep = (Math.Abs(point2.Y - point1.Y) >= Math.Abs(point2.X - point1.X));
 
+            // If the bool is true it swaps the x and y of the 
             if (isLineSteep)
             {
                 point1 = SwapVectorCoordinates(point1);
@@ -225,15 +240,41 @@ namespace CStrike2D
             return pointsOnRay;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public float GetRayLength()
         {
-            return (RayCastLine.CollisionPos - EmitPos).Length();
+            return (rayCastLine.CollisionPos - emitPos).Length();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="pixelTexture"></param>
+        /// <param name="circleTexture"></param>
+        public void Draw(SpriteBatch sb, Texture2D pixelTexture, Texture2D circleTexture)
+        {
+            sb.Draw(pixelTexture,
+                    new Rectangle((int)emitPos.X, (int)emitPos.Y, (int)GetRayLength(), 2),
+                    null,
+                    RayColor,
+                    angle,
+                    Vector2.Zero,
+                    SpriteEffects.None,
+                    0);
         }
 
     }
 
+    /// <summary>
+    /// Stores the Raycasting result. Used to return the result with a bool and a Vector2
+    /// </summary>
     public class RayCastResult
     {
+        // Public properties that are used to store and return the Vector2 and bool for collision
         public bool IsColliding { get; set; }
         public Vector2 CollisionPos { get; set; }
     }
