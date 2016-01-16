@@ -11,24 +11,30 @@ namespace CStrike2D
     class ClientGrenade
     {
 
+        private Assets assets;
+
         public Vector2 Position { get; private set; }
-        private Vector2 velocity;
+        public Vector2 Direction { get; private set; }
+        private float velocity;
 
         private ParticleEmitterModel grenadeEmitter;
 
-        public enum GrenadeType
+
+        public enum GrenadeStates
         {
-            Frag,
-            Flashbang,
-            Smoke,
-            Incendiary
+            Empty,
+            InPossession,
+            Thrown,
+            Exploding
         }
 
-        public enum State
+        public ParticleModel.ParticleTypes NadeType { get; private set; }
+        public GrenadeStates State { get; private set; }
+
+
+        public ClientGrenade(Assets assets)
         {
-            NotThrown,
-            Thrown,
-            Landed
+            this.assets = assets;
         }
 
         /// <summary>
@@ -36,21 +42,19 @@ namespace CStrike2D
         /// </summary>
         /// <param name="angle"> Angle to throw the grenade from</param>
         /// <param name="velocity"> If the player is moving, add this to the initial velocity </param>
-        public void Throw(float angle, Vector2 velocity)
+        public void Throw(float angle, float velocity)
         {
+            // Updates the class velocity
+            this.velocity = velocity;
+
+            // Changes the current nade state
+            State = GrenadeStates.Thrown;
 
             // Get direction from vector
-            Vector2 direction = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
-            
+            Direction = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+
             // Normalize the vector
-            direction.Normalize();
-
-            // If the player is already moving, this will increase the initial velocity of the
-            // grenade.
-            direction += velocity;
-
-            // Set the velocity of this grenade
-            this.velocity = direction;
+            Direction.Normalize();
         }
 
         /// <summary>
@@ -58,18 +62,68 @@ namespace CStrike2D
         /// </summary>
         public void CollidedWithWorld()
         {
-            
+
         }
-        
+
 
         public void Update(float gameTime)
         {
-            
+            switch (State)
+            {
+                case GrenadeStates.Empty:
+                    break;
+
+                case GrenadeStates.InPossession:
+                    break;
+
+                case GrenadeStates.Thrown:
+                    // Updates position of the nade
+                    Position += Direction * velocity;
+
+                    // Decrements the velocity
+                    if (velocity >= 0.0f)
+                    {
+                        velocity -= 0.05f;
+                    }
+
+                    if (velocity <= 0.0f)
+                    {
+                        velocity = 0.0f;
+                        Explode();
+                    }
+
+                    break;
+
+
+                case GrenadeStates.Exploding:
+                    // update emitter
+                    grenadeEmitter.Update(gameTime);
+
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Explode()
+        {
+            grenadeEmitter = new ParticleEmitterModel(Position, NadeType);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="nadeType"></param>
+        public void PickupNade(ParticleModel.ParticleTypes nadeType)
+        {
+            this.NadeType = nadeType;
+            State = GrenadeStates.InPossession;
         }
 
         public void Draw(SpriteBatch sb)
         {
-            
+            grenadeEmitter.View.Draw(sb,
         }
     }
 }

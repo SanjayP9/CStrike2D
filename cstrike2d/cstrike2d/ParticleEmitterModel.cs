@@ -26,9 +26,6 @@ namespace CStrike2D
         // Used to store the current ParticleType
         private ParticleModel.ParticleTypes particleType;
 
-        // Stores an instance of the Random Class
-        private Random rand;
-
         // Stores the emitter Vector2 Point
         private Vector2 emitVect;
 
@@ -47,10 +44,9 @@ namespace CStrike2D
         /// <param name="emitVect"></param>
         /// <param name="rand"></param>
         /// <param name="particleType"></param>
-        public ParticleEmitterModel(Vector2 emitVect, Random rand, ParticleModel.ParticleTypes particleType)
+        public ParticleEmitterModel(Vector2 emitVect, ParticleModel.ParticleTypes particleType)
         {
             this.particleType = particleType;
-            this.rand = rand;
             this.emitVect = emitVect;
 
             // initializes the ParticleEmitter View and passes through this class
@@ -147,7 +143,7 @@ namespace CStrike2D
             //based on the Particle type
             for (int i = 0; i < launchNumber; i++)
             {
-                Particles.Add(new ParticleModel(launchVect, rand, particleType, playerAngle));
+                Particles.Add(new ParticleModel(launchVect, particleType, playerAngle));
             }
         }
     }

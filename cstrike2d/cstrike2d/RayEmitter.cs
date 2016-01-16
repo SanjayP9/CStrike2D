@@ -64,7 +64,7 @@ namespace CStrike2D
         {
             foreach (RayCastModel i in rays)
             {
-                i.View.Draw(sb, pixelTexture, circleTexture);
+             //   i.View.Draw(sb, pixelTexture, circleTexture);
             }
 
             // Insert polygon filling
