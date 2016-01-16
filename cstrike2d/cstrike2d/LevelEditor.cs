@@ -56,7 +56,7 @@ namespace CStrike2D
                          mouseWorld.Y < placementArea.Y + placementArea.Height)
                 {
                     placedTilePos = new Vector2(((mouseWorld.X - placementArea.X) / tileSize), (mouseWorld.Y - placementArea.Y) / tileSize);
-                    if((selectedTile != 0) || (selectedTile != 72))
+                    if((selectedTile != 0) && (selectedTile != 72))
                     {
                         tiles[(int)((mouseWorld.X - placementArea.X) / tileSize),
                               (int)((mouseWorld.Y - placementArea.Y) / tileSize)] = new Tile(selectedTile, false, false);
