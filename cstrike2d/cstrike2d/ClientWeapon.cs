@@ -12,7 +12,7 @@ namespace CStrike2D
     {
 
         public ClientPlayer Owner { get; private set; }
-        public ParticleEmitterModel GunEmitter { get; private set; }
+        public ParticleEmitter GunEmitter { get; private set; }
         public bool Fired { get; private set; }
 
         public Vector2 Position { get; private set; }
