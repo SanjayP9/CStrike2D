@@ -8,5 +8,15 @@ namespace CStrike2DServer
 {
     class ServerWeapon
     {
+        public ServerPlayer Owner { get; private set; }
+
+
+
+        public void Update()
+        {
+            
+        }
+
+
     }
 }

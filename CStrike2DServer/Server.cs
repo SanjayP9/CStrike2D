@@ -33,6 +33,7 @@ namespace CStrike2DServer
         private static short entityCounter;
         private static double updateTimer;
         public const double UPDATE_RATE = 7d;
+        public const double NET_UPDATE_RATE = 15d;
 
         static void Main(string[] args)
         {
@@ -63,7 +64,8 @@ namespace CStrike2DServer
 
             Vector2 defSpawnPosition = new Vector2(350, 350);
 
-            Stopwatch sw = new Stopwatch();
+            Stopwatch updateTimer = new Stopwatch();
+            Stopwatch netUpdateTimer = new Stopwatch();
 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("==================================");
@@ -88,12 +90,18 @@ namespace CStrike2DServer
             server.Start();
             Console.WriteLine("Server is live.");
 
-            sw.Start();
+            updateTimer.Start();
+            netUpdateTimer.Start();
             while (server.Status == NetPeerStatus.Running)
             {
-                if (sw.Elapsed.TotalMilliseconds > UPDATE_RATE)
+                if (updateTimer.Elapsed.TotalMilliseconds > UPDATE_RATE)
                 {
                     Simulate();
+                }
+
+                if (netUpdateTimer.Elapsed.TotalMilliseconds > NET_UPDATE_RATE)
+                {
+                    
                 }
             }
             /*
