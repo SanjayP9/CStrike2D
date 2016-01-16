@@ -37,6 +37,9 @@ namespace CStrike2D
         public ParticleView View { get; private set; }
         //Stores the source rectangle. Used when drawing
         public Rectangle SourceRect { get; private set; }
+        // Used to change the rotation of the texture when drawing
+        public float Rotation { get; private set; }
+
 
         // Records how long the particle has been acitve for
         public float ParticleLifeTime { get; private set; }
@@ -72,7 +75,7 @@ namespace CStrike2D
         /// Passes through instance of a Random in order 
         /// to create random integers
         /// </param>
-        protected ParticleModel(Vector2 emitVect, Random rand, ParticleTypes particleType)
+        public ParticleModel(Vector2 emitVect, Random rand, ParticleTypes particleType, float playerAngle)
         {
             this.ParticlePosition = emitVect;
             this.emitVect = emitVect;
@@ -118,10 +121,25 @@ namespace CStrike2D
                     ParticleScale = 1.5f;
 
                     break;
+
                 case ParticleTypes.GunSmoke:
+                    particleColor = new Color(120, 120, 120);
+
+                    particleDirection = CalcDirectionVect((float)(-Math.PI * 0.5f));
+
+                    particleVelocity = 1.0f;
+                    ParticleTransparency = 1.0f;
+                    ParticleScale = 0.01f;
                     break;
+
                 case ParticleTypes.Debris:
+                    particleColor = Color.White;
                     break;
+
+                case ParticleTypes.Shell:
+                    particleColor = Color.White;
+                    break;
+
                 default:
                     break;
             }
@@ -132,66 +150,79 @@ namespace CStrike2D
         /// transparency, color and other properties
         /// </summary>
         /// <param name="gameTime"> Passes through gameTime in order to record elasped time </param>
-        public virtual void Update(float gameTime)
+        public void Update(float gameTime)
         {
             // Adds elapsed game time to 
             ParticleLifeTime += gameTime;
             updateTime += gameTime;
+            updateTime = 0.0f;
 
+            // Adds the direction multiplied by the speed to the current particle position
+            ParticlePosition += particleDirection * particleVelocity;
 
-            if (updateTime > updateFreq)
+            if ((ParticleTransparency <= 0.0f) && (Type == ParticleTypes.Smoke || Type == ParticleTypes.Fire))
             {
-                updateTime = 0.0f;
-
-                // Adds the direction multiplied by the speed to the current particle position
-                ParticlePosition += particleDirection * particleVelocity;
-
-                if (ParticleTransparency <= 0.0f)
-                {
-                    Respawn();
-                }
+                Respawn();
+            }
 
 
-                switch (Type)
-                {
-                    case ParticleTypes.Frag:
+            switch (Type)
+            {
+                case ParticleTypes.Frag:
 
-                        if (particleColor.G > 165)
+                    if (particleColor.G > 165)
+                    {
+                        particleColor.G -= 17;
+                    }
+                    else
+                    {
+                        if (particleColor.R > 0)
                         {
-                            particleColor.G -= 17;
+                            particleColor.R -= 10;
                         }
-                        else
+                        if (particleColor.G > 0)
                         {
-                            if (particleColor.R > 0)
-                            {
-                                particleColor.R -= 10;
-                            }
-                            if (particleColor.G > 0)
-                            {
-                                particleColor.G -= 15;
-                            }
+                            particleColor.G -= 15;
                         }
+                    }
 
 
-                        ParticleTransparency -= 0.02f;
-                        particleVelocity -= 0.025f;
+                    ParticleTransparency -= 0.02f;
+                    particleVelocity -= 0.025f;
 
-                        if (ParticleScale < 0.4f)
-                        {
-                            ParticleScale += 0.01f;
-                        }
+                    if (ParticleScale < 0.4f)
+                    {
+                        ParticleScale += 0.01f;
+                    }
 
-                        break;
-                    case ParticleTypes.Fire:
-                        break;
-                    case ParticleTypes.Smoke:
-                        ParticleTransparency -= 0.007f;
-                        break;
-                    case ParticleTypes.GunSmoke:
-                        break;
-                    case ParticleTypes.Debris:
-                        break;
-                }
+                    break;
+                case ParticleTypes.Fire:
+                    break;
+
+                case ParticleTypes.Smoke:
+                    ParticleTransparency -= 0.007f;
+                    break;
+
+                case ParticleTypes.GunSmoke:
+                    ParticleScale += 0.005f;
+                    ParticleTransparency -= 0.07f;
+                    break;
+
+                case ParticleTypes.Debris:
+                    if (!(particleVelocity <= 0.0f))
+                    {
+                        particleVelocity -= 0.25f;
+                    }
+                    else
+                    {
+                        particleVelocity = 0.0f;
+                    }
+
+                    if (ParticleLifeTime >= 3000f)
+                    {
+                        ParticleTransparency -= 0.05f;
+                    }
+                    break;
             }
 
         }
@@ -199,7 +230,7 @@ namespace CStrike2D
         /// <summary>
         /// Used to respawn particles back at their emit vectors
         /// </summary>
-        public virtual void Respawn()
+        public void Respawn()
         {
             ParticleTransparency = 1.0f;
             ParticlePosition = emitVect;
@@ -224,7 +255,7 @@ namespace CStrike2D
             }
         }
 
-        public Vector2 CalcDirectionVect(int angle)
+        public Vector2 CalcDirectionVect(float angle)
         {
             return new Vector2((float)(Math.Cos(angle)), (float)(Math.Sin(angle)));
         }
