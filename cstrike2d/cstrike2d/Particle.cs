@@ -14,7 +14,7 @@ using System.Text;
 
 namespace CStrike2D
 {
-    class ParticleModel
+    class Particle
     {
         // Constants used to store to control the update frequency
         private const float SMOKE_UPDATE_FREQ = 50.0f;
@@ -23,26 +23,22 @@ namespace CStrike2D
         private float updateFreq = 0.0f;
 
         // Used to store the current particle position and the original emit vector
-        public Vector2 ParticlePosition { get; private set; }
+        private Vector2 ParticlePosition;
         private Vector2 emitVect;
 
         // Properties used for drawing
         // Controls transparency of particle texture
         public float ParticleTransparency { get; private set; }
         //Scales the particles texture size 
-        public float ParticleScale { get; private set; }
+        private float ParticleScale;
         //Controls particle texture color overlay
         private Color particleColor;
-        // Stores an instance of particle model. Used to draw particles
-        public ParticleView View { get; private set; }
-        //Stores the source rectangle. Used when drawing
-        public Rectangle SourceRect { get; private set; }
         // Used to change the rotation of the texture when drawing
         public float Rotation { get; private set; }
 
 
         // Records how long the particle has been acitve for
-        public float ParticleLifeTime { get; private set; }
+        private float ParticleLifeTime;
 
         // Stores the direction vector of the particle
         private Vector2 particleDirection;
@@ -75,13 +71,11 @@ namespace CStrike2D
         /// Passes through instance of a Random in order 
         /// to create random integers
         /// </param>
-        public ParticleModel(Vector2 emitVect,ParticleTypes particleType, float playerAngle)
+        public Particle(Vector2 emitVect,ParticleTypes particleType, float playerAngle)
         {
             this.ParticlePosition = emitVect;
             this.emitVect = emitVect;
             this.Type = particleType;
-
-            View = new ParticleView(this);
 
             switch (Type)
             {
@@ -265,6 +259,25 @@ namespace CStrike2D
         public Color ReturnColor()
         {
             return particleColor;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="particleImg"></param>
+        public void Draw(SpriteBatch sb, Texture2D particleImg)
+        {
+            sb.Draw(particleImg,
+                    ParticlePosition,
+                    null,//Model.SourceRect,
+                    ReturnColor() * ParticleTransparency,
+                    0f,
+                    new Vector2(particleImg.Width * 0.5f, particleImg.Width * 0.5f),
+                    ParticleScale,
+                    SpriteEffects.None,
+                    0);
         }
     }
 }

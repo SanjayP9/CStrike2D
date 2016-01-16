@@ -29,6 +29,12 @@ namespace CStrike2D
 
         public Texture2D TileSet { get; private set; }
 
+        // Textures
+        public Texture2D ParticleTexture { get; private set; }
+        public Texture2D SmokeParticle { get; private set; }
+        public Texture2D DebrisParticle { get; private set; }
+        public Texture2D ShellTexture { get; private set; }
+
         public Effect BlurEffect { get; private set; }
 
 
@@ -124,6 +130,12 @@ namespace CStrike2D
                     weaponTextures[i, 2] = gameContentLoader.Load<Texture2D>(filePath + "_m");
                 }
             }
+
+            ParticleTexture = gameContentLoader.Load<Texture2D>("texture/Textures/particle");
+            SmokeParticle = gameContentLoader.Load<Texture2D>("texture/Textures/newparticle");
+            DebrisParticle = gameContentLoader.Load<Texture2D>("texture/Textures/rocks");
+            ShellTexture = gameContentLoader.Load<Texture2D>("texture/Textures/bullet");
+
 
             GameContentLoaded = true;
         }

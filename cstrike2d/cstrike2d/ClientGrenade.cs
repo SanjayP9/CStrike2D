@@ -17,7 +17,7 @@ namespace CStrike2D
         public Vector2 Direction { get; private set; }
         private float velocity;
 
-        private ParticleEmitterModel grenadeEmitter;
+        private ParticleEmitter grenadeEmitter;
 
 
         public enum GrenadeStates
@@ -28,7 +28,7 @@ namespace CStrike2D
             Exploding
         }
 
-        public ParticleModel.ParticleTypes NadeType { get; private set; }
+        public Particle.ParticleTypes NadeType { get; private set; }
         public GrenadeStates State { get; private set; }
 
 
@@ -108,14 +108,14 @@ namespace CStrike2D
         /// </summary>
         public void Explode()
         {
-            grenadeEmitter = new ParticleEmitterModel(Position, NadeType);
+            grenadeEmitter = new ParticleEmitter(Position, NadeType);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="nadeType"></param>
-        public void PickupNade(ParticleModel.ParticleTypes nadeType)
+        public void PickupNade(Particle.ParticleTypes nadeType)
         {
             this.NadeType = nadeType;
             State = GrenadeStates.InPossession;
@@ -123,7 +123,20 @@ namespace CStrike2D
 
         public void Draw(SpriteBatch sb)
         {
-            grenadeEmitter.View.Draw(sb,
+            switch (NadeType)
+            {
+                case Particle.ParticleTypes.Frag:
+                    grenadeEmitter.Draw(sb, assets.ParticleTexture);
+                    break;
+
+                case Particle.ParticleTypes.Fire:
+                    grenadeEmitter.Draw(sb, assets.SmokeParticle);
+                    break;
+
+                case Particle.ParticleTypes.Smoke:
+                    grenadeEmitter.Draw(sb, assets.SmokeParticle);
+                    break;
+            }
         }
     }
 }

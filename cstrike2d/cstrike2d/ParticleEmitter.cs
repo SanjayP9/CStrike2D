@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CStrike2D
 {
-    class ParticleEmitterModel
+    class ParticleEmitter
     {
         // These constants are used to store the life time of the particle system
         const float SMOKE_GRENADE_LIFETIME = 18000f;
@@ -18,13 +19,10 @@ namespace CStrike2D
         const float SMOKE_UPDATE_FREQ = 50f;
 
         // Used to store a list of Particle Models
-        public List<ParticleModel> Particles { get; private set; }
-
-        // Stores an instance of ParticleEmitterView. This displays all of the model data
-        public ParticleEmitterView View { get; private set; }
+        public List<Particle> Particles { get; private set; }
 
         // Used to store the current ParticleType
-        private ParticleModel.ParticleTypes particleType;
+        private Particle.ParticleTypes particleType;
 
         // Stores the emitter Vector2 Point
         private Vector2 emitVect;
@@ -44,44 +42,41 @@ namespace CStrike2D
         /// <param name="emitVect"></param>
         /// <param name="rand"></param>
         /// <param name="particleType"></param>
-        public ParticleEmitterModel(Vector2 emitVect, ParticleModel.ParticleTypes particleType)
+        public ParticleEmitter(Vector2 emitVect, Particle.ParticleTypes particleType)
         {
             this.particleType = particleType;
             this.emitVect = emitVect;
-
-            // initializes the ParticleEmitter View and passes through this class
-            View = new ParticleEmitterView(this);
 
             // This switch statement initializes different Particles, system life times and more 
             // based on the particle type
             switch (particleType)
             {
-                case ParticleModel.ParticleTypes.Frag:
-                    Particles = new List<ParticleModel>(50);
+                case Particle.ParticleTypes.Frag:
+                    Particles = new List<Particle>(50);
                     systemLifeTime = 30.0f;
                     break;
 
-                case ParticleModel.ParticleTypes.Fire:
-                    Particles = new List<ParticleModel>(50);
+                case Particle.ParticleTypes.Fire:
+                    Particles = new List<Particle>(50);
                     systemLifeTime = FIRE_GRENADE_LIFETIME;
                     break;
 
-                case ParticleModel.ParticleTypes.Smoke:
-                    Particles = new List<ParticleModel>(50);
+                case Particle.ParticleTypes.Smoke:
+                    Particles = new List<Particle>(50);
                     systemLifeTime = SMOKE_GRENADE_LIFETIME;
                     updateFreq = SMOKE_UPDATE_FREQ;
                     break;
 
-                case ParticleModel.ParticleTypes.GunSmoke:
-                    Particles = new List<ParticleModel>();
+                case Particle.ParticleTypes.GunSmoke:
+                    Particles = new List<Particle>();
                     break;
 
-                case ParticleModel.ParticleTypes.Debris:
-                    Particles = new List<ParticleModel>();
+                case Particle.ParticleTypes.Debris:
+                    Particles = new List<Particle>();
                     break;
 
-                case ParticleModel.ParticleTypes.Shell:
-                    Particles = new List<ParticleModel>();
+                case Particle.ParticleTypes.Shell:
+                    Particles = new List<Particle>();
                     break;
             }
         }
@@ -102,7 +97,7 @@ namespace CStrike2D
                 {
                     Particles[i].Update(gameTime);
 
-                    if ((particleType == ParticleModel.ParticleTypes.Smoke || particleType == ParticleModel.ParticleTypes.Fire) &&
+                    if ((particleType == Particle.ParticleTypes.Smoke || particleType == Particle.ParticleTypes.Fire) &&
                         (Particles[i].ParticleTransparency <= 0.0f) && (systemLifeTime > systemUpTime))
                     {
                         Particles[i].Respawn();
@@ -123,18 +118,18 @@ namespace CStrike2D
 
             switch (particleType)
             {
-                case ParticleModel.ParticleTypes.Frag:
-                case ParticleModel.ParticleTypes.Fire:
-                case ParticleModel.ParticleTypes.Smoke:
+                case Particle.ParticleTypes.Frag:
+                case Particle.ParticleTypes.Fire:
+                case Particle.ParticleTypes.Smoke:
                     launchNumber = 1;
                     break;
 
-                case ParticleModel.ParticleTypes.GunSmoke:
-                case ParticleModel.ParticleTypes.Debris:
+                case Particle.ParticleTypes.GunSmoke:
+                case Particle.ParticleTypes.Debris:
                     launchNumber = 5;
                     break;
 
-                case ParticleModel.ParticleTypes.Shell:
+                case Particle.ParticleTypes.Shell:
                     launchNumber = 1;
                     break;
             }
@@ -143,7 +138,21 @@ namespace CStrike2D
             //based on the Particle type
             for (int i = 0; i < launchNumber; i++)
             {
-                Particles.Add(new ParticleModel(launchVect, particleType, playerAngle));
+                Particles.Add(new Particle(launchVect, particleType, playerAngle));
+            }
+        }
+
+        /// <summary>
+        /// Draws Particle Emitter Model Data
+        /// </summary>
+        /// <param name="sb"> Passes through SpriteBatch instance in order to use Draw Method </param>
+        /// <param name="particleImg"> Passes through the particle texture to be drawn </param>
+        public void Draw(SpriteBatch sb, Texture2D particleImg)
+        {
+            // Cycles through every ParticleModel in Particles and draws it
+            foreach (Particle particle in Particles)
+            {
+                particle.Draw(sb, particleImg);
             }
         }
     }
