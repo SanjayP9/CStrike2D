@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
 {
-    class ClientPlayer
+    internal class ClientPlayer
     {
         public string UserName { get; private set; }
         public long UniqueIdentifier { get; private set; }
@@ -16,6 +18,44 @@ namespace CStrike2D
         public Team CurrentTeam { get; private set; }
         public float Health { get; private set; }
         public float Armor { get; private set; }
+
+        // Weapons
+        public ClientWeapon CurrentWeapon { get; private set; }
+        public ClientWeapon PrimaryWeapon { get; private set; }
+        public ClientWeapon SecondaryWeapon { get; private set; }
+
+        // State
+
+        // Gets the position of the player
+        public Vector2 Position
+        {
+            get
+            {
+                return position;
+            }
+            set
+            {
+                position = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the rotation of the player
+        /// </summary>
+        public float Rotation
+        {
+            get
+            {
+                return rotation;
+            }
+            set
+            {
+                rotation = value;
+            }
+        }
+
+        private Vector2 position;
+        private float rotation;
 
         public enum PlayerState
         {
@@ -37,9 +77,23 @@ namespace CStrike2D
             CurrentTeam = Team.Spectator;
         }
 
-        public void FireWeapon()
+        public void Update(float gameTime)
         {
 
+        }
+
+        public void Draw(SpriteBatch sb)
+        {
+            // Draw Player
+
+            // Draw Weapon
+
+        }
+
+
+        public void Fire()
+        {
+            CurrentWeapon.FireWeapon();
         }
 
         public void SwitchWeapon()
@@ -57,7 +111,5 @@ namespace CStrike2D
             Health -= health;
             Armor -= armor;
         }
-
-
     }
 }

@@ -84,7 +84,9 @@
     <Compile Include="Bar.cs" />
     <Compile Include="Button.cs" />
     <Compile Include="Camera2D.cs" />
+    <Compile Include="ClientGrenade.cs" />
     <Compile Include="ClientPlayer.cs" />
+    <Compile Include="ClientWeapon.cs" />
     <Compile Include="Console.cs" />
     <Compile Include="CStrikeModel.cs" />
     <Compile Include="EasingFunctions.cs" />
@@ -99,7 +101,6 @@
     <Compile Include="NetworkManager.cs" />
     <Compile Include="ParticleEmitterModel.cs" />
     <Compile Include="ParticleEmitterView.cs" />
-    <Compile Include="ParticleManagerModel.cs" />
     <Compile Include="ParticleModel.cs" />
     <Compile Include="ParticleView.cs" />
     <Compile Include="Player.cs" />
