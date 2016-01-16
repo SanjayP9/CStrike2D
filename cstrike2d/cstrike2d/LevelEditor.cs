@@ -117,7 +117,16 @@ namespace CStrike2D
                                                                      (int)tileSize,
                                                                      (int)tileSize),
                                                                      new Rectangle(0, 0, 32, 32),
-                                                                     Color.White * 0.5f);
+                                                                     Color.White * 0.7f);
+                        }
+                        if (tiles[x, y].IsSaveSpot)
+                        {
+                            sb.Draw(driver.Assets.TileSet, new Rectangle((int)(x * tileSize + placementArea.X),
+                                                                     (int)(y * tileSize + placementArea.Y),
+                                                                     (int)tileSize,
+                                                                     (int)tileSize),
+                                                                     new Rectangle(0, 320, 32, 32),
+                                                                     Color.Red * 0.7f);
                         }
                     }
                 }
