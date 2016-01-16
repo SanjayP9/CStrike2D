@@ -120,7 +120,7 @@ namespace CStrike2D
         /// Starts the particle system by initializing a set amount of particles
         /// </summary>
         /// <param name="launchVect"> Specifies where the particles will be emitted from </param>
-        public void Launch(Vector2 launchVect)
+        public void Launch(Vector2 launchVect, float playerAngle)
         {
             // Sets the amount of launch particles based on the particle type
             int launchNumber = 0;
@@ -147,7 +147,7 @@ namespace CStrike2D
             //based on the Particle type
             for (int i = 0; i < launchNumber; i++)
             {
-                Particles.Add(new ParticleModel(launchVect, rand, particleType));
+                Particles.Add(new ParticleModel(launchVect, rand, particleType, playerAngle));
             }
         }
     }
