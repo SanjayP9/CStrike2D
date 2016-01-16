@@ -75,7 +75,7 @@ namespace CStrike2D
         /// Passes through instance of a Random in order 
         /// to create random integers
         /// </param>
-        public ParticleModel(Vector2 emitVect, Random rand, ParticleTypes particleType, float playerAngle)
+        public ParticleModel(Vector2 emitVect,ParticleTypes particleType, float playerAngle)
         {
             this.ParticlePosition = emitVect;
             this.emitVect = emitVect;
@@ -89,9 +89,10 @@ namespace CStrike2D
 
                     particleColor = new Color(250, 250, 0);
 
-                    particleDirection = CalcDirectionVect(rand.Next(0, 361));
 
-                    if (rand.Next(0, 101) < 10)
+                    particleDirection = CalcDirectionVect(CStrike2D.Rand.Next(0, 361));
+
+                    if (CStrike2D.Rand.Next(0, 101) < 10)
                     {
                         particleVelocity = 5.0f;
                     }
@@ -113,7 +114,7 @@ namespace CStrike2D
                     updateFreq = SMOKE_UPDATE_FREQ;
 
                     particleColor = Color.Gray;
-                    particleDirection = CalcDirectionVect(rand.Next(0, 361));
+                    particleDirection = CalcDirectionVect(CStrike2D.Rand.Next(0, 361));
 
 
                     particleVelocity = 1.0f;
