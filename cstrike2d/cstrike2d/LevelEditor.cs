@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.IO;
 
 namespace CStrike2D
 {
@@ -39,6 +40,7 @@ namespace CStrike2D
 
         public void Update(float gameTime)
         {
+            LoadFile("world.txt");
             Vector2 mouseWorld = input.ScreenToWorld(input.MousePosition, driver.Model.Camera, driver.Model.Center);
             if (input.LeftClick() == true)
             {
@@ -58,8 +60,7 @@ namespace CStrike2D
                     placedTilePos = new Vector2(((mouseWorld.X - placementArea.X) / tileSize), (mouseWorld.Y - placementArea.Y) / tileSize);
                     if((selectedTile != 0) && (selectedTile != 72))
                     {
-                        tiles[(int)((mouseWorld.X - placementArea.X) / tileSize),
-                              (int)((mouseWorld.Y - placementArea.Y) / tileSize)] = new Tile(selectedTile, false, false);
+                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = new Tile(selectedTile, false, false);
                     }
                     else if(selectedTile == 0 && tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
                     {
@@ -88,6 +89,7 @@ namespace CStrike2D
             {
                 driver.Model.Camera.Position.X += 5;
             }
+
         }
 
         public void DrawWorld(SpriteBatch sb)
@@ -146,6 +148,56 @@ namespace CStrike2D
             sb.DrawString(driver.Assets.DefaultFont, "" + input.ScreenToWorld(input.MousePosition, driver.Model.Camera, driver.Model.Center), new Vector2(100, 0), Color.White);
             sb.Draw(driver.Assets.TileSet, tileSetOffset, Color.White);
             sb.DrawString(driver.Assets.DefaultFont, "" + selectedTile, new Vector2 (0,0), Color.White );
+            for (int x = 0; x <= 8; x++)
+            {
+                sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(tileSetOffset.X + x * tileSize), (int)tileSetOffset.Y, 1, (int)tileSetOffset.Height), Color.Black);
+            }
+            for (int y = 0; y <= 10; y++)
+            {
+                sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)tileSetOffset.X, (int)(tileSetOffset.Y + y * tileSize), (int)tileSetOffset.Width, 1), Color.Black);
+            }
+        }
+        public void LoadFile(string fileName)
+        {
+            StreamReader inFile = File.OpenText(fileName);
+            int lineCount = File.ReadLines(fileName).Count() - 2;
+            string[] rowData;
+
+            numCols = Convert.ToInt32(inFile.ReadLine());
+            numRows = Convert.ToInt32(inFile.ReadLine());
+
+            tiles = new Tile[numCols, numRows];
+
+            for (int rows = 0; rows < lineCount; rows++)
+            {
+                rowData = inFile.ReadLine().Split(',');
+
+                for (int cols = 0; cols < rowData.Length; cols++)
+                {
+                    if (rowData[cols] != "")
+                    {
+                        if (rowData[cols][rowData[cols].Length - 2] == '1')
+                        {
+                            isPlantSpot = true;
+                        }
+                        else
+                        {
+                            isPlantSpot = false;
+                        }
+                        if (rowData[cols][rowData[cols].Length - 1] == '1')
+                        {
+                            isSaveSpot = true;
+                        }
+                        else
+                        {
+                            isSaveSpot = false;
+                        }
+
+                        tiles[cols, rows] = new Tile(Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 2)), isSaveSpot, isPlantSpot);
+                    }
+                }
+            }
+            inFile.Close();
         }
     }
 }
