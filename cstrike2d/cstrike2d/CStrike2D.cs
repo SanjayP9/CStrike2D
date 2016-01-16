@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
 {
+
     /// <summary>
     /// This is the main type for your game
     /// </summary>
@@ -44,6 +45,10 @@ namespace CStrike2D
 
         private int counter;       // Used to count how many times the screen is drawn
         private decimal timer;     // Used to track 1 second intervals in walltime for counting FPS
+
+
+        public static readonly Random Rand = new Random();
+
 
         public CStrike2D()
         {
