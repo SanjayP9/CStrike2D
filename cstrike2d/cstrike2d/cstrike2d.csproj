@@ -99,6 +99,7 @@
     <Compile Include="NetworkManager.cs" />
     <Compile Include="ParticleEmitterModel.cs" />
     <Compile Include="ParticleEmitterView.cs" />
+    <Compile Include="ParticleManagerModel.cs" />
     <Compile Include="ParticleModel.cs" />
     <Compile Include="ParticleView.cs" />
     <Compile Include="Player.cs" />
