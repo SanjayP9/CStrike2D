@@ -15,35 +15,14 @@ namespace CStrike2D
         {
             return Vector2.Distance(player1, player2) <= playerRadius;
         }
-
-        public static bool BulletToPlayer(Vector2 playerOrigin, float angle, float radius)
-        {
-            // Solve for P.O.I
-            // Create line y = ax + b
-            float a = (float)Math.Tan(angle);
-            float b = playerOrigin.Y + (a * (playerOrigin.X)); //maybe minus
-
-            // Solve for x and y
-            float x = (b / (2 * a));
-            float y = (b * 0.5f);
-
-            // P.O.I
-            Vector2 intersect = new Vector2(x, y);
-
-            // Line-Circle Collision
-            float distance = Vector2.Distance(playerOrigin, intersect);
-
-            return (radius <= distance);
-        }
-
         public static bool BulletToPerson(Vector2 shootingPlayer, Vector2 enemyPlayer, float shotAngle, float playerRadius)
         {
             double enemytoPlayerA = Math.Atan((double)((enemyPlayer.Y - shootingPlayer.Y)/(enemyPlayer.X - shootingPlayer.X)));
-            if (0 <= shotAngle && shotAngle < Math.PI)
-            {
-                return false;
-                shotAngle = (float)Math.PI * 2f + shotAngle;
-            }
+            //if (0 <= shotAngle && shotAngle < Math.PI)
+            //{
+            //    return false;
+            //    shotAngle = (float)Math.PI * 2f + shotAngle;
+            //}
             
             float mPlayer = (float)Math.Tan(shotAngle);
             float bPlayer = shootingPlayer.Y - mPlayer * shootingPlayer.X;

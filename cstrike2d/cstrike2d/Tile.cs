@@ -14,8 +14,9 @@ namespace CStrike2D
         public bool IsSaveSpot { get; private set; }
         public bool IsCTSpawnPoint { get; private set; }
         public bool IsTSpawnPoint { get; private set; }
+        public bool IsSiteDefencePoint { get; private set; }
 
-        public Tile(int tileType, bool isPlantSpot, bool isSaveSpot, bool isSolid, bool isCTSpawnPoint, bool isTSpawnPoint)
+        public Tile(int tileType, bool isPlantSpot, bool isSaveSpot, bool isSolid, bool isCTSpawnPoint, bool isTSpawnPoint, bool isSiteDefencePoint)
         {
             TileType = tileType;
             IsPlantSpot = isPlantSpot;
@@ -23,6 +24,7 @@ namespace CStrike2D
             IsSolid = isSolid;
             IsCTSpawnPoint = isCTSpawnPoint;
             IsTSpawnPoint = isTSpawnPoint;
+            IsSiteDefencePoint = isSiteDefencePoint;
         }
         public void SetTileType(int tileType)
         {
@@ -47,6 +49,10 @@ namespace CStrike2D
         public void SetIsTSpawnPoint(bool isTSpawnPoint)
         {
             IsTSpawnPoint = isTSpawnPoint;
+        }
+        public void SetIsSiteDefencePoint(bool isSiteDefencePoint)
+        {
+            IsSiteDefencePoint = isSiteDefencePoint;
         }
 
         public void Draw(SpriteBatch sb, Texture2D tileTexture)
