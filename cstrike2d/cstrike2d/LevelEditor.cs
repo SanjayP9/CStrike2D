@@ -12,14 +12,14 @@ namespace CStrike2D
 {
     public class LevelEditor
     {
-        Tile[,] tiles = new Tile[50, 50];
+        Tile[,] tiles = new Tile[75, 50];
         int selectedTile;
         float tileSize = 32;
         int NUMBER_OF_TILES_WIDE = 8;
         int NUMBER_OF_TILES_LONG = 10;
 
         int numRows = 50;
-        int numCols = 50;
+        int numCols = 75;
 
         Vector2 mouseWorld;
         Vector2 placedTilePos;
@@ -37,7 +37,7 @@ namespace CStrike2D
         private CStrike2D driver;
 
         Rectangle tileSetOffset = new Rectangle(50, 100, 256, 320);
-        Rectangle placementArea = new Rectangle(-200, -250, 1600, 1600);
+        Rectangle placementArea = new Rectangle(-200, -250, 2400, 1600);
 
         public LevelEditor(CStrikeModel model)
         {
@@ -50,6 +50,7 @@ namespace CStrike2D
         {
             // Holds the mouse position according to the world
             mouseWorld = input.ScreenToWorld(input.MousePosition, driver.Model.Camera, driver.Model.Center);
+            LoadFile("de_cache.txt");
 
             // If left mouse is clicked
             if (input.LeftClick())
@@ -151,6 +152,10 @@ namespace CStrike2D
             {
                 driver.Model.Camera.Position.X += 5;
             }
+            if (input.Tapped(Keys.Enter))
+            {
+                SaveFile("de_cache.txt");
+            }
         }
 
         public void DrawWorld(SpriteBatch sb)
@@ -158,9 +163,9 @@ namespace CStrike2D
             sb.Draw(driver.Assets.PixelTexture, placementArea, Color.CornflowerBlue);
 
             // Draws all tiles placed and the properties highlighted overthem
-            for (int x = 0; x < numRows; x++)
+            for (int x = 0; x < numCols; x++)
             {
-                for (int y = 0; y < numCols; y++)
+                for (int y = 0; y < numRows; y++)
                 {
                     if (tiles[x, y] != null)
                     {
@@ -281,7 +286,7 @@ namespace CStrike2D
             tiles = new Tile[numCols, numRows];
 
             // Goes through every line in the text past the first two
-            for (int rows = 0; rows < lineCount - 2; rows++)
+            for (int rows = 0; rows < numRows; rows++)
             {
                 // Sets the row data to be split by commas to siginify a new column
                 rowData = inFile.ReadLine().Split(',');
@@ -344,7 +349,7 @@ namespace CStrike2D
                         }
 
                         // Initialize each property of the tile
-                        tiles[cols, rows] = new Tile(Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 7)), isSaveSpot, isPlantSpot, isSolid, isCTSpawnPoint, isTSpawnPoint, isSiteDefencePoint);
+                        tiles[cols, rows] = new Tile(Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 6)), isSaveSpot, isPlantSpot, isSolid, isCTSpawnPoint, isTSpawnPoint, isSiteDefencePoint);
                     }
                 }
             }
