@@ -24,6 +24,8 @@ namespace CStrike2D
         bool isPlantSpot;
         bool isSaveSpot;
         bool isSolid;
+        bool isCTSpawnPoint;
+        bool isTSpawnPoint;
 
         private InputManager input;
         private AudioManager audio;
@@ -42,7 +44,6 @@ namespace CStrike2D
 
         public void Update(float gameTime)
         {
-            //LoadFile("world1.txt");
             mouseWorld = input.ScreenToWorld(input.MousePosition, driver.Model.Camera, driver.Model.Center);
             if (input.LeftClick() == true)
             {
@@ -54,14 +55,6 @@ namespace CStrike2D
                     selectedTile = (int)((input.MousePosition.Y - tileSetOffset.Y) / tileSize) * 8 +
                                    (int)((input.MousePosition.X - tileSetOffset.X) / tileSize);
                 }
-                if (mouseWorld.X > placementArea.X &&
-                         mouseWorld.X < placementArea.X + placementArea.Width &&
-                         mouseWorld.Y > placementArea.Y &&
-                         mouseWorld.Y < placementArea.Y + placementArea.Height)
-                {
-                    placedTilePos = new Vector2(((mouseWorld.X - placementArea.X) / tileSize), (mouseWorld.Y - placementArea.Y) / tileSize);   
-                    tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = new Tile(selectedTile, false, false, false);
-                }
             }
             
             if (mouseWorld.X > placementArea.X &&
@@ -72,7 +65,14 @@ namespace CStrike2D
                 placedTilePos = new Vector2(((mouseWorld.X - placementArea.X) / tileSize), (mouseWorld.Y - placementArea.Y) / tileSize);
                 if (input.LeftHold())
                 {
-                    tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = new Tile(selectedTile, false, false, false);
+                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                    {
+                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetTileType(selectedTile);
+                    }
+                    else
+                    {
+                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = new Tile(selectedTile, false, false, false, false, false);
+                    }
                 }
                 else if (input.RightHold())
                 {
@@ -82,21 +82,21 @@ namespace CStrike2D
                 {
                     if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
                     {
-                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot = !tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot;
+                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsPlantSpot(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot);
                     }
                 }
                 else if (input.Tapped(Keys.X))
                 {
                     if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
                     {
-                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot = !tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot;
+                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSaveSpot(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot);
                     }
                 }
                 else if (input.Tapped(Keys.C))
                 {
                     if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
                     {
-                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid = !tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid;
+                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSolid(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid);
                     }
                 }
             }
@@ -166,6 +166,24 @@ namespace CStrike2D
                                                                      new Rectangle(0, 0, 32, 32),
                                                                      Color.Blue * 0.5f);
                         }
+                        if (tiles[x, y].IsCTSpawnPoint)
+                        {
+                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * tileSize + placementArea.X),
+                                                                     (int)(y * tileSize + placementArea.Y),
+                                                                     (int)tileSize,
+                                                                     (int)tileSize),
+                                                                     new Rectangle(0, 0, 32, 32),
+                                                                     Color.Brown * 0.5f);
+                        }
+                        if (tiles[x, y].IsTSpawnPoint)
+                        {
+                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * tileSize + placementArea.X),
+                                                                     (int)(y * tileSize + placementArea.Y),
+                                                                     (int)tileSize,
+                                                                     (int)tileSize),
+                                                                     new Rectangle(0, 0, 32, 32),
+                                                                     Color.Green * 0.5f);
+                        }
                     }
                 }
             }
@@ -212,7 +230,7 @@ namespace CStrike2D
                 {
                     if (rowData[cols] != "")
                     {
-                        if (rowData[cols][rowData[cols].Length - 3] == '1')
+                        if (rowData[cols][rowData[cols].Length - 5] == '1')
                         {
                             isPlantSpot = true;
                         }
@@ -220,7 +238,7 @@ namespace CStrike2D
                         {
                             isPlantSpot = false;
                         }
-                        if (rowData[cols][rowData[cols].Length - 2] == '1')
+                        if (rowData[cols][rowData[cols].Length - 4] == '1')
                         {
                             isSaveSpot = true;
                         }
@@ -228,7 +246,7 @@ namespace CStrike2D
                         {
                             isSaveSpot = false;
                         }
-                        if (rowData[cols][rowData[cols].Length - 1] == '1')
+                        if (rowData[cols][rowData[cols].Length - 3] == '1')
                         {
                             isSolid = true;
                         }
@@ -236,8 +254,24 @@ namespace CStrike2D
                         {
                             isSolid = false;
                         }
+                        if (rowData[cols][rowData[cols].Length - 2] == '1')
+                        {
+                            isCTSpawnPoint = true;
+                        }
+                        else
+                        {
+                            isCTSpawnPoint = false;
+                        }
+                        if (rowData[cols][rowData[cols].Length - 1] == '1')
+                        {
+                            isTSpawnPoint = true;
+                        }
+                        else
+                        {
+                            isTSpawnPoint = false;
+                        }
 
-                        tiles[cols, rows] = new Tile(Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 4)), isSaveSpot, isPlantSpot, isSolid);
+                        tiles[cols, rows] = new Tile(Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 6)), isSaveSpot, isPlantSpot, isSolid, isCTSpawnPoint, isTSpawnPoint);
                     }
                 }
             }
@@ -257,6 +291,8 @@ namespace CStrike2D
                     string isPlantSpotString;
                     string isSaveSpotString;
                     string isSolidString;
+                    string isCTSpawnPointString;
+                    string isTSpawnPointString;
                     if (tiles[cols, rows] != null)
                     {
                         if (tiles[cols, rows].IsPlantSpot)
@@ -283,7 +319,23 @@ namespace CStrike2D
                         {
                             isSolidString = "0";
                         }
-                        outFile.Write(Convert.ToString(tiles[cols, rows].TileType) + isPlantSpotString + isSaveSpotString + isSolidString + ",");
+                        if (tiles[cols, rows].IsCTSpawnPoint)
+                        {
+                            isCTSpawnPointString = "1";
+                        }
+                        else
+                        {
+                            isCTSpawnPointString = "0";
+                        }
+                        if (tiles[cols, rows].IsSolid)
+                        {
+                            isTSpawnPointString = "1";
+                        }
+                        else
+                        {
+                            isTSpawnPointString = "0";
+                        }
+                        outFile.Write(Convert.ToString(tiles[cols, rows].TileType) + isPlantSpotString + isSaveSpotString + isSolidString + isCTSpawnPointString + isTSpawnPointString + ",");
                     }
                     outFile.Write(",");
                 }

@@ -42,7 +42,7 @@ namespace CStrike2D
                                             TILE_SIDE_LENGTH,
                                             TILE_SIDE_LENGTH),
                                             temp);*/
-                    Tiles[x, y] = new Tile(1, false, false, false);
+                    Tiles[x, y] = new Tile(1, false, false, false, false, false);
                 }
             }
         }
