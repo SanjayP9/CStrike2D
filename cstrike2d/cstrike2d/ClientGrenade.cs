@@ -91,7 +91,6 @@ namespace CStrike2D
                         velocity = 0.0f;
                         Explode();
                     }
-
                     break;
 
 
@@ -104,11 +103,12 @@ namespace CStrike2D
         }
 
         /// <summary>
-        /// 
+        /// Runs this method when the grenade needs to explode
         /// </summary>
         public void Explode()
         {
-            grenadeEmitter = new ParticleEmitter(Position, NadeType);
+            grenadeEmitter = new ParticleEmitter(NadeType);
+            grenadeEmitter.Launch(Position, 0f);
         }
 
         /// <summary>

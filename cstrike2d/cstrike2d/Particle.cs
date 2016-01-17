@@ -102,6 +102,14 @@ namespace CStrike2D
                     break;
 
                 case ParticleTypes.Fire:
+                    particleColor = Color.Yellow;
+
+                    particleVelocity = 0.7f;
+
+                    ParticleTransparency = 1.0f;
+                    ParticleScale = 0.3f;
+                    particleDirection = CalcDirectionVect(CStrike2D.Rand.Next(0, 361));
+
                     break;
 
                 case ParticleTypes.Smoke:
