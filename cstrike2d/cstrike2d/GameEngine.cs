@@ -107,15 +107,320 @@ namespace CStrike2D
             float rot, byte weapon)
         {
             ClientPlayer player = new ClientPlayer(username, identifier, assets);
+            player.SetPosition(new Vector2(posX, posY));
+            player.SetRotation(rot);
+            player.SetCurrentWeapon(WeaponData.ByteToWeapon(weapon));
         }
 
         public void MovePlayer(short identifier, byte direction)
         {
-            ClientPlayer player = Players.Find(ply => ply.Identifier == playerID);
+            ClientPlayer player = Players.Find(ply => ply.Identifier == identifier);
+            player.Move(direction);
+        }
 
-            if (player != null)
+        public void ChangeTeam(short identifier, byte team)
+        {
+            ClientPlayer player = Players.Find(ply => ply.Identifier == identifier);
+            player.SetTeam(team);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="gameTime"></param>
+        public void Update(float gameTime)
+        {
+            if (CurState == GameEngineState.Active)
             {
-                player.Move(direction);
+                showScoreBoard = input.Held(Keys.Tab);
+
+                if (showScoreBoard)
+                {
+                    driver.Model.InterfaceManager.ShowPage("scoreboard");
+                }
+                else
+                {
+                    driver.Model.InterfaceManager.HidePage("scoreboard");
+                }
+
+                if (!teamSelect)
+                {
+                    byte dir = 0;
+                    if (Client.CurrentTeam != ServerClientInterface.Team.Spectator)
+                    {
+                        if (input.Tapped(Keys.B))
+                        {
+                            showMenu = !showMenu;
+
+
+                        }
+
+                        if (showMenu)
+                        {
+                            driver.Model.InterfaceManager.ShowPage("buyMenu");
+                            driver.Model.InterfaceManager.ShowPage("buyButtonMenu");
+                        }
+                        else
+                        {
+                            driver.Model.InterfaceManager.HideAll();
+                        }
+
+
+                        if (showMenu)
+                        {
+                            switch (CurMenuState)
+                            {
+                                case MenuState.MainMenu:
+                                    driver.Model.InterfaceManager.ShowPage("buyButtonMenu");
+                                    if (input.Tapped(Keys.Escape))
+                                    {
+                                        showMenu = false;
+                                    }
+                                    else if (input.Tapped(Keys.D1) ||
+                                             driver.Model.InterfaceManager.Clicked(input, "buyButtonMenu",
+                                                 "pistolMenuButton"))
+                                    {
+                                        if (Client.CurrentTeam == ServerClientInterface.Team.CounterTerrorist)
+                                        {
+                                            driver.Model.InterfaceManager.ShowPage("pistolMenuButton");
+                                        }
+                                        else
+                                        {
+
+                                        }
+                                    }
+                                    else if (input.Tapped(Keys.D2) ||
+                                             driver.Model.InterfaceManager.Clicked(input, "buyButtonMenu",
+                                                 "heavyMenuButton"))
+                                    {
+                                        if (Client.CurrentTeam == ServerClientInterface.Team.CounterTerrorist)
+                                        {
+                                        }
+                                        else
+                                        {
+
+                                        }
+                                    }
+                                    else if (input.Tapped(Keys.D3) ||
+                                             driver.Model.InterfaceManager.Clicked(input, "buyButtonMenu",
+                                                 "smgMenuButton"))
+                                    {
+                                        if (Client.CurrentTeam == ServerClientInterface.Team.CounterTerrorist)
+                                        {
+                                        }
+                                        else
+                                        {
+
+                                        }
+                                    }
+                                    else if (input.Tapped(Keys.D4) ||
+                                             driver.Model.InterfaceManager.Clicked(input, "buyButtonMenu",
+                                                 "rifleMenuButton"))
+                                    {
+                                        driver.Model.InterfaceManager.HidePage("buyButtonMenu");
+                                        CurMenuState = MenuState.Rifles;
+                                    }
+                                    break;
+                                case MenuState.Pistols:
+                                    break;
+                                case MenuState.Heavy:
+                                    break;
+                                case MenuState.Smgs:
+                                    break;
+                                case MenuState.Rifles:
+
+                                    if (input.Tapped(Keys.Escape))
+                                    {
+                                        driver.Model.InterfaceManager.HidePage("ctRifleButtonMenu");
+                                        CurMenuState = MenuState.MainMenu;
+                                    }
+                                    if (Client.CurrentTeam == ServerClientInterface.Team.CounterTerrorist)
+                                    {
+                                        driver.Model.InterfaceManager.ShowPage("ctRifleButtonMenu");
+                                    }
+                                    else
+                                    {
+                                        driver.Model.InterfaceManager.ShowPage("tRifleButtonMenu");
+
+                                        if (driver.Model.InterfaceManager.Clicked(input, "tRifleButtonMenu", "ak47MenuButton"))
+                                        {
+                                            network.RequestBuy(NetInterface.WEAPON_AK47);
+                                            driver.Model.InterfaceManager.HidePage("tRifleButtonMenu");
+                                        }
+                                    }
+                                    break;
+                                case MenuState.Gear:
+                                    break;
+                                case MenuState.Grenades:
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            if (input.Tapped(Keys.D1))
+                            {
+                                //Client.SwitchWeapon(WeaponInfo.WeaponType.Primary);
+                                //network.SwitchWeapon(Client.PrimaryWeapon.EntityID, NetInterface.SWITCH_PRIMARY);
+                            }
+                            else if (input.Tapped(Keys.D2))
+                            {
+                                //Client.SwitchWeapon(WeaponInfo.WeaponType.Secondary);
+                                //network.SwitchWeapon(Client.SecondaryWeapon.EntityID, NetInterface.SWITCH_SECONDARY);
+                            }
+                            else if (input.Tapped(Keys.D3))
+                            {
+                                //Client.SwitchWeapon(WeaponInfo.WeaponType.Knife);
+                                //network.SwitchWeapon(Client.Knife.EntityID, NetInterface.SWITCH_KNIFE);
+                            }
+
+                            if (input.Tapped(Keys.K))
+                            {
+                                audioManager.PlaySound("flashbang1", audioManager.SoundEffectVolume, Client.Position,
+                                    Client.Position);
+                                Flashed = true;
+                                flashTimer = 20f;
+                            }
+                        }
+
+                        if (Flashed)
+                        {
+                            if (flashTimer >= 0f)
+                            {
+                                flashTimer -= 0.2f;
+                                driver.Model.Shader.ChangeBlurAmount(flashTimer * 2f);
+                            }
+                        }
+
+                        if (input.Tapped(Keys.W) || input.Held(Keys.W))
+                        {
+                            dir += 1;
+                        }
+                        else if (input.Tapped(Keys.S) || input.Held(Keys.S))
+                        {
+                            dir += 2;
+                        }
+
+                        if (input.Tapped(Keys.A) || input.Held(Keys.A))
+                        {
+                            dir += 4;
+                        }
+                        else if (input.Tapped(Keys.D) | input.Held(Keys.D))
+                        {
+                            dir += 8;
+                        }
+
+                        switch (dir)
+                        {
+                            case 1: // UP
+                                network.SendInputData(NetInterface.MOVE_UP);
+                                break;
+                            case 2: // DOWN
+                                network.SendInputData(NetInterface.MOVE_DOWN);
+                                break;
+                            case 4: // LEFT
+                                network.SendInputData(NetInterface.MOVE_LEFT);
+                                break;
+                            case 8: // RIGHT
+                                network.SendInputData(NetInterface.MOVE_RIGHT);
+                                break;
+                            case 9: // UP-RIGHT
+                                network.SendInputData(NetInterface.MOVE_UPRIGHT);
+                                break;
+                            case 10: // DOWN-RIGHT
+                                network.SendInputData(NetInterface.MOVE_DOWNRIGHT);
+                                break;
+                            case 6: // DOWN-LEFT
+                                network.SendInputData(NetInterface.MOVE_DOWNLEFT);
+                                break;
+                            case 5: // UP-LEFT
+                                network.SendInputData(NetInterface.MOVE_UPLEFT);
+                                break;
+                        }
+
+                        if (input.LeftClickImmediate() && !showMenu)
+                        {
+                            network.SendInputData(NetInterface.FIRE);
+                        }
+
+                        if (Players.Count > 0)
+                        {
+                            float curRotation = input.MouseRotation(driver.Model.Camera);
+
+                            if (curRotation != prevRotation)
+                            {
+                                network.SendRotData(curRotation);
+                            }
+
+                            driver.Model.Camera.Position = Client.Position;
+                            Client.SetRotation(curRotation);
+                            prevRotation = curRotation;
+                        }
+                    }
+                    else
+                    {
+                        if (input.Tapped(Keys.W) || input.Held(Keys.W))
+                        {
+                            driver.Model.Camera.Position.Y -= 5f;
+                        }
+                        else if (input.Tapped(Keys.S) || input.Held(Keys.S))
+                        {
+                            driver.Model.Camera.Position.Y += 5f;
+                        }
+
+                        if (input.Tapped(Keys.A) || input.Held(Keys.A))
+                        {
+                            driver.Model.Camera.Position.X -= 5f;
+                        }
+                        else if (input.Tapped(Keys.D) | input.Held(Keys.D))
+                        {
+                            driver.Model.Camera.Position.X += 5f;
+                        }
+                    }
+
+                    foreach (ClientPlayer ply in Players)
+                    {
+                        ply.Update(gameTime);
+                    }
+
+                }
+                else
+                {
+                    if (input.Tapped(Keys.W) || input.Held(Keys.W))
+                    {
+                        driver.Model.Camera.Position.Y -= 5f;
+                    }
+                    else if (input.Tapped(Keys.S) || input.Held(Keys.S))
+                    {
+                        driver.Model.Camera.Position.Y += 5f;
+                    }
+
+                    if (input.Tapped(Keys.A) || input.Held(Keys.A))
+                    {
+                        driver.Model.Camera.Position.X -= 5f;
+                    }
+                    else if (input.Tapped(Keys.D) | input.Held(Keys.D))
+                    {
+                        driver.Model.Camera.Position.X += 5f;
+                    }
+
+                    if (driver.Model.InterfaceManager.Clicked(input, "teamSelectMenu", "ctButton"))
+                    {
+                        teamSelect = false;
+                        driver.Model.InterfaceManager.HideAll();
+                        network.RequestTeamChange(ServerClientInterface.Team.CounterTerrorist);
+                    }
+                    else if (driver.Model.InterfaceManager.Clicked(input, "teamSelectMenu", "tButton"))
+                    {
+                        teamSelect = false;
+                        driver.Model.InterfaceManager.HideAll();
+                        network.RequestTeamChange(ServerClientInterface.Team.Terrorist);
+                    }
+                    else if (input.Tapped(Keys.Escape))
+                    {
+                        teamSelect = false;
+                        driver.Model.InterfaceManager.HideAll();
+                    }
+                }
             }
         }
 
@@ -195,305 +500,7 @@ namespace CStrike2D
             return Players.Exists(ply => ply.PlayerID == playerID);
         }
         
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="gameTime"></param>
-        public void Update(float gameTime)
-        {
-            if (CurState == GameEngineState.Active)
-            {
-                showScoreBoard = input.Held(Keys.Tab);
-
-                if (showScoreBoard)
-                {
-                    driver.Model.InterfaceManager.ShowPage("scoreboard");
-                }
-                else
-                {
-                    driver.Model.InterfaceManager.HidePage("scoreboard");
-                }
-
-                if (!teamSelect)
-                {
-                    byte dir = 0;
-                    if (clientPlayer.Team != NetInterface.Team.Spectator)
-                    {
-                        if (input.Tapped(Keys.B))
-                        {
-                            showMenu = !showMenu;
-
-
-                        }
-
-                        if (showMenu)
-                        {
-                            driver.Model.InterfaceManager.ShowPage("buyMenu");
-                            driver.Model.InterfaceManager.ShowPage("buyButtonMenu");
-                        }
-                        else
-                        {
-                            driver.Model.InterfaceManager.HideAll();
-                        }
-
-
-                        if (showMenu)
-                        {
-                            switch (CurMenuState)
-                            {
-                                case MenuState.MainMenu:
-                                    driver.Model.InterfaceManager.ShowPage("buyButtonMenu");
-                                    if (input.Tapped(Keys.Escape))
-                                    {
-                                        showMenu = false;
-                                    }
-                                    else if (input.Tapped(Keys.D1) ||
-                                             driver.Model.InterfaceManager.Clicked(input, "buyButtonMenu",
-                                                 "pistolMenuButton"))
-                                    {
-                                        if (clientPlayer.Team == NetInterface.Team.CT)
-                                        {
-                                            driver.Model.InterfaceManager.ShowPage("pistolMenuButton");
-                                        }
-                                        else
-                                        {
-                                            
-                                        }
-                                    }
-                                    else if (input.Tapped(Keys.D2) ||
-                                             driver.Model.InterfaceManager.Clicked(input, "buyButtonMenu",
-                                                 "heavyMenuButton"))
-                                    {
-                                        if (clientPlayer.Team == NetInterface.Team.CT)
-                                        {
-                                        }
-                                        else
-                                        {
-                                            
-                                        }
-                                    }
-                                    else if (input.Tapped(Keys.D3) ||
-                                             driver.Model.InterfaceManager.Clicked(input, "buyButtonMenu",
-                                                 "smgMenuButton"))
-                                    {
-                                        if (clientPlayer.Team == NetInterface.Team.CT)
-                                        {
-                                        }
-                                        else
-                                        {
-                                            
-                                        }
-                                    }
-                                    else if (input.Tapped(Keys.D4) ||
-                                             driver.Model.InterfaceManager.Clicked(input, "buyButtonMenu",
-                                                 "rifleMenuButton"))
-                                    {
-                                        driver.Model.InterfaceManager.HidePage("buyButtonMenu");
-                                        CurMenuState = MenuState.Rifles;
-                                    }
-                                    break;
-                                case MenuState.Pistols:
-                                    break;
-                                case MenuState.Heavy:
-                                    break;
-                                case MenuState.Smgs:
-                                    break;
-                                case MenuState.Rifles:
-                                                                        
-                                    if (input.Tapped(Keys.Escape))
-                                    {
-                                        driver.Model.InterfaceManager.HidePage("ctRifleButtonMenu");
-                                        CurMenuState = MenuState.MainMenu;
-                                    }
-                                    if (clientPlayer.Team == NetInterface.Team.CT)
-                                    {
-                                        driver.Model.InterfaceManager.ShowPage("ctRifleButtonMenu");
-                                    }
-                                    else
-                                    {
-                                        driver.Model.InterfaceManager.ShowPage("tRifleButtonMenu");
-
-                                        if (driver.Model.InterfaceManager.Clicked(input, "tRifleButtonMenu", "ak47MenuButton"))
-                                        {
-                                            network.RequestBuy(NetInterface.WEAPON_AK47);
-                                            driver.Model.InterfaceManager.HidePage("tRifleButtonMenu");
-                                        }
-                                    }
-                                    break;
-                                case MenuState.Gear:
-                                    break;
-                                case MenuState.Grenades:
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            if (input.Tapped(Keys.D1))
-                            {
-                                clientPlayer.SwitchWeapon(WeaponInfo.WeaponType.Primary);
-                                network.SwitchWeapon(clientPlayer.PrimaryWeapon.EntityID, NetInterface.SWITCH_PRIMARY);
-                            }
-                            else if (input.Tapped(Keys.D2))
-                            {
-                                clientPlayer.SwitchWeapon(WeaponInfo.WeaponType.Secondary);
-                                network.SwitchWeapon(clientPlayer.SecondaryWeapon.EntityID, NetInterface.SWITCH_SECONDARY);
-                            }
-                            else if (input.Tapped(Keys.D3))
-                            {
-                                clientPlayer.SwitchWeapon(WeaponInfo.WeaponType.Knife);
-                                network.SwitchWeapon(clientPlayer.Knife.EntityID, NetInterface.SWITCH_KNIFE);
-                            }
-
-                            if (input.Tapped(Keys.K))
-                            {
-                                audioManager.PlaySound("flashbang1", audioManager.SoundEffectVolume, clientPlayer.Position,
-                                    clientPlayer.Position);
-                                Flashed = true;
-                                flashTimer = 20f;
-                            }
-                        }
-
-                        if (Flashed)
-                        {
-                            if (flashTimer >= 0f)
-                            {
-                                flashTimer -= 0.2f;
-                                driver.Model.Shader.ChangeBlurAmount(flashTimer * 2f);
-                            }
-                        }
-
-                        if (input.Tapped(Keys.W) || input.Held(Keys.W))
-                        {
-                            dir += 1;
-                        }
-                        else if (input.Tapped(Keys.S) || input.Held(Keys.S))
-                        {
-                            dir += 2;
-                        }
-
-                        if (input.Tapped(Keys.A) || input.Held(Keys.A))
-                        {
-                            dir += 4;
-                        }
-                        else if (input.Tapped(Keys.D) | input.Held(Keys.D))
-                        {
-                            dir += 8;
-                        }
-
-                        switch (dir)
-                        {
-                            case 1: // UP
-                                network.SendInputData(NetInterface.MOVE_UP);
-                                break;
-                            case 2: // DOWN
-                                network.SendInputData(NetInterface.MOVE_DOWN);
-                                break;
-                            case 4: // LEFT
-                                network.SendInputData(NetInterface.MOVE_LEFT);
-                                break;
-                            case 8: // RIGHT
-                                network.SendInputData(NetInterface.MOVE_RIGHT);
-                                break;
-                            case 9: // UP-RIGHT
-                                network.SendInputData(NetInterface.MOVE_UPRIGHT);
-                                break;
-                            case 10: // DOWN-RIGHT
-                                network.SendInputData(NetInterface.MOVE_DOWNRIGHT);
-                                break;
-                            case 6: // DOWN-LEFT
-                                network.SendInputData(NetInterface.MOVE_DOWNLEFT);
-                                break;
-                            case 5: // UP-LEFT
-                                network.SendInputData(NetInterface.MOVE_UPLEFT);
-                                break;
-                        }
-
-                        if (input.LeftClickImmediate() && !showMenu)
-                        {
-                            network.SendInputData(NetInterface.FIRE);
-                        }
-
-                        if (Players.Count > 0)
-                        {
-                            float curRotation = input.MouseRotation(driver.Model.Camera);
-
-                            if (curRotation != prevRotation)
-                            {
-                                network.SendRotData(curRotation);
-                            }
-
-                            driver.Model.Camera.Position = clientPlayer.Position;
-                            clientPlayer.SetRot(curRotation);
-                            prevRotation = curRotation;
-                        }
-                    }
-                    else
-                    {
-                        if (input.Tapped(Keys.W) || input.Held(Keys.W))
-                        {
-                            driver.Model.Camera.Position.Y -= 5f;
-                        }
-                        else if (input.Tapped(Keys.S) || input.Held(Keys.S))
-                        {
-                            driver.Model.Camera.Position.Y += 5f;
-                        }
-
-                        if (input.Tapped(Keys.A) || input.Held(Keys.A))
-                        {
-                            driver.Model.Camera.Position.X -= 5f;
-                        }
-                        else if (input.Tapped(Keys.D) | input.Held(Keys.D))
-                        {
-                            driver.Model.Camera.Position.X += 5f;
-                        }
-                    }
-
-                    foreach (Player ply in Players)
-                    {
-                        ply.Update(gameTime);
-                    }
-
-                }
-                else
-                {
-                    if (input.Tapped(Keys.W) || input.Held(Keys.W))
-                    {
-                        driver.Model.Camera.Position.Y -= 5f;
-                    }
-                    else if (input.Tapped(Keys.S) || input.Held(Keys.S))
-                    {
-                        driver.Model.Camera.Position.Y += 5f;
-                    }
-
-                    if (input.Tapped(Keys.A) || input.Held(Keys.A))
-                    {
-                        driver.Model.Camera.Position.X -= 5f;
-                    }
-                    else if (input.Tapped(Keys.D) | input.Held(Keys.D))
-                    {
-                        driver.Model.Camera.Position.X += 5f;
-                    }
-
-                    if (driver.Model.InterfaceManager.Clicked(input, "teamSelectMenu", "ctButton"))
-                    {
-                        teamSelect = false;
-                        driver.Model.InterfaceManager.HideAll();
-                        network.SendChangeTeam(NetInterface.PLY_CT);
-                    }
-                    else if (driver.Model.InterfaceManager.Clicked(input, "teamSelectMenu", "tButton"))
-                    {
-                        teamSelect = false;
-                        driver.Model.InterfaceManager.HideAll();
-                        network.SendChangeTeam(NetInterface.PLY_T);
-                    }
-                    else if (input.Tapped(Keys.Escape))
-                    {
-                        teamSelect = false;
-                        driver.Model.InterfaceManager.HideAll();
-                    }
-                }
-            }
-        }
+        
         */
 
         /// <summary>

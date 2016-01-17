@@ -55,6 +55,8 @@ namespace CStrike2DServer
 
         public const byte CHANGE_TEAM_DENIED = 24;
 
+        public const byte ROTATE_PLAYER = 25;
+
         public enum Team
         {
             CounterTerrorist,

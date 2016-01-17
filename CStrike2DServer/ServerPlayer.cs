@@ -95,6 +95,11 @@ namespace CStrike2DServer
             Armor = armor;
         }
 
+        public void SetTeam(byte team)
+        {
+            CurrentTeam = ServerClientInterface.ByteToTeam(team);
+        }
+
         public void Damage(float health, float armor)
         {
             Health -= health;

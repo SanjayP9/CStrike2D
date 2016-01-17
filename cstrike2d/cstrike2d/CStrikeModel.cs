@@ -388,7 +388,7 @@ namespace CStrike2D
             }
 
             InterfaceManager.Update(gameTime);
-            NetworkManager.Update();
+            NetworkManager.Update(gameTime);
 
             switch (CurState)
             {
@@ -507,7 +507,6 @@ namespace CStrike2D
                             if (DriverInstance.Assets.GameContentLoaded)
                             {
                                 CurState = State.InGame;
-                                GameEngine.CurState = GameEngine.GameEngineState.Active;
                                 InterfaceManager.ShowPage("teamSelectMenu");
                             }
                             else
@@ -531,6 +530,7 @@ namespace CStrike2D
                 Input.Tock();
             }
         }
+
         /*
         public void LoadMap(string mapFolder)
         {

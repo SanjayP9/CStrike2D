@@ -88,10 +88,17 @@ namespace CStrike2D
 
         public override void Draw(SpriteBatch sb)
         {
-            // Draw Player
+            if (CurrentTeam != ServerClientInterface.Team.Spectator)
+            {
+                sb.Draw(Assets.CTTexture, position, new Rectangle(0, 0, 32, 32), Color.White, 1.57f + rotation,
+                    new Vector2(16, 16),
+                    1f, SpriteEffects.None, 0);
 
-            // Draw Weapon
+                sb.DrawString(Assets.DefaultFont, UserName, new Vector2(position.X, position.Y - 50),
+                    CurrentTeam == ServerClientInterface.Team.CounterTerrorist ? Color.Blue : Color.Red);
 
+                CurrentWeapon.Draw(sb);
+            }
         }
 
         public void Fire()
@@ -144,6 +151,21 @@ namespace CStrike2D
         public void SetArmor(int armor)
         {
             Armor = armor;
+        }
+
+        public void SetPosition(Vector2 position)
+        {
+            this.position = position;
+        }
+
+        public void SetRotation(float rotation)
+        {
+            this.rotation = rotation;
+        }
+
+        public void SetTeam(byte team)
+        {
+            CurrentTeam = ServerClientInterface.ByteToTeam(team);
         }
 
         public void Damage(int health, int armor)

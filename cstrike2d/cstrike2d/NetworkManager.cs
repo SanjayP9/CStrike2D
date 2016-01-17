@@ -88,6 +88,7 @@ namespace CStrike2D
 
                                         // Send the message
                                         client.SendMessage(outMsg, NetDeliveryMethod.ReliableSequenced);
+                                        CurState = NetState.Connected;
                                     }
                                 }
                                 break;
@@ -104,12 +105,19 @@ namespace CStrike2D
                                         break;
                                     case ServerClientInterface.SYNC_BEGIN:
                                         // Get data of all currently connected players
-                                        while (msg.ReadByte() != ServerClientInterface.SYNC_COMPLETE)
+                                        while ((msg = client.ReadMessage()) != null)
                                         {
+                                            if (msg.ReadByte() == ServerClientInterface.SYNC_COMPLETE)
+                                            {
+                                                break;
+                                            }
+
                                             engine.SyncPlayer(msg.ReadInt16(), msg.ReadString(),
                                                 msg.ReadByte(),msg.ReadInt16(), msg.ReadInt16(),
                                                 msg.ReadFloat(), msg.ReadByte());
                                         }
+                                        // The client has all data of the server, enter the game
+                                        engine.CurState = GameEngine.GameEngineState.Active;
                                         break;
                                     case ServerClientInterface.MOVE_UP:
                                     case ServerClientInterface.MOVE_DOWN:
@@ -119,9 +127,11 @@ namespace CStrike2D
                                     case ServerClientInterface.MOVE_UPRIGHT:
                                     case ServerClientInterface.MOVE_DOWNRIGHT:
                                     case ServerClientInterface.MOVE_DOWNLEFT:
-                                        
+                                        engine.MovePlayer(msg.ReadInt16(), code);
                                         break;
-
+                                    case ServerClientInterface.CHANGE_TEAM:
+                                        engine.ChangeTeam(msg.ReadInt16(), msg.ReadByte());
+                                        break;
                                 }
                                 break;
                         }
@@ -140,6 +150,29 @@ namespace CStrike2D
             outMsg.Write(ServerClientInterface.CHANGE_TEAM);
             outMsg.Write(ServerClientInterface.TeamToByte(team));
             client.SendMessage(outMsg, NetDeliveryMethod.ReliableSequenced);
+        }
+
+        /// <summary>
+        /// Tells the server that the client wishes to rotate their player
+        /// </summary>
+        /// <param name="rotation"></param>
+        public void Rotate(float rotation)
+        {
+            outMsg = client.CreateMessage();
+            outMsg.Write(ServerClientInterface.ROTATE_PLAYER);
+            outMsg.Write(rotation);
+            client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
+        }
+
+        /// <summary>
+        /// Tells the server that the client wishes to move in a certain direction
+        /// </summary>
+        /// <param name="direction"></param>
+        public void Move(byte direction)
+        {
+            outMsg = client.CreateMessage();
+            outMsg.Write(direction);
+            client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
         public void SyncWorld()
@@ -173,7 +206,7 @@ namespace CStrike2D
             // TODO: Spawns a bomb at a site
 
         }
-
+        /*
         public void Update()
         {
             counter++;
@@ -350,7 +383,9 @@ namespace CStrike2D
             
             client.Recycle(msg);
         }
+        */
 
+        [Obsolete("Old Netcode")]
         public void SendInputData(byte code)
         {
             NetOutgoingMessage outMsg = client.CreateMessage();
@@ -359,6 +394,8 @@ namespace CStrike2D
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
+        
+        [Obsolete("Old Netcode")]
         public void SendRotData(float rotation)
         {
             NetOutgoingMessage outMsg = client.CreateMessage();
@@ -368,6 +405,8 @@ namespace CStrike2D
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
+
+        [Obsolete("Old Netcode")]
         public void SendChangeTeam(byte team)
         {
             NetOutgoingMessage outMsg = client.CreateMessage();
@@ -377,6 +416,7 @@ namespace CStrike2D
             client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered);
         }
 
+        [Obsolete("Old Netcode")]
         public void SwitchWeapon(short entityID, byte weaponSwitch)
         {
             NetOutgoingMessage outMsg = client.CreateMessage();
@@ -387,6 +427,8 @@ namespace CStrike2D
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
+
+        [Obsolete("Old Netcode")]
         public void RequestBuy(short weapon)
         {
             NetOutgoingMessage outMsg = client.CreateMessage();

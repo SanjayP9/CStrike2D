@@ -16,7 +16,7 @@ namespace CStrike2DServer
 
         private static List<ServerPlayer> players = new List<ServerPlayer>();
         private static short playerIdentifier;
-        private static string serverVersion = "0.2.3a";            // Server Version
+        private static string serverVersion = "0.4.0a";            // Server Version
         private static int maxPlayers = 32;
         private static int port = 27015;
         private static string buffer = "";
@@ -340,7 +340,7 @@ namespace CStrike2DServer
                                 outMsg.Write(NetInterface.HANDSHAKE);
 
                                 // Send the message
-                                msg.SenderConnection.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+                                server.SendMessage(outMsg, msg.SenderConnection, NetDeliveryMethod.ReliableSequenced);
                                 break;
                             case NetConnectionStatus.Disconnected:
                                 player =
@@ -370,6 +370,21 @@ namespace CStrike2DServer
 
                                 // Sync the new player with everyone else on the server
                                 SyncNewPlayer(player);
+                                SyncCurrentPlayers(msg.SenderConnection);
+
+                                Console.WriteLine("\"" + username + "\" has joined the server");
+                                break;
+                            case ServerClientInterface.CHANGE_TEAM:
+                                player = players.Find(
+                                    ply => ply.ConnectionIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
+                                    
+                                player.SetTeam(msg.ReadByte());
+
+                                Console.WriteLine("\"" + player.UserName + "\" joined the " + player.CurrentTeam);
+
+                                outMsg.Write(ServerClientInterface.CHANGE_TEAM);
+                                outMsg.Write(player.Identifier);
+                                server.SendToAll(outMsg,NetDeliveryMethod.ReliableSequenced);
                                 break;
                         }
                         break;
@@ -426,34 +441,44 @@ namespace CStrike2DServer
             outMsg = server.CreateMessage();
             outMsg.Write(ServerClientInterface.SYNC_COMPLETE);
         }
+        static void Move(byte direction, ServerPlayer player)
+        {
+            if (CheckPlayerCollision(player, direction))
+            {
+                player.Move(direction);
+                outMsg.Write(direction);
+                outMsg.Write(player.Identifier);
+                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+            }
+        }
 
-        public static void SyncWorld()
+        static void SyncWorld()
         {
             // TODO: Sends a snapshot of the world to all players to ensure
             // TODO: everyone is viewing the same thing
         }
 
-        public static void StartRound()
+        static void StartRound()
         {
             // TODO: Spawns all players, sets up all timers, etc
         }
 
-        public static void EndRound()
+        static void EndRound()
         {
             // TODO: Processes kills, calculates money, etc
         }
 
-        public static void SpawnWeapon(long playerIdentifier, ServerWeapon weapon)
+        static void SpawnWeapon(long playerIdentifier, ServerWeapon weapon)
         {
             // TODO: Gives a weapon to a player
         }
 
-        public static void SpawnPlayer(long playerIdentifier, Vector2 location)
+        static void SpawnPlayer(long playerIdentifier, Vector2 location)
         {
             // TODO: Spawns a player onto the map
         }
 
-        public static void PlantBomb(long playerIdentifier, Vector2 location, bool aSite)
+        static void PlantBomb(long playerIdentifier, Vector2 location, bool aSite)
         {
             // TODO: Spawns a bomb at a site
 
@@ -511,20 +536,9 @@ namespace CStrike2DServer
             Console.WriteLine("Configuration written to disk.");
         }
 
-        static void Move(byte direction, Player player)
+        static bool CheckPlayerCollision(ServerPlayer player, byte direction)
         {
-            if (CheckPlayerCollision(player, direction))
-            {
-                player.Move(direction);
-                outMsg.Write(direction);
-                outMsg.Write(player.PlayerID);
-                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-            }
-        }
-
-        static bool CheckPlayerCollision(Player player, byte direction)
-        {
-            if (player.Team != NetInterface.Team.Spectator && enableCollision)
+            if (player.CurrentTeam != ServerClientInterface.Team.Spectator && enableCollision)
             {
                 float vectorX = 0f;
                 float vectorY = 0f;
@@ -562,10 +576,10 @@ namespace CStrike2DServer
 
                 foreach (ServerPlayer ply in players)
                 {
-                    if (ply.Identifier != player.PlayerID)
+                    if (ply.Identifier != player.Identifier)
                     {
-                        if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X + vectorX,
-                            player.GetPosition().Y + vectorY), ply.GetPosition(), 23f))
+                        if (Collision.PlayerToPlayer(new Vector2(player.Position.X + vectorX,
+                            player.Position.Y + vectorY), ply.Position, 23f))
                         {
                             return false;
                         }
