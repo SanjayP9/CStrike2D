@@ -19,9 +19,11 @@ namespace CStrike2D
         int numRows = 50;
         int numCols = 50;
 
+        Vector2 mouseWorld;
         Vector2 placedTilePos;
         bool isPlantSpot;
         bool isSaveSpot;
+        bool isSolid;
 
         private InputManager input;
         private AudioManager audio;
@@ -41,7 +43,7 @@ namespace CStrike2D
         public void Update(float gameTime)
         {
             //LoadFile("world1.txt");
-            Vector2 mouseWorld = input.ScreenToWorld(input.MousePosition, driver.Model.Camera, driver.Model.Center);
+            mouseWorld = input.ScreenToWorld(input.MousePosition, driver.Model.Camera, driver.Model.Center);
             if (input.LeftClick() == true)
             {
                 if (input.MousePosition.X > tileSetOffset.X &&
@@ -52,29 +54,49 @@ namespace CStrike2D
                     selectedTile = (int)((input.MousePosition.Y - tileSetOffset.Y) / tileSize) * 8 +
                                    (int)((input.MousePosition.X - tileSetOffset.X) / tileSize);
                 }
-                else if (mouseWorld.X > placementArea.X &&
+                if (mouseWorld.X > placementArea.X &&
                          mouseWorld.X < placementArea.X + placementArea.Width &&
                          mouseWorld.Y > placementArea.Y &&
                          mouseWorld.Y < placementArea.Y + placementArea.Height)
                 {
-                    placedTilePos = new Vector2(((mouseWorld.X - placementArea.X) / tileSize), (mouseWorld.Y - placementArea.Y) / tileSize);
-                    if((selectedTile != 0) && (selectedTile != 72))
-                    {
-                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = new Tile(selectedTile, false, false);
-                    }
-                    else if(selectedTile == 0 && tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
-                    {
-                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot = true;
-                    }
-                    else if (selectedTile == 72 && tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
-                    {
-                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot = true;
-                    }
+                    placedTilePos = new Vector2(((mouseWorld.X - placementArea.X) / tileSize), (mouseWorld.Y - placementArea.Y) / tileSize);   
+                    tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = new Tile(selectedTile, false, false, false);
                 }
             }
-            if(selectedTile == 5)
+            if (input.LeftHold())
             {
-                SaveFile("world1.txt");
+                if (mouseWorld.X > placementArea.X &&
+                             mouseWorld.X < placementArea.X + placementArea.Width &&
+                             mouseWorld.Y > placementArea.Y &&
+                             mouseWorld.Y < placementArea.Y + placementArea.Height)
+                {
+                    placedTilePos = new Vector2(((mouseWorld.X - placementArea.X) / tileSize), (mouseWorld.Y - placementArea.Y) / tileSize);
+                    tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = new Tile(selectedTile, false, false, false);
+                }
+            }
+            if (input.Tapped(Keys.Z))
+            {
+                placedTilePos = new Vector2(((mouseWorld.X - placementArea.X) / tileSize), (mouseWorld.Y - placementArea.Y) / tileSize);
+                if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                {
+                    tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot = !tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot;
+                }
+            }
+            else if (input.Tapped(Keys.X))
+            {
+                placedTilePos = new Vector2(((mouseWorld.X - placementArea.X) / tileSize), (mouseWorld.Y - placementArea.Y) / tileSize);
+                if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                {
+                    tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot = !tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot;
+                }
+            }
+            else if (input.Tapped(Keys.C))
+            {
+                placedTilePos = new Vector2(((mouseWorld.X - placementArea.X) / tileSize), (mouseWorld.Y - placementArea.Y) / tileSize);
+                if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                {
+                    tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid = !tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid;
+                }
             }
 
             if (input.Held(Keys.W))
@@ -93,7 +115,6 @@ namespace CStrike2D
             {
                 driver.Model.Camera.Position.X += 5;
             }
-
         }
 
         public void DrawWorld(SpriteBatch sb)
@@ -118,21 +139,30 @@ namespace CStrike2D
 
                         if(tiles[x, y].IsPlantSpot)
                         {
-                            sb.Draw(driver.Assets.TileSet, new Rectangle((int)(x * tileSize + placementArea.X),
+                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * tileSize + placementArea.X),
                                                                      (int)(y * tileSize + placementArea.Y),
                                                                      (int)tileSize,
                                                                      (int)tileSize),
                                                                      new Rectangle(0, 0, 32, 32),
-                                                                     Color.White * 0.7f);
+                                                                     Color.Red * 0.5f);
                         }
                         if (tiles[x, y].IsSaveSpot)
                         {
-                            sb.Draw(driver.Assets.TileSet, new Rectangle((int)(x * tileSize + placementArea.X),
+                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * tileSize + placementArea.X),
                                                                      (int)(y * tileSize + placementArea.Y),
                                                                      (int)tileSize,
                                                                      (int)tileSize),
-                                                                     new Rectangle(0, 320, 32, 32),
-                                                                     Color.Red * 0.7f);
+                                                                     new Rectangle(0, 0, 32, 32),
+                                                                     Color.Yellow * 0.5f);
+                        }
+                        if (tiles[x, y].IsSolid)
+                        {
+                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * tileSize + placementArea.X),
+                                                                     (int)(y * tileSize + placementArea.Y),
+                                                                     (int)tileSize,
+                                                                     (int)tileSize),
+                                                                     new Rectangle(0, 0, 32, 32),
+                                                                     Color.Blue * 0.5f);
                         }
                     }
                 }
@@ -180,7 +210,7 @@ namespace CStrike2D
                 {
                     if (rowData[cols] != "")
                     {
-                        if (rowData[cols][rowData[cols].Length - 2] == '1')
+                        if (rowData[cols][rowData[cols].Length - 3] == '1')
                         {
                             isPlantSpot = true;
                         }
@@ -188,7 +218,7 @@ namespace CStrike2D
                         {
                             isPlantSpot = false;
                         }
-                        if (rowData[cols][rowData[cols].Length - 1] == '1')
+                        if (rowData[cols][rowData[cols].Length - 2] == '1')
                         {
                             isSaveSpot = true;
                         }
@@ -196,8 +226,16 @@ namespace CStrike2D
                         {
                             isSaveSpot = false;
                         }
+                        if (rowData[cols][rowData[cols].Length - 1] == '1')
+                        {
+                            isSolid = true;
+                        }
+                        else
+                        {
+                            isSolid = false;
+                        }
 
-                        tiles[cols, rows] = new Tile(Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 2)), isSaveSpot, isPlantSpot);
+                        tiles[cols, rows] = new Tile(Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 3)), isSaveSpot, isPlantSpot, isSolid);
                     }
                 }
             }
@@ -216,6 +254,7 @@ namespace CStrike2D
                 {
                     string isPlantSpotString;
                     string isSaveSpotString;
+                    string isSolidString;
                     if (tiles[cols, rows] != null)
                     {
                         if (tiles[cols, rows].IsPlantSpot)
@@ -234,12 +273,17 @@ namespace CStrike2D
                         {
                             isSaveSpotString = "0";
                         }
-                        outFile.Write(Convert.ToString(tiles[cols, rows].TileType) + isPlantSpotString + isSaveSpotString + ",");
+                        if (tiles[cols, rows].IsSolid)
+                        {
+                            isSolidString = "1";
+                        }
+                        else
+                        {
+                            isSolidString = "0";
+                        }
+                        outFile.Write(Convert.ToString(tiles[cols, rows].TileType) + isPlantSpotString + isSaveSpotString + isSolidString + ",");
                     }
-                    else
-                    {
-                        outFile.Write(",");
-                    }
+                    outFile.Write(",");
                 }
                 outFile.WriteLine();
             }
