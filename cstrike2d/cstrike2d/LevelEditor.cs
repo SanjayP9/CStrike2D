@@ -63,39 +63,41 @@ namespace CStrike2D
                     tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = new Tile(selectedTile, false, false, false);
                 }
             }
-            if (input.LeftHold())
+            
+            if (mouseWorld.X > placementArea.X &&
+                            mouseWorld.X < placementArea.X + placementArea.Width &&
+                            mouseWorld.Y > placementArea.Y &&
+                            mouseWorld.Y < placementArea.Y + placementArea.Height)
             {
-                if (mouseWorld.X > placementArea.X &&
-                             mouseWorld.X < placementArea.X + placementArea.Width &&
-                             mouseWorld.Y > placementArea.Y &&
-                             mouseWorld.Y < placementArea.Y + placementArea.Height)
+                placedTilePos = new Vector2(((mouseWorld.X - placementArea.X) / tileSize), (mouseWorld.Y - placementArea.Y) / tileSize);
+                if (input.LeftHold())
                 {
-                    placedTilePos = new Vector2(((mouseWorld.X - placementArea.X) / tileSize), (mouseWorld.Y - placementArea.Y) / tileSize);
                     tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = new Tile(selectedTile, false, false, false);
                 }
-            }
-            if (input.Tapped(Keys.Z))
-            {
-                placedTilePos = new Vector2(((mouseWorld.X - placementArea.X) / tileSize), (mouseWorld.Y - placementArea.Y) / tileSize);
-                if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                else if (input.RightHold())
                 {
-                    tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot = !tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot;
+                    tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = null;
                 }
-            }
-            else if (input.Tapped(Keys.X))
-            {
-                placedTilePos = new Vector2(((mouseWorld.X - placementArea.X) / tileSize), (mouseWorld.Y - placementArea.Y) / tileSize);
-                if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                if (input.Tapped(Keys.Z))
                 {
-                    tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot = !tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot;
+                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                    {
+                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot = !tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot;
+                    }
                 }
-            }
-            else if (input.Tapped(Keys.C))
-            {
-                placedTilePos = new Vector2(((mouseWorld.X - placementArea.X) / tileSize), (mouseWorld.Y - placementArea.Y) / tileSize);
-                if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                else if (input.Tapped(Keys.X))
                 {
-                    tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid = !tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid;
+                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                    {
+                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot = !tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot;
+                    }
+                }
+                else if (input.Tapped(Keys.C))
+                {
+                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                    {
+                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid = !tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid;
+                    }
                 }
             }
 
@@ -235,7 +237,7 @@ namespace CStrike2D
                             isSolid = false;
                         }
 
-                        tiles[cols, rows] = new Tile(Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 3)), isSaveSpot, isPlantSpot, isSolid);
+                        tiles[cols, rows] = new Tile(Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 4)), isSaveSpot, isPlantSpot, isSolid);
                     }
                 }
             }
