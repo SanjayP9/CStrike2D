@@ -42,10 +42,9 @@ namespace CStrike2D
         /// <param name="emitVect"></param>
         /// <param name="rand"></param>
         /// <param name="particleType"></param>
-        public ParticleEmitter(Vector2 emitVect, Particle.ParticleTypes particleType)
+        public ParticleEmitter(Particle.ParticleTypes particleType)
         {
             this.particleType = particleType;
-            this.emitVect = emitVect;
 
             // This switch statement initializes different Particles, system life times and more 
             // based on the particle type
@@ -97,11 +96,16 @@ namespace CStrike2D
                 {
                     Particles[i].Update(gameTime);
 
+
                     if ((particleType == Particle.ParticleTypes.Smoke || particleType == Particle.ParticleTypes.Fire) &&
                         (Particles[i].ParticleTransparency <= 0.0f) && (systemLifeTime > systemUpTime))
                     {
                         Particles[i].Respawn();
                     }
+                }
+                else if ((Particles[i] == null) && (particleType == Particle.ParticleTypes.Smoke||particleType == Particle.ParticleTypes.Fire))
+                {
+                    Particles[i] = new Particle(emitVect, particleType,0f);
                 }
             }
 
@@ -113,6 +117,9 @@ namespace CStrike2D
         /// <param name="launchVect"> Specifies where the particles will be emitted from </param>
         public void Launch(Vector2 launchVect, float playerAngle)
         {
+            // Updates emitter vector location
+            this.emitVect = launchVect;
+
             // Sets the amount of launch particles based on the particle type
             int launchNumber = 0;
 
