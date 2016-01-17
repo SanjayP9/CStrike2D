@@ -607,6 +607,7 @@ namespace CStrike2D
             return tiles.ToArray();
         }
         
+
         public int SearchTile(int origin, int direction)
         {
             // Left Down Right Up
@@ -707,6 +708,7 @@ namespace CStrike2D
             return -1;
         }
         
+        /*
         public int[] GetWalls(int origin, float angle)
         {
             angle = MathHelper.Clamp(angle, 0, 6);
@@ -777,5 +779,63 @@ namespace CStrike2D
             return tiles.ToArray();
         }
          */
+
+
+
+        public Point[] GetPath(Tile[,] Grid, Point curLocation, Point destLocation)
+        {
+            Point[] possibleDirections = new Point[8];
+
+
+            int g;
+            int f;
+            int h;
+            Point checkPoint = curLocation;
+            for (int i = 0; i < possibleDirections.Length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        checkPoint.X -= 1;
+                        break;
+                    case 1:
+                        checkPoint.Y -= 1;
+                        break;
+                    case 2:
+                        checkPoint.X += 1;
+                        checkPoint.Y -= 1;
+                        break;
+                    case 3:
+                        checkPoint.X -= 1;
+                        break;
+                    case 5:
+                        checkPoint.X += 1;
+                        break;
+                    case 6:
+                        checkPoint.X -= 1;
+                        checkPoint.Y += 1;
+                        break;
+                    case 7:
+                        checkPoint.Y += 1;
+                        break;
+                    case 8:
+                        checkPoint.X += 1;
+                        checkPoint.Y += 1;
+                        break;
+                }
+                // Direction goes from Top Left in a clockwise direction
+                if (curLocation.X == checkPoint.X ||
+                    curLocation.Y == checkPoint.Y)
+                {
+                    g = 10;
+                }
+                else
+                {
+                    g = 14;
+                }
+            }
+
+            return null;
+        }
     }
 }
