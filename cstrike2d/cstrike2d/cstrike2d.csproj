@@ -85,6 +85,7 @@
     <Compile Include="..\..\CStrike2DServer\WeaponData.cs">
       <Link>WeaponData.cs</Link>
     </Compile>
+    <Compile Include="AI.cs" />
     <Compile Include="Assets.cs" />
     <Compile Include="AudioManager.cs" />
     <Compile Include="Bar.cs" />
