@@ -40,7 +40,7 @@ namespace CStrike2D
 
         public void Update(float gameTime)
         {
-            LoadFile("world.txt");
+            //LoadFile("world1.txt");
             Vector2 mouseWorld = input.ScreenToWorld(input.MousePosition, driver.Model.Camera, driver.Model.Center);
             if (input.LeftClick() == true)
             {
@@ -71,6 +71,10 @@ namespace CStrike2D
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot = true;
                     }
                 }
+            }
+            if(selectedTile == 5)
+            {
+                SaveFile("world1.txt");
             }
 
             if (input.Held(Keys.W))
@@ -198,6 +202,48 @@ namespace CStrike2D
                 }
             }
             inFile.Close();
+        }
+        public void SaveFile(string fileName)
+        {
+            StreamWriter outFile = File.CreateText(fileName);
+
+            outFile.WriteLine(numCols);
+            outFile.WriteLine(numRows);
+
+            for (int rows = 0; rows < numRows; rows++)
+            {
+                for (int cols = 0; cols < numCols; cols++)
+                {
+                    string isPlantSpotString;
+                    string isSaveSpotString;
+                    if (tiles[cols, rows] != null)
+                    {
+                        if (tiles[cols, rows].IsPlantSpot)
+                        {
+                            isPlantSpotString = "1";
+                        }
+                        else
+                        {
+                            isPlantSpotString = "0";
+                        }
+                        if (tiles[cols, rows].IsSaveSpot)
+                        {
+                            isSaveSpotString = "1";
+                        }
+                        else
+                        {
+                            isSaveSpotString = "0";
+                        }
+                        outFile.Write(Convert.ToString(tiles[cols, rows].TileType) + isPlantSpotString + isSaveSpotString + ",");
+                    }
+                    else
+                    {
+                        outFile.Write(",");
+                    }
+                }
+                outFile.WriteLine();
+            }
+            outFile.Close();
         }
     }
 }
