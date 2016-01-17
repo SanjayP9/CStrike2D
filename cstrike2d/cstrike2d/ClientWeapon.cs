@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
 {
-    class ClientWeapon
+    public class ClientWeapon
     {
 
         public ClientPlayer Owner { get; private set; }
@@ -25,7 +20,6 @@ namespace CStrike2D
                 Fired = true;
             }
         }
-
 
         public void Update(float gameTime)
         {

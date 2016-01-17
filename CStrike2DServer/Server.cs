@@ -14,7 +14,7 @@ namespace CStrike2DServer
         private static NetPeerConfiguration config;
         private static NetIncomingMessage msg;
 
-        private static List<Player> players = new List<Player>();
+        private static List<ServerPlayer> players = new List<ServerPlayer>();
         private static short playerIdentifier;
         private static string serverVersion = "0.2.3a";            // Server Version
         private static int maxPlayers = 32;
@@ -97,11 +97,13 @@ namespace CStrike2DServer
                 if (updateTimer.Elapsed.TotalMilliseconds > UPDATE_RATE)
                 {
                     Simulate();
+                    updateTimer.Restart();
                 }
 
                 if (netUpdateTimer.Elapsed.TotalMilliseconds > NET_UPDATE_RATE)
                 {
-                    
+                    UpdateNetwork();
+                    netUpdateTimer.Restart();
                 }
             }
             /*
@@ -149,7 +151,7 @@ namespace CStrike2DServer
         }
 
         #region Old Code
-
+        /*
         public static void SyncServer()
         {
             NetOutgoingMessage syncMsg;
@@ -308,7 +310,162 @@ namespace CStrike2DServer
             }
             server.Recycle(msg);
         }
+        */
 
+        #endregion
+
+        #region New Code
+
+        public static void Simulate()
+        {
+            // TODO: Runs all server based logic
+        }
+
+        public static void UpdateNetwork()
+        {
+            // TODO : Updates the network, recieves input.
+            while ((msg = server.ReadMessage()) != null)
+            {
+                outMsg = server.CreateMessage();
+                ServerPlayer player;
+                switch (msg.MessageType)
+                {
+                    case NetIncomingMessageType.StatusChanged:
+                        switch ((NetConnectionStatus) msg.ReadByte())
+                        {
+                            case NetConnectionStatus.Connected:
+                                // If someone has successfully connected to the server, initialize
+                                // handshake with the client. Give them a unique identifier
+                                // which allows the server to differ between multiple clients
+                                outMsg.Write(NetInterface.HANDSHAKE);
+
+                                // Send the message
+                                msg.SenderConnection.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+                                break;
+                            case NetConnectionStatus.Disconnected:
+                                player =
+                                    players.Find(
+                                        ply => ply.ConnectionIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
+                                outMsg.Write(ServerClientInterface.PLAYER_DISCONNECTED);
+                                outMsg.Write(player.ConnectionIdentifier);
+                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
+                                Console.WriteLine("\"" + player.UserName + "\" has left the server");
+                                players.Remove(player);
+                                break;
+                        }
+                        break;
+                    case NetIncomingMessageType.Data:
+                        switch (msg.ReadByte())
+                        {
+                            case ServerClientInterface.REQUEST_SYNC:
+                                string username = msg.ReadString();
+
+                                player = new ServerPlayer(username, playerIdentifier, msg.SenderConnection.RemoteUniqueIdentifier);
+                                players.Add(player);
+                                playerIdentifier++;
+
+                                outMsg.Write(ServerClientInterface.REQUEST_SYNC);
+                                outMsg.Write(player.Identifier);
+                                server.SendMessage(outMsg, msg.SenderConnection, NetDeliveryMethod.ReliableSequenced);
+
+                                // Sync the new player with everyone else on the server
+                                SyncNewPlayer(player);
+                                break;
+                        }
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sends data about a newly connected player to all players
+        /// </summary>
+        /// <param name="newPlayer"></param>
+        public static void SyncNewPlayer(ServerPlayer newPlayer)
+        {
+            foreach (NetConnection client in server.Connections)
+            {
+                outMsg = server.CreateMessage();
+                outMsg.Write(ServerClientInterface.SYNC_NEW_PLAYER);
+                outMsg.Write(newPlayer.UserName);
+                outMsg.Write(newPlayer.Identifier);
+
+                // Don't resend the player's information to 
+                if (client.RemoteUniqueIdentifier != newPlayer.ConnectionIdentifier)
+                {
+                    server.SendMessage(outMsg, client, NetDeliveryMethod.ReliableSequenced);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sends data of all connected players to a newly connected client
+        /// </summary>
+        /// <param name="client"></param>
+        public static void SyncCurrentPlayers(NetConnection client)
+        {
+            outMsg = server.CreateMessage();
+            outMsg.Write(ServerClientInterface.SYNC_BEGIN);
+            server.SendMessage(outMsg, client, NetDeliveryMethod.ReliableSequenced);
+            foreach (ServerPlayer ply in players)
+            {
+                // Send data about every player except their own player to the client
+                if (ply.ConnectionIdentifier != client.RemoteUniqueIdentifier)
+                {
+                    server.CreateMessage();
+                    outMsg.Write(ply.Identifier);
+                    outMsg.Write(ply.UserName);
+                    outMsg.Write(ServerClientInterface.TeamToByte(ply.CurrentTeam));
+                    outMsg.Write(ply.Position.X);
+                    outMsg.Write(ply.Position.Y);
+                    outMsg.Write(ply.Rotation);
+                    outMsg.Write(WeaponData.WeaponToByte(ply.CurrentWeapon.Weapon));
+                    server.SendMessage(outMsg, client, NetDeliveryMethod.ReliableSequenced);
+                }
+            }
+            outMsg = server.CreateMessage();
+            outMsg.Write(ServerClientInterface.SYNC_COMPLETE);
+        }
+
+        public static void SyncWorld()
+        {
+            // TODO: Sends a snapshot of the world to all players to ensure
+            // TODO: everyone is viewing the same thing
+        }
+
+        public static void StartRound()
+        {
+            // TODO: Spawns all players, sets up all timers, etc
+        }
+
+        public static void EndRound()
+        {
+            // TODO: Processes kills, calculates money, etc
+        }
+
+        public static void SpawnWeapon(long playerIdentifier, ServerWeapon weapon)
+        {
+            // TODO: Gives a weapon to a player
+        }
+
+        public static void SpawnPlayer(long playerIdentifier, Vector2 location)
+        {
+            // TODO: Spawns a player onto the map
+        }
+
+        public static void PlantBomb(long playerIdentifier, Vector2 location, bool aSite)
+        {
+            // TODO: Spawns a bomb at a site
+
+            
+            Console.WriteLine("Player planted the bomb at " + (aSite? "A Site" : "B Site"));
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Reads the configuration 
+        /// </summary>
         static void ReadConfig()
         {
             // If the config file exists, open it and process it
@@ -403,9 +560,9 @@ namespace CStrike2DServer
                         break;
                 }
 
-                foreach (Player ply in players)
+                foreach (ServerPlayer ply in players)
                 {
-                    if (ply.PlayerID != player.PlayerID)
+                    if (ply.Identifier != player.PlayerID)
                     {
                         if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X + vectorX,
                             player.GetPosition().Y + vectorY), ply.GetPosition(), 23f))
@@ -535,54 +692,5 @@ namespace CStrike2DServer
         }
 
 
-        #endregion
-
-        #region New Code
-
-        public static void Simulate()
-        {
-            // TODO: Runs all server based logic
-        }
-
-        public static void UpdateNetwork()
-        {
-            // TODO : Updates the network, recieves input.
-        }
-
-        public static void SyncWorld()
-        {
-            // TODO: Sends a snapshot of the world to all players to ensure
-            // TODO: everyone is viewing the same thing
-        }
-
-        public static void StartRound()
-        {
-            // TODO: Spawns all players, sets up all timers, etc
-        }
-
-        public static void EndRound()
-        {
-            // TODO: Processes kills, calculates money, etc
-        }
-
-        public static void SpawnWeapon(long playerIdentifier, ServerWeapon weapon)
-        {
-            // TODO: Gives a weapon to a player
-        }
-
-        public static void SpawnPlayer(long playerIdentifier, Vector2 location)
-        {
-            // TODO: Spawns a player onto the map
-        }
-
-        public static void PlantBomb(long playerIdentifier, Vector2 location, bool aSite)
-        {
-            // TODO: Spawns a bomb at a site
-
-            
-            Console.WriteLine("Player planted the bomb at " + (aSite? "A Site" : "B Site"));
-        }
-
-        #endregion
     }
 }

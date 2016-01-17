@@ -1,5 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Threading;
+using CStrike2DServer;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
@@ -15,6 +17,7 @@ namespace CStrike2D
         private NetClient client;
         private NetBuffer buffer;
         private NetIncomingMessage msg;
+        private NetOutgoingMessage outMsg;
         private int counter;
         private int byteCount;
 
@@ -23,6 +26,9 @@ namespace CStrike2D
         public NetState CurState { get; private set; }
 
         public short PlayerID { get; private set; }
+
+        // Player
+        public short UniqueIdentifier { get; private set; }
 
         public enum NetState
         {
@@ -50,6 +56,122 @@ namespace CStrike2D
                 client.Connect(address, 27015);
                 CurState = NetState.Handshake;
             }
+        }
+
+        public void Update(float gameTime)
+        {
+            while ((msg = client.ReadMessage()) != null)
+            {
+                byte code;
+                ClientPlayer player;
+                switch (msg.MessageType)
+                {
+                    case NetIncomingMessageType.Data:
+
+                        switch (CurState)
+                        {
+                            case NetState.Handshake:
+                                if (client.ConnectionStatus == NetConnectionStatus.Connected)
+                                {
+                                    code = msg.ReadByte();
+                                    // If a handshake was initialized by the server
+                                    if (code == ServerClientInterface.HANDSHAKE)
+                                    {
+
+
+                                        // Send the server the client name and a 
+                                        // request for synchronization
+                                        outMsg = client.CreateMessage();
+
+                                        outMsg.Write(ServerClientInterface.REQUEST_SYNC);
+                                        outMsg.Write(ClientName);
+
+                                        // Send the message
+                                        client.SendMessage(outMsg, NetDeliveryMethod.ReliableSequenced);
+                                    }
+                                }
+                                break;
+                            case NetState.Connected:
+                                code = msg.ReadByte();
+                                switch (code)
+                                {
+                                    case ServerClientInterface.REQUEST_SYNC:
+                                        // Sync the client's own player instance
+                                        UniqueIdentifier = msg.ReadInt16();
+                                        break;
+                                    case ServerClientInterface.SYNC_NEW_PLAYER:
+                                        
+                                        break;
+                                    case ServerClientInterface.SYNC_BEGIN:
+                                        // Get data of all currently connected players
+                                        while (msg.ReadByte() != ServerClientInterface.SYNC_COMPLETE)
+                                        {
+                                            engine.SyncPlayer(msg.ReadInt16(), msg.ReadString(),
+                                                msg.ReadByte(),msg.ReadInt16(), msg.ReadInt16(),
+                                                msg.ReadFloat(), msg.ReadByte());
+                                        }
+                                        break;
+                                    case ServerClientInterface.MOVE_UP:
+                                    case ServerClientInterface.MOVE_DOWN:
+                                    case ServerClientInterface.MOVE_LEFT:
+                                    case ServerClientInterface.MOVE_RIGHT:
+                                    case ServerClientInterface.MOVE_UPLEFT:
+                                    case ServerClientInterface.MOVE_UPRIGHT:
+                                    case ServerClientInterface.MOVE_DOWNRIGHT:
+                                    case ServerClientInterface.MOVE_DOWNLEFT:
+                                        
+                                        break;
+
+                                }
+                                break;
+                        }
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Tells the server that the client wishes to change to the specified team
+        /// </summary>
+        /// <param name="team"></param>
+        public void RequestTeamChange(ServerClientInterface.Team team)
+        {
+            outMsg = client.CreateMessage();
+            outMsg.Write(ServerClientInterface.CHANGE_TEAM);
+            outMsg.Write(ServerClientInterface.TeamToByte(team));
+            client.SendMessage(outMsg, NetDeliveryMethod.ReliableSequenced);
+        }
+
+        public void SyncWorld()
+        {
+            // TODO: Sends a snapshot of the world to all players to ensure
+            // TODO: everyone is viewing the same thing
+        }
+
+        public void StartRound()
+        {
+            // TODO: Spawns all players, sets up all timers, etc
+        }
+
+        public void EndRound()
+        {
+            // TODO: Processes kills, calculates money, etc
+        }
+
+        public void SpawnWeapon(long playerIdentifier, ClientWeapon weapon)
+        {
+            // TODO: Gives a weapon to a player
+        }
+
+        public void SpawnPlayer(long playerIdentifier, Vector2 location)
+        {
+            // TODO: Spawns a player onto the map
+        }
+
+        public void PlantBomb(long playerIdentifier, Vector2 location, bool aSite)
+        {
+            // TODO: Spawns a bomb at a site
+
         }
 
         public void Update()

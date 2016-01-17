@@ -6,6 +6,7 @@
 // Description: Handles all logic and drawing of the in-game components
 using System.Collections.Generic;
 using System.Diagnostics;
+using CStrike2DServer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -20,8 +21,8 @@ namespace CStrike2D
         private InputManager input;
         private AudioManager audioManager;
         private Assets assets;
-        public List<Player> Players { get; private set; }
-        private Player clientPlayer;
+        public List<ClientPlayer> Players { get; private set; }
+        public ClientPlayer Client { get; private set; }
 
         private float prevRotation;
 
@@ -79,11 +80,47 @@ namespace CStrike2D
                 audioManager = audio;
                 this.input = input;
                 this.assets = assets;
-                Players = new List<Player>();
+                Players = new List<ClientPlayer>();
                 CurState = GameEngineState.Loaded;
             }
         }
 
+        /// <summary>
+        /// Syncs the client's player instance with the server
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="identifier"></param>
+        public void SyncClient(string username, short identifier)
+        {
+            ClientPlayer player = new ClientPlayer(username, identifier, assets);
+
+            Client = player;
+        }
+
+        /// <summary>
+        /// Syncs other players that are connected to the server
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <param name="username"></param>
+        /// <param name="?"></param>
+        public void SyncPlayer(short identifier, string username, byte team, float posX, float posY,
+            float rot, byte weapon)
+        {
+            ClientPlayer player = new ClientPlayer(username, identifier, assets);
+        }
+
+        public void MovePlayer(short identifier, byte direction)
+        {
+            ClientPlayer player = Players.Find(ply => ply.Identifier == playerID);
+
+            if (player != null)
+            {
+                player.Move(direction);
+            }
+        }
+
+        /*
+      
         /// <summary>
         /// 
         /// </summary>
@@ -99,16 +136,6 @@ namespace CStrike2D
             ply.SetWeapon(entityID, curWeapon);
             Players.Add(ply);
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="player"></param>
-        public void SetClientPlayer(Player player)
-        {
-            clientPlayer = player;
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -167,7 +194,7 @@ namespace CStrike2D
         {
             return Players.Exists(ply => ply.PlayerID == playerID);
         }
-
+        
         /// <summary>
         /// 
         /// </summary>
@@ -467,6 +494,7 @@ namespace CStrike2D
                 }
             }
         }
+        */
 
         /// <summary>
         /// 
@@ -477,7 +505,7 @@ namespace CStrike2D
             sb.Draw(assets.PixelTexture, new Rectangle(0, 0, (int)driver.Model.Dimensions.X, (int)driver.Model.Dimensions.Y), Color.White);
             if (CurState == GameEngineState.Active)
             {
-                foreach (Player ply in Players)
+                foreach (ClientPlayer ply in Players)
                 {
                     ply.Draw(sb);
                 }
@@ -495,14 +523,14 @@ namespace CStrike2D
             {
                 for (int i = 0; i < Players.Count; i++)
                 {
-                    switch (Players[i].Team)
+                    switch (Players[i].CurrentTeam)
                     {
-                        case NetInterface.Team.CT:
-                            sb.DrawString(assets.DefaultFont, Players[i].Name, new Vector2(95, 50 + (i*40)),
+                        case ServerClientInterface.Team.CounterTerrorist:
+                            sb.DrawString(assets.DefaultFont, Players[i].UserName, new Vector2(95, 50 + (i*40)),
                                 NetInterface.CT_Color);
                             break;
-                        case NetInterface.Team.T:
-                            sb.DrawString(assets.DefaultFont, Players[i].Name, new Vector2(645, 50 + (i * 50)),
+                        case ServerClientInterface.Team.Terrorist:
+                            sb.DrawString(assets.DefaultFont, Players[i].UserName, new Vector2(645, 50 + (i * 50)),
                                 NetInterface.T_Color);
                             break;
                     }

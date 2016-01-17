@@ -9,14 +9,14 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
 {
-    internal class ClientPlayer : Entity
+    public class ClientPlayer : Entity
     {
         public string UserName { get; private set; }
-        public long UniqueIdentifier { get; private set; }
+        public short Identifier { get; private set; }
         public short EntityIdentifier { get; private set; }
 
         public PlayerState State { get; private set; }
-        public Team CurrentTeam { get; private set; }
+        public ServerClientInterface.Team CurrentTeam { get; private set; }
         public int Health { get; private set; }
         public int Armor { get; private set; }
 
@@ -28,6 +28,11 @@ namespace CStrike2D
         private RayEmitter rayEmitter;
 
         // State
+
+
+        public override int DrawOrder { get; protected set; }
+
+        public override Rectangle Dimensions { get; protected set; }
 
         // Gets the position of the player
         public override Vector2 Position
@@ -41,11 +46,6 @@ namespace CStrike2D
                 position = value;
             }
         }
-
-        public override int DrawOrder { get; protected set; }
-
-        public override Rectangle Dimensions { get; protected set; }
-
         /// <summary>
         /// Gets the rotation of the player
         /// </summary>
@@ -70,18 +70,12 @@ namespace CStrike2D
             Alive
         }
 
-        public enum Team
-        {
-            CounterTerrorist,
-            Terrorist,
-            Spectator
-        }
-
-        public ClientPlayer(string username, long identifier, Assets assets) : base(assets)
+        public ClientPlayer(string username, short identifier, Assets assets)
+            : base(assets)
         {
             UserName = username;
-            UniqueIdentifier = identifier;
-            CurrentTeam = Team.Spectator;
+            Identifier = identifier;
+            CurrentTeam = ServerClientInterface.Team.Spectator;
             State = PlayerState.Dead;
             Health = 100;
             Armor = 0;
@@ -110,6 +104,15 @@ namespace CStrike2D
 
         }
 
+        /// <summary>
+        /// Used by the server
+        /// </summary>
+        /// <param name="weapon"></param>
+        public void SetCurrentWeapon(WeaponData.Weapon weapon)
+        {
+            
+        }
+
         public void Move(byte direction)
         {
             switch (direction)
@@ -131,6 +134,16 @@ namespace CStrike2D
                 case ServerClientInterface.MOVE_DOWNLEFT:
                     break;
             }
+        }
+
+        public void SetHealth(int health)
+        {
+            Health = health;
+        }
+
+        public void SetArmor(int armor)
+        {
+            Armor = armor;
         }
 
         public void Damage(int health, int armor)

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CStrike2D
 {
-    class ParticleEmitter
+    public class ParticleEmitter
     {
         // These constants are used to store the life time of the particle system
         const float SMOKE_GRENADE_LIFETIME = 18000f;

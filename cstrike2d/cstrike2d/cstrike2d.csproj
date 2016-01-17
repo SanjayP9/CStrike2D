@@ -82,6 +82,9 @@
     <Compile Include="..\..\CStrike2DServer\ServerClientInterface.cs">
       <Link>ServerClientInterface.cs</Link>
     </Compile>
+    <Compile Include="..\..\CStrike2DServer\WeaponData.cs">
+      <Link>WeaponData.cs</Link>
+    </Compile>
     <Compile Include="Assets.cs" />
     <Compile Include="AudioManager.cs" />
     <Compile Include="Bar.cs" />
@@ -105,6 +108,7 @@
     <Compile Include="ParticleEmitter.cs" />
     <Compile Include="Particle.cs" />
     <Compile Include="Player.cs" />
+    <Compile Include="Polygon.cs" />
     <Compile Include="RayCastModel.cs" />
     <Compile Include="RayCastView.cs" />
     <Compile Include="RayEmitter.cs" />
@@ -112,6 +116,7 @@
     <Compile Include="SoundContainer.cs" />
     <Compile Include="TextBox.cs" />
     <Compile Include="TileManager.cs" />
+    <Compile Include="Triangle.cs" />
     <Compile Include="UIManager.cs" />
     <Compile Include="Weapon.cs" />
     <Compile Include="WeaponInfo.cs" />

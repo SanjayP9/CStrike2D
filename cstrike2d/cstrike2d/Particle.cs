@@ -14,7 +14,7 @@ using System.Text;
 
 namespace CStrike2D
 {
-    class Particle
+    public class Particle
     {
         // Constants used to store to control the update frequency
         private const float SMOKE_UPDATE_FREQ = 50.0f;
