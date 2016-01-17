@@ -33,7 +33,6 @@ namespace CStrike2D
 
         Rectangle tileSetOffset = new Rectangle(50, 100, 256, 320);
         Rectangle placementArea = new Rectangle(-200, -250, 1600, 1600);
-        Vector2 SelectedTileLoc;
 
         public LevelEditor(CStrikeModel model)
         {
@@ -78,25 +77,27 @@ namespace CStrike2D
                 {
                     tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = null;
                 }
-                if (input.Tapped(Keys.Z))
+                if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
                 {
-                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                    if (input.Tapped(Keys.Z))
                     {
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsPlantSpot(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot);
                     }
-                }
-                else if (input.Tapped(Keys.X))
-                {
-                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                    else if (input.Tapped(Keys.X))
                     {
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSaveSpot(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot);
                     }
-                }
-                else if (input.Tapped(Keys.C))
-                {
-                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                    else if (input.Tapped(Keys.C))
                     {
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSolid(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid);
+                    }
+                    else if (input.Tapped(Keys.V))
+                    {
+                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsCTSpawnPoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsCTSpawnPoint);
+                    }
+                    else if (input.Tapped(Keys.B))
+                    {
+                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsTSpawnPoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsTSpawnPoint);
                     }
                 }
             }
