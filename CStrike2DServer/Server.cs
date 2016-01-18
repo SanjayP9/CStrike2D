@@ -471,7 +471,7 @@ namespace CStrike2DServer
                                 // If someone has successfully connected to the server, initialize
                                 // handshake with the client. Give them a unique identifier
                                 // which allows the server to differ between multiple clients
-                                outMsg.Write(NetInterface.HANDSHAKE);
+                                outMsg.Write(ServerClientInterface.HANDSHAKE);
 
                                 // Send the message
                                 server.SendMessage(outMsg, msg.SenderConnection, NetDeliveryMethod.ReliableSequenced);

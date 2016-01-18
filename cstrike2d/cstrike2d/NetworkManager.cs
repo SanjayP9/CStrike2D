@@ -141,7 +141,8 @@ namespace CStrike2D
                                         player.Respawn(new Vector2(msg.ReadFloat(), msg.ReadFloat()));
                                         break;
                                     case ServerClientInterface.PLAYER_DISCONNECTED:
-                                        engine.Players.Remove(engine.Players.Find(ply => ply.Identifier == msg.ReadInt16()));
+                                        short id = msg.ReadInt16();
+                                        engine.Players.Remove(engine.Players.Find(ply => ply.Identifier == id));
                                         break;
                                     case ServerClientInterface.ROTATE_PLAYER:
                                         engine.Players.Find(ply => ply.Identifier == msg.ReadInt16())
