@@ -135,9 +135,6 @@ namespace CStrike2DServer
             netUpdateTimer.Start();
             while (server.Status == NetPeerStatus.Running)
             {
-                Console.Clear();   
-                Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop);
-                Console.WriteLine("Players " + numPlayers + "/" + maxPlayers);
 
                 if (Console.KeyAvailable)
                 {
