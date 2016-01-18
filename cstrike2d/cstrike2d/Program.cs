@@ -1,4 +1,5 @@
 
+using System;
 namespace CStrike2D
 {
 #if WINDOWS || XBOX
@@ -7,6 +8,7 @@ namespace CStrike2D
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
+        [STAThreadAttribute]
         private static void Main(string[] args)
         {
             using (CStrike2D game = new CStrike2D())

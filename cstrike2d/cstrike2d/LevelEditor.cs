@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.IO;
-
+using System.Windows.Forms;
+using Keys = Microsoft.Xna.Framework.Input.Keys;
 namespace CStrike2D
 {
     public class LevelEditor
@@ -35,6 +36,8 @@ namespace CStrike2D
 
         // 
         Vector2 placedTilePos;
+
+        bool displayTileSet = true;
 
         // Stores the status of the properties of a tile
         bool isPlantSpot;
@@ -69,22 +72,9 @@ namespace CStrike2D
             // Reset the properties
             properties = "";
 
-            // If mouse is over the tile set
-            if (input.MousePosition.X > tileSetOffset.X &&
-                    input.MousePosition.X < tileSetOffset.X + tileSetOffset.Width &&
-                    input.MousePosition.Y > tileSetOffset.Y &&
-                    input.MousePosition.Y < tileSetOffset.Y + tileSetOffset.Height)
-            {
-                // If left mouse is clicked
-                if (input.LeftClick())
-                {
-                    // Set the selected tile to be the one that they have clicked
-                    selectedTile = (int)((input.MousePosition.Y - tileSetOffset.Y) / TILE_SIZE) * TILE_SET_WIDTH +
-                                   (int)((input.MousePosition.X - tileSetOffset.X) / TILE_SIZE);
-                }
-            }
+            
             // If the mouse is over the map region
-            else if (mouseMap.X > mapArea.X &&
+            if (mouseMap.X > mapArea.X &&
                 mouseMap.X < mapArea.X + mapArea.Width &&
                 mouseMap.Y > mapArea.Y &&
                 mouseMap.Y < mapArea.Y + mapArea.Height)
@@ -173,6 +163,23 @@ namespace CStrike2D
                     }
                 }
             }
+            if (displayTileSet)
+            {
+                // If mouse is over the tile set
+                if (input.MousePosition.X > tileSetOffset.X &&
+                        input.MousePosition.X < tileSetOffset.X + tileSetOffset.Width &&
+                        input.MousePosition.Y > tileSetOffset.Y &&
+                        input.MousePosition.Y < tileSetOffset.Y + tileSetOffset.Height)
+                {
+                    // If left mouse is clicked
+                    if (input.LeftClick())
+                    {
+                        // Set the selected tile to be the one that they have clicked
+                        selectedTile = (int)((input.MousePosition.Y - tileSetOffset.Y) / TILE_SIZE) * TILE_SET_WIDTH +
+                                       (int)((input.MousePosition.X - tileSetOffset.X) / TILE_SIZE);
+                    }
+                }
+            }
 
             // Move the camera up when the W key is held
             if (input.Held(Keys.W))
@@ -194,13 +201,56 @@ namespace CStrike2D
             {
                 driver.Model.Camera.Position.X += 5;
             }
-            //if (input.Tapped(Keys.Enter))
-            //{
-            //    SaveFile("de_cache.txt");
-            //}
-            if (input.Tapped(Keys.L))
+            if (input.Held(Keys.LeftControl))
             {
-                LoadFile("de_cache.txt");
+                if (input.Tapped(Keys.S))
+                {
+                    SaveFileDialog saveDialog = new SaveFileDialog();
+                    saveDialog.Filter = "Map Files (.txt)|*.txt";
+                    saveDialog.FilterIndex = 1;
+
+                    DialogResult result = saveDialog.ShowDialog();
+                    if (result == DialogResult.OK)
+                    {
+                        SaveFile(saveDialog.FileName);
+                    }
+                }
+                else if (input.Tapped(Keys.O))
+                {
+                    OpenFileDialog openDialog = new OpenFileDialog();
+                    openDialog.Filter = "Map Files (.txt)|*.txt";
+                    openDialog.FilterIndex = 1;
+                    openDialog.Multiselect = false;
+
+                    DialogResult result = openDialog.ShowDialog();
+                    if (result == DialogResult.OK)
+                    {
+                        LoadFile(openDialog.FileName);
+                    }
+                }
+                else if (input.Tapped(Keys.D0))
+                {
+                    driver.Model.Camera.ResetZoom();
+                }
+            }
+            else if (input.Held(Keys.LeftShift))
+            {
+                if (input.Tapped(Keys.Delete))
+                {
+                    tiles = new Tile[numCols, numRows];
+                }
+            }
+            if (input.ScrollUp())
+            {
+                driver.Model.Camera.IncreaseZoom();
+            }
+            else if (input.ScrollDown())
+            {
+                driver.Model.Camera.DecreaseZoom();
+            }
+            if (input.Tapped(Keys.Tab))
+            {
+                displayTileSet = !displayTileSet;
             }
         }
 
@@ -303,17 +353,20 @@ namespace CStrike2D
             sb.DrawString(driver.Assets.DefaultFont, "Selected Tile #: " + selectedTile, new Vector2(0, 0), Color.White);
             sb.DrawString(driver.Assets.DefaultFont, "Properties: " + properties, new Vector2(360, 0), Color.White);
 
-            // Draw the tile set
-            sb.Draw(driver.Assets.TileSet, tileSetOffset, Color.White);
+            if (displayTileSet)
+            {
+                // Draw the tile set
+                sb.Draw(driver.Assets.TileSet, tileSetOffset, Color.White);
 
-            // Drawn the grid line for the tile set each line being 1 pixel thick
-            for (int x = 0; x <= TILE_SET_WIDTH; x++)
-            {
-                sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(tileSetOffset.X + x * TILE_SIZE), (int)tileSetOffset.Y, 1, (int)tileSetOffset.Height), Color.Black);
-            }
-            for (int y = 0; y <= TILES_SET_HEIGHT; y++)
-            {
-                sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)tileSetOffset.X, (int)(tileSetOffset.Y + y * TILE_SIZE), (int)tileSetOffset.Width, 1), Color.Black);
+                // Drawn the grid line for the tile set each line being 1 pixel thick
+                for (int x = 0; x <= TILE_SET_WIDTH; x++)
+                {
+                    sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(tileSetOffset.X + x * TILE_SIZE), (int)tileSetOffset.Y, 1, (int)tileSetOffset.Height), Color.Black);
+                }
+                for (int y = 0; y <= TILES_SET_HEIGHT; y++)
+                {
+                    sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)tileSetOffset.X, (int)(tileSetOffset.Y + y * TILE_SIZE), (int)tileSetOffset.Width, 1), Color.Black);
+                }
             }
         }
         public void LoadFile(string fileName)
