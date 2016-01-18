@@ -12,19 +12,31 @@ namespace CStrike2D
 {
     public class LevelEditor
     {
+        // Stores the tiles 
         Tile[,] tiles = new Tile[75, 50];
+
+        // Stores the selected tile of the tile set
         int selectedTile;
-        float tileSize = 32;
-        int NUMBER_OF_TILES_WIDE = 8;
-        int NUMBER_OF_TILES_LONG = 10;
 
-        int numRows = 50;
+        // Stores the constants of the tile size and the width/height of the tile set
+        const float TILE_SIZE = 32;
+        const int TILE_SET_WIDTH = 8;
+        const int TILES_SET_HEIGHT = 10;
+
+        // Stores all the properties of a tile in a string
+        string properties = "";
+
+        // Variables used to store the number of columns and rows
         int numCols = 75;
+        int numRows = 50;
+        
+        // Stores the position of the mouse according to the map
+        Vector2 mouseMap;
 
-        Vector2 mouseWorld;
+        // 
         Vector2 placedTilePos;
 
-        // Stores the properties of a tile
+        // Stores the status of the properties of a tile
         bool isPlantSpot;
         bool isSaveSpot;
         bool isSolid;
@@ -36,8 +48,11 @@ namespace CStrike2D
         private AudioManager audio;
         private CStrike2D driver;
 
+        // Stores the tile set of set position
         Rectangle tileSetOffset = new Rectangle(50, 100, 256, 320);
-        Rectangle placementArea = new Rectangle(-200, -250, 2400, 1600);
+
+        // Stores the map area
+        Rectangle mapArea = new Rectangle(-225, -250, 2400, 1600);
 
         public LevelEditor(CStrikeModel model)
         {
@@ -49,32 +64,33 @@ namespace CStrike2D
         public void Update(float gameTime)
         {
             // Holds the mouse position according to the world
-            mouseWorld = input.ScreenToWorld(input.MousePosition, driver.Model.Camera, driver.Model.Center);
-            //LoadFile("de_cache.txt");
+            mouseMap = input.ScreenToWorld(input.MousePosition, driver.Model.Camera, driver.Model.Center);
 
-            // If left mouse is clicked
-            if (input.LeftClick())
-            {
-                // If the mouse if over the tile set
-                if (input.MousePosition.X > tileSetOffset.X &&
+            // Reset the properties
+            properties = "";
+
+            // If mouse is over the tile set
+            if (input.MousePosition.X > tileSetOffset.X &&
                     input.MousePosition.X < tileSetOffset.X + tileSetOffset.Width &&
                     input.MousePosition.Y > tileSetOffset.Y &&
                     input.MousePosition.Y < tileSetOffset.Y + tileSetOffset.Height)
+            {
+                // If left mouse is clicked
+                if (input.LeftClick())
                 {
                     // Set the selected tile to be the one that they have clicked
-                    selectedTile = (int)((input.MousePosition.Y - tileSetOffset.Y) / tileSize) * NUMBER_OF_TILES_WIDE +
-                                   (int)((input.MousePosition.X - tileSetOffset.X) / tileSize);
+                    selectedTile = (int)((input.MousePosition.Y - tileSetOffset.Y) / TILE_SIZE) * TILE_SET_WIDTH +
+                                   (int)((input.MousePosition.X - tileSetOffset.X) / TILE_SIZE);
                 }
             }
-            
             // If the mouse is over the map region
-            if (mouseWorld.X > placementArea.X &&
-                mouseWorld.X < placementArea.X + placementArea.Width &&
-                mouseWorld.Y > placementArea.Y &&
-                mouseWorld.Y < placementArea.Y + placementArea.Height)
+            else if (mouseMap.X > mapArea.X &&
+                mouseMap.X < mapArea.X + mapArea.Width &&
+                mouseMap.Y > mapArea.Y &&
+                mouseMap.Y < mapArea.Y + mapArea.Height)
             {
                 // Find the tile the mouse is on
-                placedTilePos = new Vector2(((mouseWorld.X - placementArea.X) / tileSize), (mouseWorld.Y - placementArea.Y) / tileSize);
+                placedTilePos = new Vector2(((mouseMap.X - mapArea.X) / TILE_SIZE), (mouseMap.Y - mapArea.Y) / TILE_SIZE);
 
                 // If the left mouse button is held
                 if (input.LeftHold())
@@ -100,34 +116,60 @@ namespace CStrike2D
                 if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
                 {
                     // 
-                    if (input.Tapped(Keys.Z))
+                    if (input.Tapped(Keys.D1))
                     {
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsPlantSpot(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot);
                     }
                     // 
-                    else if (input.Tapped(Keys.X))
+                    else if (input.Tapped(Keys.D2))
                     {
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSaveSpot(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot);
                     }
                     // 
-                    else if (input.Tapped(Keys.C))
+                    else if (input.Tapped(Keys.D3))
                     {
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSolid(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid);
                     }
                     // 
-                    else if (input.Tapped(Keys.V))
+                    else if (input.Tapped(Keys.D4))
                     {
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsCTSpawnPoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsCTSpawnPoint);
                     }
                     // 
-                    else if (input.Tapped(Keys.B))
+                    else if (input.Tapped(Keys.D5))
                     {
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsTSpawnPoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsTSpawnPoint);
                     }
                     // 
-                    else if (input.Tapped(Keys.N))
+                    else if (input.Tapped(Keys.D6))
                     {
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSiteDefencePoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSiteDefencePoint);
+                    }
+
+                    // Add the specified properties to the properties string if that property is true
+                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot)
+                    {
+                        properties += "Plant, ";
+                    }
+                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot)
+                    {
+                        properties += "Save, ";
+                    }
+                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid)
+                    {
+                        properties += "Collidable, ";
+                    }
+                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsCTSpawnPoint)
+                    {
+                        properties += "CT, ";
+                    }
+                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsTSpawnPoint)
+                    {
+                        properties += "T, ";
+                    }
+                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSiteDefencePoint)
+                    {
+                        properties += "Defence ";
                     }
                 }
             }
@@ -152,10 +194,10 @@ namespace CStrike2D
             {
                 driver.Model.Camera.Position.X += 5;
             }
-            if (input.Tapped(Keys.Enter))
-            {
-                SaveFile("de_cache.txt");
-            }
+            //if (input.Tapped(Keys.Enter))
+            //{
+            //    SaveFile("de_cache.txt");
+            //}
             if (input.Tapped(Keys.L))
             {
                 LoadFile("de_cache.txt");
@@ -164,7 +206,7 @@ namespace CStrike2D
 
         public void DrawWorld(SpriteBatch sb)
         {
-            sb.Draw(driver.Assets.PixelTexture, placementArea, Color.CornflowerBlue);
+            sb.Draw(driver.Assets.PixelTexture, mapArea, Color.CornflowerBlue);
 
             // Draws all tiles placed and the properties highlighted overthem
             for (int x = 0; x < numCols; x++)
@@ -173,68 +215,68 @@ namespace CStrike2D
                 {
                     if (tiles[x, y] != null)
                     {
-                        int srcX = (int)(tiles[x, y].TileType % 8 * tileSize);
-                        int srcY = (int)(tiles[x, y].TileType / 8 * tileSize);
-                        Rectangle tileSrcRec = new Rectangle(srcX, srcY, (int)tileSize, (int)tileSize);
+                        int srcX = (int)(tiles[x, y].TileType % 8 * TILE_SIZE);
+                        int srcY = (int)(tiles[x, y].TileType / 8 * TILE_SIZE);
+                        Rectangle tileSrcRec = new Rectangle(srcX, srcY, (int)TILE_SIZE, (int)TILE_SIZE);
 
-                        sb.Draw(driver.Assets.TileSet, new Rectangle((int)(x * tileSize + placementArea.X),
-                                                                     (int)(y * tileSize + placementArea.Y),
-                                                                     (int)tileSize,
-                                                                     (int)tileSize),
+                        sb.Draw(driver.Assets.TileSet, new Rectangle((int)(x * TILE_SIZE + mapArea.X),
+                                                                     (int)(y * TILE_SIZE + mapArea.Y),
+                                                                     (int)TILE_SIZE,
+                                                                     (int)TILE_SIZE),
                                                                      tileSrcRec,
                                                                      Color.White);
 
                         if(tiles[x, y].IsPlantSpot)
                         {
-                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * tileSize + placementArea.X),
-                                                                     (int)(y * tileSize + placementArea.Y),
-                                                                     (int)tileSize,
-                                                                     (int)tileSize),
+                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * TILE_SIZE + mapArea.X),
+                                                                     (int)(y * TILE_SIZE + mapArea.Y),
+                                                                     (int)TILE_SIZE,
+                                                                     (int)TILE_SIZE),
                                                                      new Rectangle(0, 0, 32, 32),
                                                                      Color.Yellow * 0.5f);
                         }
                         if (tiles[x, y].IsSaveSpot)
                         {
-                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * tileSize + placementArea.X),
-                                                                     (int)(y * tileSize + placementArea.Y),
-                                                                     (int)tileSize,
-                                                                     (int)tileSize),
+                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * TILE_SIZE + mapArea.X),
+                                                                     (int)(y * TILE_SIZE + mapArea.Y),
+                                                                     (int)TILE_SIZE,
+                                                                     (int)TILE_SIZE),
                                                                      new Rectangle(0, 0, 32, 32),
                                                                      Color.Green * 0.5f);
                         }
                         if (tiles[x, y].IsSolid)
                         {
-                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * tileSize + placementArea.X),
-                                                                     (int)(y * tileSize + placementArea.Y),
-                                                                     (int)tileSize,
-                                                                     (int)tileSize),
+                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * TILE_SIZE + mapArea.X),
+                                                                     (int)(y * TILE_SIZE + mapArea.Y),
+                                                                     (int)TILE_SIZE,
+                                                                     (int)TILE_SIZE),
                                                                      new Rectangle(0, 0, 32, 32),
                                                                      Color.Red * 0.5f);
                         }
                         if (tiles[x, y].IsCTSpawnPoint)
                         {
-                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * tileSize + placementArea.X),
-                                                                     (int)(y * tileSize + placementArea.Y),
-                                                                     (int)tileSize,
-                                                                     (int)tileSize),
+                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * TILE_SIZE + mapArea.X),
+                                                                     (int)(y * TILE_SIZE + mapArea.Y),
+                                                                     (int)TILE_SIZE,
+                                                                     (int)TILE_SIZE),
                                                                      new Rectangle(0, 0, 32, 32),
                                                                      Color.Blue * 0.5f);
                         }
                         if (tiles[x, y].IsTSpawnPoint)
                         {
-                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * tileSize + placementArea.X),
-                                                                     (int)(y * tileSize + placementArea.Y),
-                                                                     (int)tileSize,
-                                                                     (int)tileSize),
+                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * TILE_SIZE + mapArea.X),
+                                                                     (int)(y * TILE_SIZE + mapArea.Y),
+                                                                     (int)TILE_SIZE,
+                                                                     (int)TILE_SIZE),
                                                                      new Rectangle(0, 0, 32, 32),
                                                                      Color.Orange * 0.5f);
                         }
                         if (tiles[x, y].IsSiteDefencePoint)
                         {
-                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * tileSize + placementArea.X),
-                                                                     (int)(y * tileSize + placementArea.Y),
-                                                                     (int)tileSize,
-                                                                     (int)tileSize),
+                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * TILE_SIZE + mapArea.X),
+                                                                     (int)(y * TILE_SIZE + mapArea.Y),
+                                                                     (int)TILE_SIZE,
+                                                                     (int)TILE_SIZE),
                                                                      new Rectangle(0, 0, 32, 32),
                                                                      Color.Purple * 0.5f);
                         }
@@ -245,30 +287,32 @@ namespace CStrike2D
             // Draws a grid line for the map each line being 1 pixel thick
             for (int x = 0; x <= numCols; x++)
             {
-                sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(placementArea.X + x * tileSize), (int)placementArea.Y, 1, (int)placementArea.Height), Color.Black);
+                sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(mapArea.X + x * TILE_SIZE), (int)mapArea.Y, 1, (int)mapArea.Height), Color.Black);
             }
             for (int y = 0; y <= numRows; y++)
             {
-                sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)placementArea.X, (int)(placementArea.Y + y * tileSize), (int)placementArea.Width, 1), Color.Black);
+                sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)mapArea.X, (int)(mapArea.Y + y * TILE_SIZE), (int)mapArea.Width, 1), Color.Black);
             }
         }
 
         public void DrawUI(SpriteBatch sb)
         {
-            sb.DrawString(driver.Assets.DefaultFont, "" + Math.Floor(placedTilePos.X) + "|" + Math.Floor(placedTilePos.Y), new Vector2(100, 0), Color.White);
-            sb.DrawString(driver.Assets.DefaultFont, "" + selectedTile, new Vector2(0, 0), Color.White);
+            // Drawn the UI, includes map tile index, the selected tile #, and the properties of the tile the mouse is on
+            sb.DrawString(driver.Assets.DefaultFont, "Map Tile Index: " + Math.Floor(placedTilePos.X) + "|" + Math.Floor(placedTilePos.Y), new Vector2(175, 0), Color.White);
+            sb.DrawString(driver.Assets.DefaultFont, "Selected Tile #: " + selectedTile, new Vector2(0, 0), Color.White);
+            sb.DrawString(driver.Assets.DefaultFont, "Properties: " + properties, new Vector2(360, 0), Color.White);
 
             // Draw the tile set
             sb.Draw(driver.Assets.TileSet, tileSetOffset, Color.White);
 
             // Drawn the grid line for the tile set each line being 1 pixel thick
-            for (int x = 0; x <= NUMBER_OF_TILES_WIDE; x++)
+            for (int x = 0; x <= TILE_SET_WIDTH; x++)
             {
-                sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(tileSetOffset.X + x * tileSize), (int)tileSetOffset.Y, 1, (int)tileSetOffset.Height), Color.Black);
+                sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(tileSetOffset.X + x * TILE_SIZE), (int)tileSetOffset.Y, 1, (int)tileSetOffset.Height), Color.Black);
             }
-            for (int y = 0; y <= NUMBER_OF_TILES_LONG; y++)
+            for (int y = 0; y <= TILES_SET_HEIGHT; y++)
             {
-                sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)tileSetOffset.X, (int)(tileSetOffset.Y + y * tileSize), (int)tileSetOffset.Width, 1), Color.Black);
+                sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)tileSetOffset.X, (int)(tileSetOffset.Y + y * TILE_SIZE), (int)tileSetOffset.Width, 1), Color.Black);
             }
         }
         public void LoadFile(string fileName)
@@ -285,6 +329,9 @@ namespace CStrike2D
             // Checks the first and second line of the text to set the number of columns and the number of rows
             numCols = Convert.ToInt32(inFile.ReadLine());
             numRows = Convert.ToInt32(inFile.ReadLine());
+
+            // Changes the placement area according to the number of columns and rows
+            mapArea = new Rectangle(-200, -250, 32 * numCols, 32 * numRows);
 
             // Initialize the number of tiles to be according the the number of columns and rows
             tiles = new Tile[numCols, numRows];
@@ -361,7 +408,7 @@ namespace CStrike2D
             // Close the file
             inFile.Close();
         }
-        public void SaveFile(string fileName)
+        private void SaveFile(string fileName)
         {
             //
             StreamWriter outFile = File.CreateText(fileName);
