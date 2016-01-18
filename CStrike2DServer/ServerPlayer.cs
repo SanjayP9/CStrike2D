@@ -61,6 +61,7 @@ namespace CStrike2DServer
             Knife = new ServerWeapon(WeaponData.Weapon.Knife, this);
             PrimaryWeapon = new ServerWeapon(WeaponData.Weapon.None, this);
             SecondaryWeapon = new ServerWeapon(WeaponData.Weapon.None, this);
+            CurrentWeapon = Knife;
         }
 
         public void FireWeapon()
