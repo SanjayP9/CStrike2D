@@ -590,6 +590,7 @@ namespace CStrike2DServer
                 if (ply.ConnectionIdentifier != client.RemoteUniqueIdentifier)
                 {
                     outMsg = server.CreateMessage();
+                    outMsg.Write(ServerClientInterface.SYNC_CHUNK);
                     outMsg.Write(ply.Identifier);
                     outMsg.Write(ply.UserName);
                     outMsg.Write(ServerClientInterface.TeamToByte(ply.CurrentTeam));

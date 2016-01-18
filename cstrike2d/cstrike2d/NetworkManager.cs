@@ -92,6 +92,7 @@ namespace CStrike2D
                                 break;
                             case NetState.Connected:
                                 code = msg.ReadByte();
+                                short id;
                                 switch (code)
                                 {
                                     case ServerClientInterface.HANDSHAKE_COMPLETE:
@@ -106,14 +107,18 @@ namespace CStrike2D
                                         // Get data of all currently connected players
                                         while ((msg = client.ReadMessage()) != null)
                                         {
-                                            if (msg.ReadByte() == ServerClientInterface.SYNC_COMPLETE)
+                                            code = msg.ReadByte();
+                                            if (code == ServerClientInterface.SYNC_COMPLETE)
                                             {
                                                 break;
                                             }
 
-                                            engine.SyncPlayer(msg.ReadInt16(), msg.ReadString(),
-                                                msg.ReadByte(), msg.ReadFloat(), msg.ReadFloat(),
-                                                msg.ReadFloat(), msg.ReadByte());
+                                            if (code == ServerClientInterface.SYNC_CHUNK)
+                                            {
+                                                engine.SyncPlayer(msg.ReadInt16(), msg.ReadString(),
+                                                    msg.ReadByte(), msg.ReadFloat(), msg.ReadFloat(),
+                                                    msg.ReadFloat(), msg.ReadByte());
+                                            }
                                         }
                                         // The client has all data of the server, enter the game
                                         engine.CurState = GameEngine.GameEngineState.Active;
@@ -132,20 +137,23 @@ namespace CStrike2D
                                         engine.ChangeTeam(msg.ReadInt16(), msg.ReadByte());
                                         break;
                                     case ServerClientInterface.SYNC_MOVEMENT:
-                                        player = engine.Players.Find(ply => ply.Identifier == msg.ReadInt16());
+                                        id = msg.ReadInt16();
+                                        player = engine.Players.Find(ply => ply.Identifier == id);
                                         player.SetPosition(new Vector2(msg.ReadFloat(), msg.ReadFloat()));
                                         player.SetRotation(msg.ReadFloat());
                                         break;
                                     case ServerClientInterface.RESPAWN_PLAYER:
-                                        player = engine.Players.Find(ply => ply.Identifier == msg.ReadInt16());
+                                        id = msg.ReadInt16();
+                                        player = engine.Players.Find(ply => ply.Identifier == id);
                                         player.Respawn(new Vector2(msg.ReadFloat(), msg.ReadFloat()));
                                         break;
                                     case ServerClientInterface.PLAYER_DISCONNECTED:
-                                        short id = msg.ReadInt16();
+                                        id = msg.ReadInt16();
                                         engine.Players.Remove(engine.Players.Find(ply => ply.Identifier == id));
                                         break;
                                     case ServerClientInterface.ROTATE_PLAYER:
-                                        engine.Players.Find(ply => ply.Identifier == msg.ReadInt16())
+                                        id = msg.ReadInt16();
+                                        engine.Players.Find(ply => ply.Identifier == id)
                                             .SetRotation(msg.ReadFloat());
                                         break;
                                 }
@@ -400,59 +408,6 @@ namespace CStrike2D
             client.Recycle(msg);
         }
         */
-
-        [Obsolete("Old Netcode")]
-        public void SendInputData(byte code)
-        {
-            NetOutgoingMessage outMsg = client.CreateMessage();
-            outMsg.Write(code);
-            byteCount += outMsg.LengthBytes;
-            client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
-        }
-
-        
-        [Obsolete("Old Netcode")]
-        public void SendRotData(float rotation)
-        {
-            NetOutgoingMessage outMsg = client.CreateMessage();
-            outMsg.Write(NetInterface.ROTATE);
-            outMsg.Write(rotation);
-            byteCount += outMsg.LengthBytes;
-            client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
-        }
-
-
-        [Obsolete("Old Netcode")]
-        public void SendChangeTeam(byte team)
-        {
-            NetOutgoingMessage outMsg = client.CreateMessage();
-            outMsg.Write(NetInterface.PLY_CHANGE_TEAM);
-            outMsg.Write(team);
-            byteCount += outMsg.LengthBytes;
-            client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered);
-        }
-
-        [Obsolete("Old Netcode")]
-        public void SwitchWeapon(short entityID, byte weaponSwitch)
-        {
-            NetOutgoingMessage outMsg = client.CreateMessage();
-            outMsg.Write(NetInterface.SWITCH_WEAPON);
-            outMsg.Write(weaponSwitch);
-            outMsg.Write(entityID);
-            byteCount += outMsg.LengthBytes;
-            client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
-        }
-
-
-        [Obsolete("Old Netcode")]
-        public void RequestBuy(short weapon)
-        {
-            NetOutgoingMessage outMsg = client.CreateMessage();
-            outMsg.Write(NetInterface.SPAWN_WEAPON);
-            outMsg.Write(weapon);
-            byteCount += outMsg.LengthBytes;
-            client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
-        }
 
         public void ShutDown()
         {

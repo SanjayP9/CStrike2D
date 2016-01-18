@@ -54,6 +54,7 @@ namespace CStrike2DServer
         /// </summary>
         public const byte REQUEST_SYNC = 19;
         public const byte SYNC_BEGIN = 20;
+        public const byte SYNC_CHUNK = 21;
         public const byte SYNC_COMPLETE = 22;
         public const byte SYNC_NEW_PLAYER = 23;
 
