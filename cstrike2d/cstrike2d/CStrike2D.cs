@@ -109,10 +109,10 @@ namespace CStrike2D
         {
             timer += (decimal)gameTime.ElapsedGameTime.TotalMilliseconds;
 
-            if (timer >= 100m)
+            if (timer >= 250m)
             {
                 timer = 0;
-                FPS = counter * 10m;
+                FPS = counter * 4m;
                 counter = 0;
             }
 

@@ -4,14 +4,18 @@ namespace CStrike2DServer
 {
     public static class WeaponData
     {
+        // Byte equivalents of weapons in the game
         public const byte WEAPON_KNIFE = 0;
         public const byte WEAPON_AK47 = 1;
         public const byte WEAPON_GLOCK = 2;
         public const byte WEAPON_AWP = 3;
         public const byte WEAPON_USP = 4;
         public const byte WEAPON_M4A1 = 5;
+        public const byte WEAPON_NONE = 255;
 
-
+        /// <summary>
+        /// Different types of weapons
+        /// </summary>
         public enum Weapon
         {
             Knife,
@@ -20,8 +24,14 @@ namespace CStrike2DServer
             Awp,
             Usp,
             M4A1,
+            None
         }
 
+        /// <summary>
+        /// Returns the byte equivalent of a weapon
+        /// </summary>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
         public static byte WeaponToByte(Weapon weapon)
         {
             switch (weapon)
@@ -38,11 +48,18 @@ namespace CStrike2DServer
                     return WEAPON_USP;
                 case Weapon.M4A1:
                     return WEAPON_M4A1;
+                case Weapon.None:
+                    return WEAPON_NONE;
                 default:
                     throw new NotImplementedException("Weapon does not exist.");
             }
         }
 
+        /// <summary>
+        /// Returns the enum equivalent of a weapon
+        /// </summary>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
         public static Weapon ByteToWeapon(byte weapon)
         {
             switch (weapon)
@@ -59,6 +76,8 @@ namespace CStrike2DServer
                     return Weapon.Usp;
                 case WEAPON_M4A1:
                     return Weapon.M4A1;
+                case WEAPON_NONE:
+                    return Weapon.None;
                 default:
                     throw new NotImplementedException("Weapon does not exist.");
             }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using CStrike2D;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
@@ -15,6 +17,9 @@ namespace CStrike2DServer
         private static NetIncomingMessage msg;
 
         private static List<ServerPlayer> players = new List<ServerPlayer>();
+        private static List<ServerWeapon> weapons = new List<ServerWeapon>();
+        private static List<ServerGrenade> grenades = new List<ServerGrenade>();
+
         private static short playerIdentifier;
         private static string serverVersion = "0.4.0a";            // Server Version
         private static int maxPlayers = 32;
@@ -29,11 +34,44 @@ namespace CStrike2DServer
         private static int bytesOut;
         private static int maxCTs = 16;
         private static int maxTs = 16;
+        private static int numTs = 0;
+        private static int numCts = 0;
+        private static float roundTimer = 0;
+        private static float numPlayers = 0;
         private static bool enableCollision = true;
         private static short entityCounter;
+        
         private static double updateTimer;
         public const double UPDATE_RATE = 7d;
         public const double NET_UPDATE_RATE = 15d;
+        public const double SYNC_RATE = 20d;
+
+        private const float FREEZE_TIME = 5f;
+        private float freezeTime;
+
+        private static int tsAlive;
+        private static int ctsAlive;
+        private static string mapName = "de_cache";
+
+        private static RoundState state = RoundState.Empty;
+        private static int numCols;
+        private static int numRows;
+        private static Rectangle mapArea;
+        private static Tile[,] tiles;
+        private static DemoRecorder recorder;
+
+        enum RoundState
+        {
+            Empty,
+            Buytime,
+            Play,
+            AfterRound
+        }
+
+        public static List<ServerPlayer> RetrievePlayers()
+        {
+            return players;
+        }
 
         static void Main(string[] args)
         {
@@ -63,9 +101,11 @@ namespace CStrike2DServer
              */
 
             Vector2 defSpawnPosition = new Vector2(350, 350);
+            recorder = new DemoRecorder();
 
             Stopwatch updateTimer = new Stopwatch();
             Stopwatch netUpdateTimer = new Stopwatch();
+            Stopwatch syncTimer = new Stopwatch();
 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("==================================");
@@ -78,7 +118,6 @@ namespace CStrike2DServer
             if (forceConfigRewrite)
             {
                 WriteFile();
-                
             }
 
             ReadConfig();
@@ -89,14 +128,32 @@ namespace CStrike2DServer
             server = new NetServer(config);
             server.Start();
             Console.WriteLine("Server is live.");
+            Thread.Sleep(1000);
 
+            recorder.StartRecording(mapName);
             updateTimer.Start();
             netUpdateTimer.Start();
             while (server.Status == NetPeerStatus.Running)
             {
+                Console.Clear();   
+                Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop);
+                Console.WriteLine("Players " + numPlayers + "/" + maxPlayers);
+
+                if (Console.KeyAvailable)
+                {
+                    ConsoleKeyInfo key = Console.ReadKey();
+
+                    if (key.Key == ConsoleKey.Escape)
+                    {
+                        recorder.EndRecording();
+                        return;
+                    }
+                }
+
                 if (updateTimer.Elapsed.TotalMilliseconds > UPDATE_RATE)
                 {
                     Simulate();
+                    recorder.Update();
                     updateTimer.Restart();
                 }
 
@@ -105,7 +162,14 @@ namespace CStrike2DServer
                     UpdateNetwork();
                     netUpdateTimer.Restart();
                 }
+
+                if (syncTimer.Elapsed.TotalMilliseconds > SYNC_RATE)
+                {
+                    SyncWorld();
+                    syncTimer.Restart();
+                }
             }
+
             /*
             int tick = 0;
             while (server.Status == NetPeerStatus.Running)
@@ -148,6 +212,64 @@ namespace CStrike2DServer
                 }
             }
             */
+        }
+
+        static void LoadMap(string mapName)
+        {
+            if (!File.Exists(mapName))
+            {
+                Console.WriteLine("Missing map: "+ mapName);
+                return;
+            }
+
+            StreamReader inFile = File.OpenText(mapName);
+
+            // Stores the data for a single line as a time
+
+            // Checks the first and second line of the text to set the number of columns and the number of rows
+            numCols = Convert.ToInt32(inFile.ReadLine());
+            numRows = Convert.ToInt32(inFile.ReadLine());
+
+            // Changes the placement area according to the number of columns and rows
+            mapArea = new Rectangle(-200, -250, 32 * numCols, 32 * numRows);
+
+            // Initialize the number of tiles to be according the the number of columns and rows
+            tiles = new Tile[numCols, numRows];
+
+            // Goes through every line in the text past the first two
+            for (int rows = 0; rows < numRows; rows++)
+            {
+                // Sets the row data to be split by commas to siginify a new column
+                string[] rowData = inFile.ReadLine().Split(',');
+
+                // Goes through every column in the row
+                for (int cols = 0; cols < rowData.Length; cols++)
+                {
+                    // If the data in the column is not blank
+                    if (rowData[cols] != "")
+                    {
+                        // According to each character in the text check to see for the 0/1
+                        // for each property and set the property to be true or false accordingly
+                        bool isPlantSpot = rowData[cols][rowData[cols].Length - 6] == '1';
+
+                        bool isSaveSpot = rowData[cols][rowData[cols].Length - 5] == '1';
+
+                        bool isSolid = rowData[cols][rowData[cols].Length - 4] == '1';
+
+                        bool isCTSpawnPoint = rowData[cols][rowData[cols].Length - 3] == '1';
+
+                        bool isTSpawnPoint = rowData[cols][rowData[cols].Length - 2] == '1';
+
+                        bool isSiteDefencePoint = rowData[cols][rowData[cols].Length - 1] == '1';
+
+                        // Initialize each property of the tile
+                        tiles[cols, rows] = new Tile(Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 6)), isPlantSpot, isSaveSpot, isSolid, isCTSpawnPoint, isTSpawnPoint, isSiteDefencePoint);
+                    }
+                }
+            }
+
+            // Close the file
+            inFile.Close();
         }
 
         #region Old Code
@@ -319,6 +441,17 @@ namespace CStrike2DServer
         public static void Simulate()
         {
             // TODO: Runs all server based logic
+            switch (state)
+            {
+                case RoundState.Empty:
+                    break;
+                case RoundState.Buytime:
+                    break;
+                case RoundState.Play:
+                    break;
+                case RoundState.AfterRound:
+                    break;
+            }
         }
 
         public static void UpdateNetwork()
@@ -328,6 +461,7 @@ namespace CStrike2DServer
             {
                 outMsg = server.CreateMessage();
                 ServerPlayer player;
+                byte code;
                 switch (msg.MessageType)
                 {
                     case NetIncomingMessageType.StatusChanged:
@@ -337,7 +471,7 @@ namespace CStrike2DServer
                                 // If someone has successfully connected to the server, initialize
                                 // handshake with the client. Give them a unique identifier
                                 // which allows the server to differ between multiple clients
-                                outMsg.Write(NetInterface.HANDSHAKE);
+                                outMsg.Write(ServerClientInterface.HANDSHAKE);
 
                                 // Send the message
                                 server.SendMessage(outMsg, msg.SenderConnection, NetDeliveryMethod.ReliableSequenced);
@@ -347,7 +481,7 @@ namespace CStrike2DServer
                                     players.Find(
                                         ply => ply.ConnectionIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
                                 outMsg.Write(ServerClientInterface.PLAYER_DISCONNECTED);
-                                outMsg.Write(player.ConnectionIdentifier);
+                                outMsg.Write(player.Identifier);
                                 server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
                                 Console.WriteLine("\"" + player.UserName + "\" has left the server");
                                 players.Remove(player);
@@ -355,7 +489,8 @@ namespace CStrike2DServer
                         }
                         break;
                     case NetIncomingMessageType.Data:
-                        switch (msg.ReadByte())
+                        code = msg.ReadByte();
+                        switch (code)
                         {
                             case ServerClientInterface.REQUEST_SYNC:
                                 string username = msg.ReadString();
@@ -363,8 +498,9 @@ namespace CStrike2DServer
                                 player = new ServerPlayer(username, playerIdentifier, msg.SenderConnection.RemoteUniqueIdentifier);
                                 players.Add(player);
                                 playerIdentifier++;
+                                numPlayers++;
 
-                                outMsg.Write(ServerClientInterface.REQUEST_SYNC);
+                                outMsg.Write(ServerClientInterface.HANDSHAKE_COMPLETE);
                                 outMsg.Write(player.Identifier);
                                 server.SendMessage(outMsg, msg.SenderConnection, NetDeliveryMethod.ReliableSequenced);
 
@@ -382,9 +518,35 @@ namespace CStrike2DServer
 
                                 Console.WriteLine("\"" + player.UserName + "\" joined the " + player.CurrentTeam);
 
+                                switch (player.CurrentTeam)
+                                {
+                                    case ServerClientInterface.Team.CounterTerrorist:
+                                        numCts++;
+                                        break;
+                                    case ServerClientInterface.Team.Terrorist:
+                                        numTs++;
+                                        break;
+                                }
+
                                 outMsg.Write(ServerClientInterface.CHANGE_TEAM);
                                 outMsg.Write(player.Identifier);
+                                outMsg.Write(ServerClientInterface.TeamToByte(player.CurrentTeam));
                                 server.SendToAll(outMsg,NetDeliveryMethod.ReliableSequenced);
+
+                                RespawnPlayer(player, new Vector2(numCts));
+                                break;
+                            case ServerClientInterface.MOVE_UP:
+                            case ServerClientInterface.MOVE_DOWN:
+                            case ServerClientInterface.MOVE_LEFT:
+                            case ServerClientInterface.MOVE_RIGHT:
+                            case ServerClientInterface.MOVE_UPLEFT:
+                            case ServerClientInterface.MOVE_UPRIGHT:
+                            case ServerClientInterface.MOVE_DOWNRIGHT:
+                            case ServerClientInterface.MOVE_DOWNLEFT:
+                                Move(code, msg.SenderConnection.RemoteUniqueIdentifier);
+                                break;
+                            case ServerClientInterface.ROTATE_PLAYER:
+                                Rotate(msg.ReadFloat(), msg.SenderConnection.RemoteUniqueIdentifier);
                                 break;
                         }
                         break;
@@ -427,7 +589,7 @@ namespace CStrike2DServer
                 // Send data about every player except their own player to the client
                 if (ply.ConnectionIdentifier != client.RemoteUniqueIdentifier)
                 {
-                    server.CreateMessage();
+                    outMsg = server.CreateMessage();
                     outMsg.Write(ply.Identifier);
                     outMsg.Write(ply.UserName);
                     outMsg.Write(ServerClientInterface.TeamToByte(ply.CurrentTeam));
@@ -441,8 +603,16 @@ namespace CStrike2DServer
             outMsg = server.CreateMessage();
             outMsg.Write(ServerClientInterface.SYNC_COMPLETE);
         }
-        static void Move(byte direction, ServerPlayer player)
+
+        /// <summary>
+        /// Moves a player
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <param name="identifier"></param>
+        static void Move(byte direction, long identifier)
         {
+            ServerPlayer player = players.Find(ply => ply.ConnectionIdentifier == identifier);
+
             if (CheckPlayerCollision(player, direction))
             {
                 player.Move(direction);
@@ -452,20 +622,68 @@ namespace CStrike2DServer
             }
         }
 
+        /// <summary>
+        /// Rotates a player
+        /// </summary>
+        /// <param name="rotation"></param>
+        /// <param name="identifier"></param>
+        static void Rotate(float rotation, long identifier)
+        {
+            ServerPlayer player = players.Find(ply => ply.ConnectionIdentifier == identifier);
+            player.Rotate(rotation);
+
+            outMsg.Write(ServerClientInterface.ROTATE_PLAYER);
+            outMsg.Write(player.Identifier);
+            outMsg.Write(player.Rotation);
+            server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+        }
+
         static void SyncWorld()
         {
             // TODO: Sends a snapshot of the world to all players to ensure
             // TODO: everyone is viewing the same thing
+            foreach (ServerPlayer player in players)
+            {
+                outMsg = server.CreateMessage();
+                outMsg.Write(ServerClientInterface.SYNC_MOVEMENT);
+                outMsg.Write(player.Identifier);
+                outMsg.Write(player.Position.X);
+                outMsg.Write(player.Position.Y);
+                outMsg.Write(player.Rotation);
+                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+            }
         }
 
         static void StartRound()
         {
             // TODO: Spawns all players, sets up all timers, etc
+            // Reset everyone's health
+            foreach (ServerPlayer ply in players)
+            {
+                ply.SetHealth(100);
+                ply.SetArmor(0);
+
+                if (ply.State == ServerPlayer.PlayerState.Dead)
+                {
+                    ply.SetState(ServerPlayer.PlayerState.Alive);
+                }
+            }
         }
 
         static void EndRound()
         {
             // TODO: Processes kills, calculates money, etc
+            // If the server was empty before this method was called
+            // Set up everyones start money
+            if (state == RoundState.Empty)
+            {
+                foreach (ServerPlayer player in players)
+                {
+                    player.SetCash(800);
+                    SpawnPlayer(player, 
+                        new Vector2(0 + (100*player.Identifier), 0 + (100*player.Identifier)));
+                }
+            }
         }
 
         static void SpawnWeapon(long playerIdentifier, ServerWeapon weapon)
@@ -476,6 +694,28 @@ namespace CStrike2DServer
         static void SpawnPlayer(long playerIdentifier, Vector2 location)
         {
             // TODO: Spawns a player onto the map
+        }
+
+        /// <summary>
+        /// Spawns a player who is currently alive
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="location"></param>
+        static void SpawnPlayer(ServerPlayer player, Vector2 location)
+        {
+            // TODO: Spawns a player onto the map
+            player.SetPosition(location);
+        }
+
+        static void RespawnPlayer(ServerPlayer player, Vector2 location)
+        {
+            outMsg = server.CreateMessage();
+            player.Respawn(location);
+            outMsg.Write(ServerClientInterface.RESPAWN_PLAYER);
+            outMsg.Write(player.Identifier);
+            outMsg.Write(player.Position.X);
+            outMsg.Write(player.Position.Y);
+            server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
         }
 
         static void PlantBomb(long playerIdentifier, Vector2 location, bool aSite)
@@ -544,33 +784,33 @@ namespace CStrike2DServer
                 float vectorY = 0f;
                 switch (direction)
                 {
-                    case NetInterface.MOVE_UP:
-                        vectorY = -5f;
+                    case ServerClientInterface.MOVE_UP:
+                        vectorY = -ServerClientInterface.MOVEMENT_SPEED;
                         break;
-                    case NetInterface.MOVE_DOWN:
-                        vectorY = 5f;
+                    case ServerClientInterface.MOVE_DOWN:
+                        vectorY = ServerClientInterface.MOVEMENT_SPEED;
                         break;
-                    case NetInterface.MOVE_LEFT:
-                        vectorX = -5f;
+                    case ServerClientInterface.MOVE_LEFT:
+                        vectorX = -ServerClientInterface.MOVEMENT_SPEED;
                         break;
-                    case NetInterface.MOVE_RIGHT:
-                        vectorX = 5f;
+                    case ServerClientInterface.MOVE_RIGHT:
+                        vectorX = ServerClientInterface.MOVEMENT_SPEED;
                         break;
-                    case NetInterface.MOVE_UPRIGHT:
-                        vectorX = 5f;
-                        vectorY = -5f;
+                    case ServerClientInterface.MOVE_UPRIGHT:
+                        vectorX = ServerClientInterface.MOVEMENT_SPEED;
+                        vectorY = -ServerClientInterface.MOVEMENT_SPEED;
                         break;
-                    case NetInterface.MOVE_DOWNRIGHT:
-                        vectorX = 5f;
-                        vectorY = 5f;
+                    case ServerClientInterface.MOVE_DOWNRIGHT:
+                        vectorX = ServerClientInterface.MOVEMENT_SPEED;
+                        vectorY = ServerClientInterface.MOVEMENT_SPEED;
                         break;
-                    case NetInterface.MOVE_DOWNLEFT:
-                        vectorX = -5f;
-                        vectorY = 5f;
+                    case ServerClientInterface.MOVE_DOWNLEFT:
+                        vectorX = -ServerClientInterface.MOVEMENT_SPEED;
+                        vectorY = ServerClientInterface.MOVEMENT_SPEED;
                         break;
-                    case NetInterface.MOVE_UPLEFT:
-                        vectorX = -5f;
-                        vectorY = -5f;
+                    case ServerClientInterface.MOVE_UPLEFT:
+                        vectorX = -ServerClientInterface.MOVEMENT_SPEED;
+                        vectorY = -ServerClientInterface.MOVEMENT_SPEED;
                         break;
                 }
 
@@ -704,7 +944,5 @@ namespace CStrike2DServer
 
             #endregion
         }
-
-
     }
 }

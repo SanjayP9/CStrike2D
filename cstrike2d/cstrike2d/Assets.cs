@@ -94,6 +94,12 @@ namespace CStrike2D
             instance.Model.AudioManager.AddSound(new SoundContainer("flashbang1", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/flashbang_explode1")));
             instance.Model.AudioManager.AddSound(new SoundContainer("flashbang2", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/flashbang_explode2")));
             
+            instance.Model.AudioManager.AddSound(new SoundContainer("bombdef", coreContentLoader.Load<SoundEffect>("sound/sfx/radio/bombdef")));
+            instance.Model.AudioManager.AddSound(new SoundContainer("bombpl", coreContentLoader.Load<SoundEffect>("sound/sfx/radio/bombpl")));
+            instance.Model.AudioManager.AddSound(new SoundContainer("ctwin", coreContentLoader.Load<SoundEffect>("sound/sfx/radio/ctwin")));
+            instance.Model.AudioManager.AddSound(new SoundContainer("rounddraw", coreContentLoader.Load<SoundEffect>("sound/sfx/radio/rounddraw")));
+            instance.Model.AudioManager.AddSound(new SoundContainer("terwin", coreContentLoader.Load<SoundEffect>("sound/sfx/radio/terwin")));
+
             BlurEffect = coreContentLoader.Load<Effect>("fx/blur");
         }
 

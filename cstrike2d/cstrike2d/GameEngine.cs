@@ -4,8 +4,11 @@
 // Creation Date: Jan 4th, 2015
 // Modified Date: Jan 3rd, 2016
 // Description: Handles all logic and drawing of the in-game components
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using CStrike2DServer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -95,6 +98,7 @@ namespace CStrike2D
             ClientPlayer player = new ClientPlayer(username, identifier, assets);
 
             Client = player;
+            Players.Add(Client);
         }
 
         /// <summary>
@@ -110,6 +114,18 @@ namespace CStrike2D
             player.SetPosition(new Vector2(posX, posY));
             player.SetRotation(rot);
             player.SetCurrentWeapon(WeaponData.ByteToWeapon(weapon));
+            Players.Add(player);
+        }
+
+        /// <summary>
+        /// Syncs a new player that has just joined the server
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="identifier"></param>
+        public void SyncNewPlayer(string username, short identifier)
+        {
+            ClientPlayer player = new ClientPlayer(username, identifier, assets);
+            Players.Add(player);
         }
 
         public void MovePlayer(short identifier, byte direction)
@@ -132,17 +148,6 @@ namespace CStrike2D
         {
             if (CurState == GameEngineState.Active)
             {
-                showScoreBoard = input.Held(Keys.Tab);
-
-                if (showScoreBoard)
-                {
-                    driver.Model.InterfaceManager.ShowPage("scoreboard");
-                }
-                else
-                {
-                    driver.Model.InterfaceManager.HidePage("scoreboard");
-                }
-
                 if (!teamSelect)
                 {
                     byte dir = 0;
@@ -152,18 +157,18 @@ namespace CStrike2D
                         {
                             showMenu = !showMenu;
 
-
+                            if (showMenu)
+                            {
+                                driver.Model.InterfaceManager.ShowPage("buyMenu");
+                                driver.Model.InterfaceManager.ShowPage("buyButtonMenu");
+                            }
+                            else
+                            {
+                                driver.Model.InterfaceManager.HideAll();
+                            }
                         }
 
-                        if (showMenu)
-                        {
-                            driver.Model.InterfaceManager.ShowPage("buyMenu");
-                            driver.Model.InterfaceManager.ShowPage("buyButtonMenu");
-                        }
-                        else
-                        {
-                            driver.Model.InterfaceManager.HideAll();
-                        }
+
 
 
                         if (showMenu)
@@ -244,7 +249,7 @@ namespace CStrike2D
 
                                         if (driver.Model.InterfaceManager.Clicked(input, "tRifleButtonMenu", "ak47MenuButton"))
                                         {
-                                            network.RequestBuy(NetInterface.WEAPON_AK47);
+                                            //network.RequestBuy(NetInterface.WEAPON_AK47);
                                             driver.Model.InterfaceManager.HidePage("tRifleButtonMenu");
                                         }
                                     }
@@ -282,6 +287,17 @@ namespace CStrike2D
                             }
                         }
 
+                        showScoreBoard = input.Held(Keys.Tab);
+
+                        if (showScoreBoard)
+                        {
+                            driver.Model.InterfaceManager.ShowPage("scoreboard");
+                        }
+                        else
+                        {
+                            driver.Model.InterfaceManager.HidePage("scoreboard");
+                        }
+
                         if (Flashed)
                         {
                             if (flashTimer >= 0f)
@@ -312,34 +328,34 @@ namespace CStrike2D
                         switch (dir)
                         {
                             case 1: // UP
-                                network.SendInputData(NetInterface.MOVE_UP);
+                                network.Move(ServerClientInterface.MOVE_UP);
                                 break;
                             case 2: // DOWN
-                                network.SendInputData(NetInterface.MOVE_DOWN);
+                                network.Move(ServerClientInterface.MOVE_DOWN);
                                 break;
                             case 4: // LEFT
-                                network.SendInputData(NetInterface.MOVE_LEFT);
+                                network.Move(ServerClientInterface.MOVE_LEFT);
                                 break;
                             case 8: // RIGHT
-                                network.SendInputData(NetInterface.MOVE_RIGHT);
+                                network.Move(ServerClientInterface.MOVE_RIGHT);
                                 break;
                             case 9: // UP-RIGHT
-                                network.SendInputData(NetInterface.MOVE_UPRIGHT);
+                                network.Move(ServerClientInterface.MOVE_UPRIGHT);
                                 break;
                             case 10: // DOWN-RIGHT
-                                network.SendInputData(NetInterface.MOVE_DOWNRIGHT);
+                                network.Move(ServerClientInterface.MOVE_DOWNRIGHT);
                                 break;
                             case 6: // DOWN-LEFT
-                                network.SendInputData(NetInterface.MOVE_DOWNLEFT);
+                                network.Move(ServerClientInterface.MOVE_DOWNLEFT);
                                 break;
                             case 5: // UP-LEFT
-                                network.SendInputData(NetInterface.MOVE_UPLEFT);
+                                network.Move(ServerClientInterface.MOVE_UPLEFT);
                                 break;
                         }
 
                         if (input.LeftClickImmediate() && !showMenu)
                         {
-                            network.SendInputData(NetInterface.FIRE);
+                            //network.SendInputData(NetInterface.FIRE);
                         }
 
                         if (Players.Count > 0)
@@ -348,11 +364,12 @@ namespace CStrike2D
 
                             if (curRotation != prevRotation)
                             {
-                                network.SendRotData(curRotation);
+                                network.Rotate(curRotation);
+                                //network.SendRotData(curRotation);
                             }
 
                             driver.Model.Camera.Position = Client.Position;
-                            Client.SetRotation(curRotation);
+                            //Client.SetRotation(curRotation);
                             prevRotation = curRotation;
                         }
                     }
@@ -528,17 +545,25 @@ namespace CStrike2D
         {
             if (showScoreBoard)
             {
-                for (int i = 0; i < Players.Count; i++)
+                int numCts = 0;
+                int numTs = 0;
+                foreach (ClientPlayer player in Players)
                 {
-                    switch (Players[i].CurrentTeam)
+                    switch (player.CurrentTeam)
                     {
                         case ServerClientInterface.Team.CounterTerrorist:
-                            sb.DrawString(assets.DefaultFont, Players[i].UserName, new Vector2(95, 50 + (i*40)),
-                                NetInterface.CT_Color);
+                            sb.DrawString(assets.DefaultFont, player.UserName + " | " +
+                                                              ((player.State == ClientPlayer.PlayerState.Dead) ? "DEAD" : ""), new Vector2(95, 75 + (numCts * 50)),
+                                ServerClientInterface.CT_Color);
+
+                            numCts++;
                             break;
                         case ServerClientInterface.Team.Terrorist:
-                            sb.DrawString(assets.DefaultFont, Players[i].UserName, new Vector2(645, 50 + (i * 50)),
-                                NetInterface.T_Color);
+                            sb.DrawString(assets.DefaultFont, player.UserName + " | " +
+                                                              ((player.State == ClientPlayer.PlayerState.Dead) ? "DEAD" : ""), new Vector2(645, 75 + (numTs * 50)),
+                                ServerClientInterface.T_Color);
+                            numTs++;
+
                             break;
                     }
                 }

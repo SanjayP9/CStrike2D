@@ -1,13 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 
 namespace CStrike2DServer
 {
     public static class ServerClientInterface
     {
+
+        public static readonly Color CT_Color = new Color(0, 81, 200);
+
+        public static readonly Color T_Color = new Color(255, 0, 25);
+
+        public static readonly Color S_Color = new Color(40, 40, 40);
+
+        public static float MOVEMENT_SPEED = 5f;
+
+
         /// <summary>
         /// Request sent by the server for the client to 
         /// exchange primary information such as their username
@@ -46,16 +53,22 @@ namespace CStrike2DServer
         /// entities
         /// </summary>
         public const byte REQUEST_SYNC = 19;
-
         public const byte SYNC_BEGIN = 20;
-
         public const byte SYNC_COMPLETE = 22;
-
         public const byte SYNC_NEW_PLAYER = 23;
 
         public const byte CHANGE_TEAM_DENIED = 24;
 
         public const byte ROTATE_PLAYER = 25;
+
+        public const byte CT_WIN = 26;
+        public const byte T_WIN = 27;
+        public const byte DRAW = 28;
+
+        public const byte SYNC_MOVEMENT = 29;
+
+        public const byte SPAWN_PLAYER = 30;
+        public const byte RESPAWN_PLAYER = 31;
 
         public enum Team
         {

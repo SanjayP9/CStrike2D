@@ -64,7 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="sound\sfx\player\" />
-    <Folder Include="sound\sfx\radio\" />
     <Folder Include="texture\weapon\aug\" />
     <Folder Include="texture\weapon\famas\" />
     <Folder Include="texture\weapon\glock\" />
@@ -219,6 +218,33 @@
       <Name>rocks</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="sound\sfx\radio\bombdef.wav">
+      <Name>bombdef</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="sound\sfx\radio\bombpl.wav">
+      <Name>bombpl</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="sound\sfx\radio\ctwin.wav">
+      <Name>ctwin</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="sound\sfx\radio\rounddraw.wav">
+      <Name>rounddraw</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="sound\sfx\radio\terwin.wav">
+      <Name>terwin</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

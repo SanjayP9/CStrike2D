@@ -24,11 +24,11 @@ namespace CStrike2D
         public ClientWeapon CurrentWeapon { get; private set; }
         public ClientWeapon PrimaryWeapon { get; private set; }
         public ClientWeapon SecondaryWeapon { get; private set; }
+        public ClientWeapon Knife { get; private set; }
 
         private RayEmitter rayEmitter;
 
         // State
-
 
         public override int DrawOrder { get; protected set; }
 
@@ -79,16 +79,22 @@ namespace CStrike2D
             State = PlayerState.Dead;
             Health = 100;
             Armor = 0;
+            PrimaryWeapon = new ClientWeapon(WeaponData.Weapon.None, this);
+            SecondaryWeapon = new ClientWeapon(WeaponData.Weapon.None, this);
+            Knife = new ClientWeapon(WeaponData.Weapon.Knife, this);
+            CurrentWeapon = Knife;
         }
 
         public override void Update(float gameTime)
         {
-
+            CurrentWeapon.Update(gameTime);
+            PrimaryWeapon.Update(gameTime);
+            SecondaryWeapon.Update(gameTime);
         }
 
         public override void Draw(SpriteBatch sb)
         {
-            if (CurrentTeam != ServerClientInterface.Team.Spectator)
+            if (CurrentTeam != ServerClientInterface.Team.Spectator && State != PlayerState.Dead)
             {
                 sb.Draw(Assets.CTTexture, position, new Rectangle(0, 0, 32, 32), Color.White, 1.57f + rotation,
                     new Vector2(16, 16),
@@ -120,25 +126,57 @@ namespace CStrike2D
             
         }
 
+        /// <summary>
+        /// If the player was dead last round, give them default weapons specific
+        /// to their team
+        /// </summary>
+        public void ResetWeapons()
+        {
+            switch (CurrentTeam)
+            {
+                case ServerClientInterface.Team.CounterTerrorist:
+                    SecondaryWeapon = new ClientWeapon(WeaponData.Weapon.Usp, this);
+                    break;
+                case ServerClientInterface.Team.Terrorist:
+                    SecondaryWeapon = new ClientWeapon(WeaponData.Weapon.Glock18, this);
+                    break;
+            }
+            PrimaryWeapon = new ClientWeapon(WeaponData.Weapon.None, this);
+            Knife = new ClientWeapon(WeaponData.Weapon.Knife, this);
+            CurrentWeapon = Knife;
+        }
+
         public void Move(byte direction)
         {
             switch (direction)
             {
                 case ServerClientInterface.MOVE_UP:
+                    position.Y -= ServerClientInterface.MOVEMENT_SPEED;
                     break;
                 case ServerClientInterface.MOVE_DOWN:
+                    position.Y += ServerClientInterface.MOVEMENT_SPEED;
                     break;
                 case ServerClientInterface.MOVE_LEFT:
+                    position.X -= ServerClientInterface.MOVEMENT_SPEED;
                     break;
                 case ServerClientInterface.MOVE_RIGHT:
+                    position.X += ServerClientInterface.MOVEMENT_SPEED;
                     break;
                 case ServerClientInterface.MOVE_UPLEFT:
+                    position.X -= ServerClientInterface.MOVEMENT_SPEED;
+                    position.Y -= ServerClientInterface.MOVEMENT_SPEED;
                     break;
                 case ServerClientInterface.MOVE_UPRIGHT:
+                    position.X += ServerClientInterface.MOVEMENT_SPEED;
+                    position.Y -= ServerClientInterface.MOVEMENT_SPEED;
                     break;
                 case ServerClientInterface.MOVE_DOWNRIGHT:
+                    position.X += ServerClientInterface.MOVEMENT_SPEED;
+                    position.Y += ServerClientInterface.MOVEMENT_SPEED;
                     break;
                 case ServerClientInterface.MOVE_DOWNLEFT:
+                    position.X -= ServerClientInterface.MOVEMENT_SPEED;
+                    position.Y += ServerClientInterface.MOVEMENT_SPEED;
                     break;
             }
         }
@@ -166,6 +204,14 @@ namespace CStrike2D
         public void SetTeam(byte team)
         {
             CurrentTeam = ServerClientInterface.ByteToTeam(team);
+        }
+
+        public void Respawn(Vector2 location)
+        {
+            position = location;
+            State = PlayerState.Alive;
+            CurrentWeapon = Knife;
+            ResetWeapons();
         }
 
         public void Damage(int health, int armor)

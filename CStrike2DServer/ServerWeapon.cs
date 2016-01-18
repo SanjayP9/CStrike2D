@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CStrike2D;
 using Microsoft.Xna.Framework;
 
 namespace CStrike2DServer
@@ -33,7 +34,7 @@ namespace CStrike2DServer
         {
             if (Owner != null)
             {
-                
+                Position = Owner.Position;
             }
         }
 

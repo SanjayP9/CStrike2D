@@ -77,8 +77,6 @@ namespace CStrike2D
                                     // If a handshake was initialized by the server
                                     if (code == ServerClientInterface.HANDSHAKE)
                                     {
-
-
                                         // Send the server the client name and a 
                                         // request for synchronization
                                         outMsg = client.CreateMessage();
@@ -96,12 +94,13 @@ namespace CStrike2D
                                 code = msg.ReadByte();
                                 switch (code)
                                 {
-                                    case ServerClientInterface.REQUEST_SYNC:
+                                    case ServerClientInterface.HANDSHAKE_COMPLETE:
                                         // Sync the client's own player instance
                                         UniqueIdentifier = msg.ReadInt16();
+                                        engine.SyncClient(ClientName, UniqueIdentifier);
                                         break;
                                     case ServerClientInterface.SYNC_NEW_PLAYER:
-                                        
+                                        engine.SyncNewPlayer(msg.ReadString(), msg.ReadInt16());
                                         break;
                                     case ServerClientInterface.SYNC_BEGIN:
                                         // Get data of all currently connected players
@@ -113,7 +112,7 @@ namespace CStrike2D
                                             }
 
                                             engine.SyncPlayer(msg.ReadInt16(), msg.ReadString(),
-                                                msg.ReadByte(),msg.ReadInt16(), msg.ReadInt16(),
+                                                msg.ReadByte(), msg.ReadFloat(), msg.ReadFloat(),
                                                 msg.ReadFloat(), msg.ReadByte());
                                         }
                                         // The client has all data of the server, enter the game
@@ -131,6 +130,23 @@ namespace CStrike2D
                                         break;
                                     case ServerClientInterface.CHANGE_TEAM:
                                         engine.ChangeTeam(msg.ReadInt16(), msg.ReadByte());
+                                        break;
+                                    case ServerClientInterface.SYNC_MOVEMENT:
+                                        player = engine.Players.Find(ply => ply.Identifier == msg.ReadInt16());
+                                        player.SetPosition(new Vector2(msg.ReadFloat(), msg.ReadFloat()));
+                                        player.SetRotation(msg.ReadFloat());
+                                        break;
+                                    case ServerClientInterface.RESPAWN_PLAYER:
+                                        player = engine.Players.Find(ply => ply.Identifier == msg.ReadInt16());
+                                        player.Respawn(new Vector2(msg.ReadFloat(), msg.ReadFloat()));
+                                        break;
+                                    case ServerClientInterface.PLAYER_DISCONNECTED:
+                                        short id = msg.ReadInt16();
+                                        engine.Players.Remove(engine.Players.Find(ply => ply.Identifier == id));
+                                        break;
+                                    case ServerClientInterface.ROTATE_PLAYER:
+                                        engine.Players.Find(ply => ply.Identifier == msg.ReadInt16())
+                                            .SetRotation(msg.ReadFloat());
                                         break;
                                 }
                                 break;

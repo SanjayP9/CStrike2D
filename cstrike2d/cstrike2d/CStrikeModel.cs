@@ -6,6 +6,7 @@
 // Description: Handles all logic processing of the game
 using System;
 using System.Diagnostics;
+using CStrike2DServer;
 using LightEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -356,6 +357,13 @@ namespace CStrike2D
 
             InterfaceManager.AddComponent(new TextBox("scoreboardTitle", new Vector2(94, 20), "Scoreboard", Color.White, 0.4f,
                 EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Down, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new TextBox("ctTitle", new Vector2(94, 50), "Counter-Terrorists", ServerClientInterface.CT_Color,
+                0.4f,
+                EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
+
+            InterfaceManager.AddComponent(new TextBox("tTitle", new Vector2(645, 50), "Terrorists", ServerClientInterface.T_Color, 0.4f,
+                EasingFunctions.AnimationType.QuinticInOut, GUIComponent.AnimationDirection.Right, DriverInstance.Assets));
 
             InterfaceManager.FormPage("scoreboard");
 
@@ -779,63 +787,5 @@ namespace CStrike2D
             return tiles.ToArray();
         }
          */
-
-
-
-        public Point[] GetPath(Tile[,] Grid, Point curLocation, Point destLocation)
-        {
-            Point[] possibleDirections = new Point[8];
-
-
-            int g;
-            int f;
-            int h;
-            Point checkPoint = curLocation;
-            for (int i = 0; i < possibleDirections.Length; i++)
-            {
-                switch (i)
-                {
-                    case 0:
-                        checkPoint.X -= 1;
-                        break;
-                    case 1:
-                        checkPoint.Y -= 1;
-                        break;
-                    case 2:
-                        checkPoint.X += 1;
-                        checkPoint.Y -= 1;
-                        break;
-                    case 3:
-                        checkPoint.X -= 1;
-                        break;
-                    case 5:
-                        checkPoint.X += 1;
-                        break;
-                    case 6:
-                        checkPoint.X -= 1;
-                        checkPoint.Y += 1;
-                        break;
-                    case 7:
-                        checkPoint.Y += 1;
-                        break;
-                    case 8:
-                        checkPoint.X += 1;
-                        checkPoint.Y += 1;
-                        break;
-                }
-                // Direction goes from Top Left in a clockwise direction
-                if (curLocation.X == checkPoint.X ||
-                    curLocation.Y == checkPoint.Y)
-                {
-                    g = 10;
-                }
-                else
-                {
-                    g = 14;
-                }
-            }
-
-            return null;
-        }
     }
 }

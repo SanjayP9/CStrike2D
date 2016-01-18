@@ -1,9 +1,11 @@
-﻿using CStrike2D;
+﻿using System;
+using CStrike2D;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
 namespace CStrike2DServer
 {
+    [Obsolete]
     class Player
     {
         // SERVER-SIDE PLAYER ENTITY
