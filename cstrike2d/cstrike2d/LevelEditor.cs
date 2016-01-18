@@ -260,17 +260,18 @@ namespace CStrike2D
         {
             // Draws the background of the map
             sb.Draw(driver.Assets.PixelTexture, mapArea, Color.CornflowerBlue);
-
+            Vector2 screenDimensions = input.ScreenToWorld(driver.Model.Dimensions, driver.Model.Camera, driver.Model.Center);
+            Vector2 screenStart = input.ScreenToWorld(new Vector2(0, 0), driver.Model.Camera, driver.Model.Center);
             // Draws all tiles placed and the properties highlighted overthem
             for (int x = 0; x < numCols; x++)
             {
                 for (int y = 0; y < numRows; y++)
                 {
-                    if (tiles[x, y] != null //&&
-                        //(x * 32 + 32 < driver.Model.Dimensions.X &&
-                         //x * 32 > 0) &&
-                        //(y * 32 + 32 < driver.Model.Dimensions.X &&
-                         //y * 32 > 0)
+                    if (tiles[x, y] != null &&
+                        (x * 32 < screenDimensions.X - mapArea.X &&
+                         x * 32 + 32 > screenStart.X - mapArea.X) &&
+                        (y * 32 < screenDimensions.Y - mapArea.Y &&
+                         y * 32 + 32 > screenStart.Y - mapArea.Y)
                         )
                     {
                         int srcX = (int)(tiles[x, y].TileType % 8 * TILE_SIZE);
