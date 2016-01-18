@@ -16,6 +16,10 @@ namespace CStrike2D
         // Stores the tiles 
         Tile[,] tiles = new Tile[75, 50];
 
+        //
+        Tile[,] prevTiles = new Tile[75, 50];
+
+
         // Stores the selected tile of the tile set
         int selectedTile;
 
@@ -99,18 +103,22 @@ namespace CStrike2D
                 if (input.LeftHold())
                 {
                     // Set the selected tile to be in that tile position according to the mouse keeping the properties if any
-                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null &&
+                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].TileType != selectedTile)
                     {
+                        BackUp();
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetTileType(selectedTile);
                     }
-                    else
+                    else if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] == null)
                     {
+                        BackUp();
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = new Tile(selectedTile, false, false, false, false, false, false);
                     }
                 }
                 // If the right mouse button is held
-                else if (input.RightHold())
+                else if (input.RightClick())
                 {
+                    BackUp();
                     // Set the tile that the mouse is on to be empty
                     tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = null;
                 }
@@ -121,31 +129,37 @@ namespace CStrike2D
                     // 
                     if (input.Tapped(Keys.D1))
                     {
+                        BackUp();
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsPlantSpot(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot);
                     }
                     // 
                     else if (input.Tapped(Keys.D2))
                     {
+                        BackUp();
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSaveSpot(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot);
                     }
                     // 
                     else if (input.Tapped(Keys.D3))
                     {
+                        BackUp();
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSolid(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid);
                     }
                     // 
                     else if (input.Tapped(Keys.D4))
                     {
+                        BackUp();
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsCTSpawnPoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsCTSpawnPoint);
                     }
                     // 
                     else if (input.Tapped(Keys.D5))
                     {
+                        BackUp();
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsTSpawnPoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsTSpawnPoint);
                     }
                     // 
                     else if (input.Tapped(Keys.D6))
                     {
+                        BackUp();
                         tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSiteDefencePoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSiteDefencePoint);
                     }
 
@@ -209,6 +223,7 @@ namespace CStrike2D
                 }
                 else if (input.Tapped(Keys.A))
                 {
+                    BackUp();
                     for (int x = 0; x < numCols; x++)
                     {
                         for (int y = 0; y < numRows; y++)
@@ -219,7 +234,12 @@ namespace CStrike2D
                 }
                 else if (input.Tapped(Keys.Delete))
                 {
+                    BackUp();
                     tiles = new Tile[numCols, numRows];
+                }
+                else if (input.Tapped(Keys.Z))
+                {
+                    Revert();
                 }
             }
             // Move the camera left when the A key is held
@@ -256,6 +276,27 @@ namespace CStrike2D
             }
         }
 
+        public void BackUp()
+        {
+            for (int row = 0; row < numRows; row++)
+            {
+                for (int col = 0; col < numCols; col++)
+                {
+                    prevTiles[col, row] = tiles[col, row];
+                }
+            }
+        }
+        public void Revert()
+        {
+            for (int row = 0; row < numRows; row++)
+            {
+                for (int col = 0; col < numCols; col++)
+                {
+                    tiles[col, row] = prevTiles[col, row];
+                }
+            }
+        }
+
         public void DrawWorld(SpriteBatch sb)
         {
             // Draws the background of the map
@@ -284,30 +325,32 @@ namespace CStrike2D
                         destRect.Y = y*TILE_SIZE + mapArea.Y;
                         //Rectangle tileSrcRec = new Rectangle(srcX, srcY, (int)TILE_SIZE, (int)TILE_SIZE);
                         sb.Draw(driver.Assets.TileSet, destRect, srcRect, Color.White);
-
-                        if(tiles[x, y].IsPlantSpot)
+                        if (displayTileSet)
                         {
-                            sb.Draw(driver.Assets.PixelTexture, destRect, Color.Yellow * 0.5f);
-                        }
-                        if (tiles[x, y].IsSaveSpot)
-                        {
-                            sb.Draw(driver.Assets.PixelTexture, destRect, Color.Green * 0.5f);
-                        }
-                        if (tiles[x, y].IsSolid)
-                        {
-                            sb.Draw(driver.Assets.PixelTexture, destRect, Color.Red * 0.5f);
-                        }
-                        if (tiles[x, y].IsCTSpawnPoint)
-                        {
-                            sb.Draw(driver.Assets.PixelTexture, destRect, Color.Blue * 0.5f);
-                        }
-                        if (tiles[x, y].IsTSpawnPoint)
-                        {
-                            sb.Draw(driver.Assets.PixelTexture, destRect, Color.Orange * 0.5f);
-                        }
-                        if (tiles[x, y].IsSiteDefencePoint)
-                        {
-                            sb.Draw(driver.Assets.PixelTexture, destRect, Color.Purple * 0.5f);
+                            if (tiles[x, y].IsPlantSpot)
+                            {
+                                sb.Draw(driver.Assets.PixelTexture, destRect, Color.Yellow*0.5f);
+                            }
+                            if (tiles[x, y].IsSaveSpot)
+                            {
+                                sb.Draw(driver.Assets.PixelTexture, destRect, Color.Green*0.5f);
+                            }
+                            if (tiles[x, y].IsSolid)
+                            {
+                                sb.Draw(driver.Assets.PixelTexture, destRect, Color.Red*0.5f);
+                            }
+                            if (tiles[x, y].IsCTSpawnPoint)
+                            {
+                                sb.Draw(driver.Assets.PixelTexture, destRect, Color.Blue*0.5f);
+                            }
+                            if (tiles[x, y].IsTSpawnPoint)
+                            {
+                                sb.Draw(driver.Assets.PixelTexture, destRect, Color.Orange*0.5f);
+                            }
+                            if (tiles[x, y].IsSiteDefencePoint)
+                            {
+                                sb.Draw(driver.Assets.PixelTexture, destRect, Color.Purple*0.5f);
+                            }
                         }
                     }
                 }
@@ -364,9 +407,14 @@ namespace CStrike2D
             numCols = Convert.ToInt32(inFile.ReadLine());
             numRows = Convert.ToInt32(inFile.ReadLine());
 
+
+
             // Changes the placement area according to the number of columns and rows
             mapArea = new Rectangle(-200, -250, 32 * numCols, 32 * numRows);
 
+            prevTiles = new Tile[numCols, numRows];
+            BackUp();
+            
             // Initialize the number of tiles to be according the the number of columns and rows
             tiles = new Tile[numCols, numRows];
 
