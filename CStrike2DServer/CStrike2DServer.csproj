@@ -53,6 +53,9 @@
     <Compile Include="..\cstrike2d\cstrike2d\NetInterface.cs">
       <Link>NetInterface.cs</Link>
     </Compile>
+    <Compile Include="..\cstrike2d\cstrike2d\Tile.cs">
+      <Link>Tile.cs</Link>
+    </Compile>
     <Compile Include="..\cstrike2d\cstrike2d\WeaponInfo.cs">
       <Link>WeaponInfo.cs</Link>
     </Compile>

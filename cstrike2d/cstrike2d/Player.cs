@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
 {
+    [Obsolete]
     public sealed class Player : Entity
     {
         // CLIENT-SIDE PLAYER ENTITY

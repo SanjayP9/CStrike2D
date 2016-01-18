@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CStrike2DServer;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
@@ -13,12 +14,20 @@ namespace CStrike2D
         public Vector2 Position { get; private set; }
         public float Rotation { get; private set; }
 
+        public WeaponData.Weapon Weapon { get; private set; }
+
         public void FireWeapon()
         {
             if (!Fired)
             {
                 Fired = true;
             }
+        }
+
+        public ClientWeapon(WeaponData.Weapon weapon, ClientPlayer owner)
+        {
+            Owner = owner;
+            
         }
 
         public void Update(float gameTime)
@@ -38,6 +47,11 @@ namespace CStrike2D
         public void Drop()
         {
             Owner = null;
+        }
+
+        public void Pickup(ClientPlayer owner)
+        {
+            Owner = owner;
         }
 
 

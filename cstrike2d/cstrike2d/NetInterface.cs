@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace CStrike2D
 {
+    [Obsolete("NetCode Rewritten")]
     public static class NetInterface
     {
         // Server Update Rate / Tick Rate Summary
