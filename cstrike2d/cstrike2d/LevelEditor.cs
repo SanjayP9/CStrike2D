@@ -71,10 +71,23 @@ namespace CStrike2D
 
             // Reset the properties
             properties = "";
-
-            
+            // If mouse is over the tile set
+            if (input.MousePosition.X > tileSetOffset.X &&
+                input.MousePosition.X < tileSetOffset.X + tileSetOffset.Width &&
+                input.MousePosition.Y > tileSetOffset.Y &&
+                input.MousePosition.Y < tileSetOffset.Y + tileSetOffset.Height &&
+                displayTileSet)
+            {
+                // If left mouse is clicked
+                if (input.LeftClick())
+                {
+                    // Set the selected tile to be the one that they have clicked
+                    selectedTile = (int)((input.MousePosition.Y - tileSetOffset.Y) / TILE_SIZE) * TILE_SET_WIDTH +
+                                   (int)((input.MousePosition.X - tileSetOffset.X) / TILE_SIZE);
+                }
+            }
             // If the mouse is over the map region
-            if (mouseMap.X > mapArea.X &&
+            else if (mouseMap.X > mapArea.X &&
                 mouseMap.X < mapArea.X + mapArea.Width &&
                 mouseMap.Y > mapArea.Y &&
                 mouseMap.Y < mapArea.Y + mapArea.Height)
@@ -163,44 +176,6 @@ namespace CStrike2D
                     }
                 }
             }
-            if (displayTileSet)
-            {
-                // If mouse is over the tile set
-                if (input.MousePosition.X > tileSetOffset.X &&
-                        input.MousePosition.X < tileSetOffset.X + tileSetOffset.Width &&
-                        input.MousePosition.Y > tileSetOffset.Y &&
-                        input.MousePosition.Y < tileSetOffset.Y + tileSetOffset.Height)
-                {
-                    // If left mouse is clicked
-                    if (input.LeftClick())
-                    {
-                        // Set the selected tile to be the one that they have clicked
-                        selectedTile = (int)((input.MousePosition.Y - tileSetOffset.Y) / TILE_SIZE) * TILE_SET_WIDTH +
-                                       (int)((input.MousePosition.X - tileSetOffset.X) / TILE_SIZE);
-                    }
-                }
-            }
-
-            // Move the camera up when the W key is held
-            if (input.Held(Keys.W))
-            {
-                driver.Model.Camera.Position.Y -= 5;
-            }
-            // Move the camera down when the S key is held
-            else if (input.Held(Keys.S))
-            {
-                driver.Model.Camera.Position.Y += 5;
-            }
-            // Move the camera left when the A key is held
-            if (input.Held(Keys.A))
-            {
-                driver.Model.Camera.Position.X -= 5;
-            }
-            // Move the camera right when the D key is held
-            else if (input.Held(Keys.D))
-            {
-                driver.Model.Camera.Position.X += 5;
-            }
             if (input.Held(Keys.LeftControl))
             {
                 if (input.Tapped(Keys.S))
@@ -232,13 +207,40 @@ namespace CStrike2D
                 {
                     driver.Model.Camera.ResetZoom();
                 }
-            }
-            else if (input.Held(Keys.LeftShift))
-            {
-                if (input.Tapped(Keys.Delete))
+                else if (input.Tapped(Keys.A))
+                {
+                    for (int x = 0; x < numCols; x++)
+                    {
+                        for (int y = 0; y < numRows; y++)
+                        {
+                            tiles[x, y] = new Tile(selectedTile, false, false, false, false, false, false);
+                        }
+                    }
+                }
+                else if (input.Tapped(Keys.Delete))
                 {
                     tiles = new Tile[numCols, numRows];
                 }
+            }
+            // Move the camera left when the A key is held
+            else if (input.Held(Keys.A))
+            {
+                driver.Model.Camera.Position.X -= 5;
+            }
+            // Move the camera right when the D key is held
+            else if (input.Held(Keys.D))
+            {
+                driver.Model.Camera.Position.X += 5;
+            }
+            // Move the camera up when the W key is held
+            if (input.Held(Keys.W))
+            {
+                driver.Model.Camera.Position.Y -= 5;
+            }
+            // Move the camera down when the S key is held
+            else if (input.Held(Keys.S))
+            {
+                driver.Model.Camera.Position.Y += 5;
             }
             if (input.ScrollUp())
             {
@@ -264,7 +266,12 @@ namespace CStrike2D
             {
                 for (int y = 0; y < numRows; y++)
                 {
-                    if (tiles[x, y] != null)
+                    if (tiles[x, y] != null //&&
+                        //(x * 32 + 32 < driver.Model.Dimensions.X &&
+                         //x * 32 > 0) &&
+                        //(y * 32 + 32 < driver.Model.Dimensions.X &&
+                         //y * 32 > 0)
+                        )
                     {
                         int srcX = (int)(tiles[x, y].TileType % 8 * TILE_SIZE);
                         int srcY = (int)(tiles[x, y].TileType / 8 * TILE_SIZE);
@@ -334,15 +341,17 @@ namespace CStrike2D
                     }
                 }
             }
-
-            // Draws a grid line for the map each line being 1 pixel thick
-            for (int x = 0; x <= numCols; x++)
+            if (displayTileSet)
             {
-                sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(mapArea.X + x * TILE_SIZE), (int)mapArea.Y, 1, (int)mapArea.Height), Color.Black);
-            }
-            for (int y = 0; y <= numRows; y++)
-            {
-                sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)mapArea.X, (int)(mapArea.Y + y * TILE_SIZE), (int)mapArea.Width, 1), Color.Black);
+                // Draws a grid line for the map each line being 1 pixel thick
+                for (int x = 0; x <= numCols; x++)
+                {
+                    sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(mapArea.X + x * TILE_SIZE), (int)mapArea.Y, 1, (int)mapArea.Height), Color.Black);
+                }
+                for (int y = 0; y <= numRows; y++)
+                {
+                    sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)mapArea.X, (int)(mapArea.Y + y * TILE_SIZE), (int)mapArea.Width, 1), Color.Black);
+                }
             }
         }
 
