@@ -110,12 +110,15 @@ namespace CStrike2D
         public void SyncPlayer(short identifier, string username, byte team, float posX, float posY,
             float rot, byte weapon)
         {
-            ClientPlayer player = new ClientPlayer(username, identifier, assets);
+            ClientPlayer player = Players.Find(ply => ply.Identifier == identifier) ??
+                                  new ClientPlayer(username, identifier, assets);
+
             player.SetPosition(new Vector2(posX, posY));
             player.SetRotation(rot);
             player.SetCurrentWeapon(WeaponData.ByteToWeapon(weapon));
             Players.Add(player);
         }
+
 
         /// <summary>
         /// Syncs a new player that has just joined the server

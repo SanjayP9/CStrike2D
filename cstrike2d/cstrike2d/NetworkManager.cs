@@ -100,6 +100,12 @@ namespace CStrike2D
                                         engine.SyncPlayer(msg.ReadInt16(), msg.ReadString(),
                                             msg.ReadByte(), msg.ReadFloat(), msg.ReadFloat(),
                                             msg.ReadFloat(), msg.ReadByte());
+                                        
+                                        
+                                    }
+
+                                    if (code == ServerClientInterface.SYNC_COMPLETE)
+                                    {
                                         // The client has all data of the server, enter the game
                                         engine.CurState = GameEngine.GameEngineState.Active;
                                     }
