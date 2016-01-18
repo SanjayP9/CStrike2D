@@ -92,70 +92,65 @@ namespace CStrike2D
                                 break;
                             case NetState.Connected:
                                 code = msg.ReadByte();
-                                short id;
-                                switch (code)
+                                if (engine.CurState == GameEngine.GameEngineState.Loaded)
                                 {
-                                    case ServerClientInterface.HANDSHAKE_COMPLETE:
-                                        // Sync the client's own player instance
-                                        UniqueIdentifier = msg.ReadInt16();
-                                        engine.SyncClient(ClientName, UniqueIdentifier);
-                                        break;
-                                    case ServerClientInterface.SYNC_NEW_PLAYER:
-                                        engine.SyncNewPlayer(msg.ReadString(), msg.ReadInt16());
-                                        break;
-                                    case ServerClientInterface.SYNC_BEGIN:
+                                    if (code == ServerClientInterface.SYNC_CHUNK)
+                                    {
                                         // Get data of all currently connected players
-                                        while ((msg = client.ReadMessage()) != null)
-                                        {
-                                            code = msg.ReadByte();
-                                            if (code == ServerClientInterface.SYNC_COMPLETE)
-                                            {
-                                                break;
-                                            }
-
-                                            if (code == ServerClientInterface.SYNC_CHUNK)
-                                            {
-                                                engine.SyncPlayer(msg.ReadInt16(), msg.ReadString(),
-                                                    msg.ReadByte(), msg.ReadFloat(), msg.ReadFloat(),
-                                                    msg.ReadFloat(), msg.ReadByte());
-                                            }
-                                        }
+                                        engine.SyncPlayer(msg.ReadInt16(), msg.ReadString(),
+                                            msg.ReadByte(), msg.ReadFloat(), msg.ReadFloat(),
+                                            msg.ReadFloat(), msg.ReadByte());
                                         // The client has all data of the server, enter the game
                                         engine.CurState = GameEngine.GameEngineState.Active;
-                                        break;
-                                    case ServerClientInterface.MOVE_UP:
-                                    case ServerClientInterface.MOVE_DOWN:
-                                    case ServerClientInterface.MOVE_LEFT:
-                                    case ServerClientInterface.MOVE_RIGHT:
-                                    case ServerClientInterface.MOVE_UPLEFT:
-                                    case ServerClientInterface.MOVE_UPRIGHT:
-                                    case ServerClientInterface.MOVE_DOWNRIGHT:
-                                    case ServerClientInterface.MOVE_DOWNLEFT:
-                                        engine.MovePlayer(msg.ReadInt16(), code);
-                                        break;
-                                    case ServerClientInterface.CHANGE_TEAM:
-                                        engine.ChangeTeam(msg.ReadInt16(), msg.ReadByte());
-                                        break;
-                                    case ServerClientInterface.SYNC_MOVEMENT:
-                                        id = msg.ReadInt16();
-                                        player = engine.Players.Find(ply => ply.Identifier == id);
-                                        player.SetPosition(new Vector2(msg.ReadFloat(), msg.ReadFloat()));
-                                        player.SetRotation(msg.ReadFloat());
-                                        break;
-                                    case ServerClientInterface.RESPAWN_PLAYER:
-                                        id = msg.ReadInt16();
-                                        player = engine.Players.Find(ply => ply.Identifier == id);
-                                        player.Respawn(new Vector2(msg.ReadFloat(), msg.ReadFloat()));
-                                        break;
-                                    case ServerClientInterface.PLAYER_DISCONNECTED:
-                                        id = msg.ReadInt16();
-                                        engine.Players.Remove(engine.Players.Find(ply => ply.Identifier == id));
-                                        break;
-                                    case ServerClientInterface.ROTATE_PLAYER:
-                                        id = msg.ReadInt16();
-                                        engine.Players.Find(ply => ply.Identifier == id)
-                                            .SetRotation(msg.ReadFloat());
-                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    short id;
+                                    switch (code)
+                                    {
+                                        case ServerClientInterface.HANDSHAKE_COMPLETE:
+                                            // Sync the client's own player instance
+                                            UniqueIdentifier = msg.ReadInt16();
+                                            engine.SyncClient(ClientName, UniqueIdentifier);
+                                            break;
+                                        case ServerClientInterface.SYNC_NEW_PLAYER:
+                                            engine.SyncNewPlayer(msg.ReadString(), msg.ReadInt16());
+                                            break;
+                                        case ServerClientInterface.MOVE_UP:
+                                        case ServerClientInterface.MOVE_DOWN:
+                                        case ServerClientInterface.MOVE_LEFT:
+                                        case ServerClientInterface.MOVE_RIGHT:
+                                        case ServerClientInterface.MOVE_UPLEFT:
+                                        case ServerClientInterface.MOVE_UPRIGHT:
+                                        case ServerClientInterface.MOVE_DOWNRIGHT:
+                                        case ServerClientInterface.MOVE_DOWNLEFT:
+                                            engine.MovePlayer(msg.ReadInt16(), code);
+                                            break;
+                                        case ServerClientInterface.CHANGE_TEAM:
+                                            engine.ChangeTeam(msg.ReadInt16(), msg.ReadByte());
+                                            break;
+                                        case ServerClientInterface.SYNC_MOVEMENT:
+                                            id = msg.ReadInt16();
+                                            player = engine.Players.Find(ply => ply.Identifier == id);
+                                            player.SetPosition(new Vector2(msg.ReadFloat(), msg.ReadFloat()));
+                                            player.SetRotation(msg.ReadFloat());
+                                            break;
+                                        case ServerClientInterface.RESPAWN_PLAYER:
+                                            id = msg.ReadInt16();
+                                            player = engine.Players.Find(ply => ply.Identifier == id);
+                                            player.Respawn(new Vector2(msg.ReadFloat(), msg.ReadFloat()));
+                                            break;
+                                        case ServerClientInterface.PLAYER_DISCONNECTED:
+                                            id = msg.ReadInt16();
+                                            engine.Players.Remove(engine.Players.Find(ply => ply.Identifier == id));
+                                            break;
+                                        case ServerClientInterface.ROTATE_PLAYER:
+                                            id = msg.ReadInt16();
+                                            engine.Players.Find(ply => ply.Identifier == id)
+                                                .SetRotation(msg.ReadFloat());
+                                            break;
+                                    }
                                 }
                                 break;
                         }

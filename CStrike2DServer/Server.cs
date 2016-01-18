@@ -583,9 +583,6 @@ namespace CStrike2DServer
         /// <param name="client"></param>
         public static void SyncCurrentPlayers(NetConnection client)
         {
-            outMsg = server.CreateMessage();
-            outMsg.Write(ServerClientInterface.SYNC_BEGIN);
-            server.SendMessage(outMsg, client, NetDeliveryMethod.ReliableSequenced);
             foreach (ServerPlayer ply in players)
             {
                 // Send data about every player except their own player to the client
