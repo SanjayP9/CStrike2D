@@ -17,7 +17,7 @@ namespace CStrike2D
         }
         public static bool BulletToPerson(Vector2 shootingPlayer, Vector2 enemyPlayer, float shotAngle, float playerRadius)
         {
-            float enemyToPlayerA = (float)(Math.Atan2(enemyPlayer.Y - shootingPlayer.Y, enemyPlayer.X - shootingPlayer.X));
+            float enemyToPlayerA = (float)(Math.Atan2(Math.Abs(enemyPlayer.Y - shootingPlayer.Y), Math.Abs(enemyPlayer.X - shootingPlayer.X)));
             if (shotAngle < 0f)
             {
                 shotAngle = (float)Math.PI * 2f + shotAngle;
