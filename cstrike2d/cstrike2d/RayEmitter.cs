@@ -12,7 +12,7 @@ namespace CStrike2D
         const float ADJACENT_ANGLE = 0.01f;
         const float RAY_LENGTH = 1200f;//= Game1.SCREEN_WIDTH;
 
-        private RayCastModel[] rays;
+        private RayCast[] rays;
         private float angle;
 
         private Vector2[] rectVerticie;
@@ -20,11 +20,11 @@ namespace CStrike2D
 
         public RayEmitter(int numOfSolidTiles)
         {
-            rays = new RayCastModel[numOfSolidTiles * 13];
+            rays = new RayCast[numOfSolidTiles * 13];
 
             for (int i = 0; i < rays.Length; i++)
             {
-                rays[i] = new RayCastModel();
+                rays[i] = new RayCast();
             }
 
             rectVerticie = new Vector2[rays.Length];
@@ -62,7 +62,7 @@ namespace CStrike2D
 
         public void Draw(SpriteBatch sb, Texture2D pixelTexture, Texture2D circleTexture, SpriteFont font)
         {
-            foreach (RayCastModel i in rays)
+            foreach (RayCast i in rays)
             {
              //   i.View.Draw(sb, pixelTexture, circleTexture);
             }

@@ -111,8 +111,7 @@
     <Compile Include="Particle.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Polygon.cs" />
-    <Compile Include="RayCastModel.cs" />
-    <Compile Include="RayCastView.cs" />
+    <Compile Include="RayCast.cs" />
     <Compile Include="RayEmitter.cs" />
     <Compile Include="ShaderRenderer.cs" />
     <Compile Include="SoundContainer.cs" />
@@ -126,7 +125,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="CStrike2D.cs" />
-    <Compile Include="RayCast.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="CStrikeView.cs" />
   </ItemGroup>
