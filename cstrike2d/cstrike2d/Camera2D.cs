@@ -35,14 +35,14 @@ namespace CStrike2D
         {
             ZoomFactor += 0.1f;
 
-            MathHelper.Clamp(ZoomFactor, 0.1f, 2f);
+            ZoomFactor = MathHelper.Clamp(ZoomFactor, 0.1f, 2f);
         }
 
         public void DecreaseZoom()
         {
             ZoomFactor -= 0.1f;
 
-            MathHelper.Clamp(ZoomFactor, 0.1f, 2f);
+            ZoomFactor = MathHelper.Clamp(ZoomFactor, 0.1f, 2f);
         }
 
         public void ResetZoom()
