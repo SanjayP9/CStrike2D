@@ -45,6 +45,11 @@ namespace CStrike2D
             MathHelper.Clamp(ZoomFactor, 0.1f, 2f);
         }
 
+        public void ResetZoom()
+        {
+            ZoomFactor = 1.2f;
+        }
+
         public int Row()
         {
             return (int) (Position.Y/64);
