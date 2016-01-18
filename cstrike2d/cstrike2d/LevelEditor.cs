@@ -369,13 +369,13 @@ namespace CStrike2D
                 }
             }
         }
-        public void LoadFile(string fileName)
+        public void LoadFile(string filePath)
         {
             // Creates a stream reader instance of the text file
-            StreamReader inFile = File.OpenText(fileName);
+            StreamReader inFile = File.OpenText(filePath);
 
             // Count the amount of lines in the text file
-            int lineCount = File.ReadLines(fileName).Count();
+            int lineCount = File.ReadLines(filePath).Count();
 
             // Stores the data for a single line as a time
             string[] rowData;
