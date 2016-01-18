@@ -112,7 +112,7 @@ namespace CStrike2D
                                             }
 
                                             engine.SyncPlayer(msg.ReadInt16(), msg.ReadString(),
-                                                msg.ReadByte(), msg.ReadInt16(), msg.ReadInt16(),
+                                                msg.ReadByte(), msg.ReadFloat(), msg.ReadFloat(),
                                                 msg.ReadFloat(), msg.ReadByte());
                                         }
                                         // The client has all data of the server, enter the game

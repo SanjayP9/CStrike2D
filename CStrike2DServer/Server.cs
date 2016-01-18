@@ -589,7 +589,7 @@ namespace CStrike2DServer
                 // Send data about every player except their own player to the client
                 if (ply.ConnectionIdentifier != client.RemoteUniqueIdentifier)
                 {
-                    server.CreateMessage();
+                    outMsg = server.CreateMessage();
                     outMsg.Write(ply.Identifier);
                     outMsg.Write(ply.UserName);
                     outMsg.Write(ServerClientInterface.TeamToByte(ply.CurrentTeam));
@@ -784,31 +784,31 @@ namespace CStrike2DServer
                 float vectorY = 0f;
                 switch (direction)
                 {
-                    case NetInterface.MOVE_UP:
+                    case ServerClientInterface.MOVE_UP:
                         vectorY = -ServerClientInterface.MOVEMENT_SPEED;
                         break;
-                    case NetInterface.MOVE_DOWN:
+                    case ServerClientInterface.MOVE_DOWN:
                         vectorY = ServerClientInterface.MOVEMENT_SPEED;
                         break;
-                    case NetInterface.MOVE_LEFT:
+                    case ServerClientInterface.MOVE_LEFT:
                         vectorX = -ServerClientInterface.MOVEMENT_SPEED;
                         break;
-                    case NetInterface.MOVE_RIGHT:
+                    case ServerClientInterface.MOVE_RIGHT:
                         vectorX = ServerClientInterface.MOVEMENT_SPEED;
                         break;
-                    case NetInterface.MOVE_UPRIGHT:
+                    case ServerClientInterface.MOVE_UPRIGHT:
                         vectorX = ServerClientInterface.MOVEMENT_SPEED;
                         vectorY = -ServerClientInterface.MOVEMENT_SPEED;
                         break;
-                    case NetInterface.MOVE_DOWNRIGHT:
+                    case ServerClientInterface.MOVE_DOWNRIGHT:
                         vectorX = ServerClientInterface.MOVEMENT_SPEED;
                         vectorY = ServerClientInterface.MOVEMENT_SPEED;
                         break;
-                    case NetInterface.MOVE_DOWNLEFT:
+                    case ServerClientInterface.MOVE_DOWNLEFT:
                         vectorX = -ServerClientInterface.MOVEMENT_SPEED;
                         vectorY = ServerClientInterface.MOVEMENT_SPEED;
                         break;
-                    case NetInterface.MOVE_UPLEFT:
+                    case ServerClientInterface.MOVE_UPLEFT:
                         vectorX = -ServerClientInterface.MOVEMENT_SPEED;
                         vectorY = -ServerClientInterface.MOVEMENT_SPEED;
                         break;
