@@ -96,6 +96,7 @@
     <Compile Include="ClientWeapon.cs" />
     <Compile Include="Console.cs" />
     <Compile Include="CStrikeModel.cs" />
+    <Compile Include="DemoPlayer.cs" />
     <Compile Include="EasingFunctions.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="GameEngine.cs" />

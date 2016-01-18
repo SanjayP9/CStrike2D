@@ -60,6 +60,7 @@
       <Link>WeaponInfo.cs</Link>
     </Compile>
     <Compile Include="Collision.cs" />
+    <Compile Include="DemoRecorder.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

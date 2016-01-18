@@ -58,6 +58,7 @@ namespace CStrike2DServer
         private static int numRows;
         private static Rectangle mapArea;
         private static Tile[,] tiles;
+        private static DemoRecorder recorder;
 
         enum RoundState
         {
@@ -65,6 +66,11 @@ namespace CStrike2DServer
             Buytime,
             Play,
             AfterRound
+        }
+
+        public static List<ServerPlayer> RetrievePlayers()
+        {
+            return players;
         }
 
         static void Main(string[] args)
@@ -95,6 +101,7 @@ namespace CStrike2DServer
              */
 
             Vector2 defSpawnPosition = new Vector2(350, 350);
+            recorder = new DemoRecorder();
 
             Stopwatch updateTimer = new Stopwatch();
             Stopwatch netUpdateTimer = new Stopwatch();
@@ -123,6 +130,7 @@ namespace CStrike2DServer
             Console.WriteLine("Server is live.");
             Thread.Sleep(1000);
 
+            recorder.StartRecording(mapName);
             updateTimer.Start();
             netUpdateTimer.Start();
             while (server.Status == NetPeerStatus.Running)
@@ -131,9 +139,21 @@ namespace CStrike2DServer
                 Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop);
                 Console.WriteLine("Players " + numPlayers + "/" + maxPlayers);
 
+                if (Console.KeyAvailable)
+                {
+                    ConsoleKeyInfo key = Console.ReadKey();
+
+                    if (key.Key == ConsoleKey.Escape)
+                    {
+                        recorder.EndRecording();
+                        return;
+                    }
+                }
+
                 if (updateTimer.Elapsed.TotalMilliseconds > UPDATE_RATE)
                 {
                     Simulate();
+                    recorder.Update();
                     updateTimer.Restart();
                 }
 
