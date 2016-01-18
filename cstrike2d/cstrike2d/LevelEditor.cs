@@ -20,7 +20,7 @@ namespace CStrike2D
         int selectedTile;
 
         // Stores the constants of the tile size and the width/height of the tile set
-        const float TILE_SIZE = 32;
+        const int TILE_SIZE = 32;
         const int TILE_SET_WIDTH = 8;
         const int TILES_SET_HEIGHT = 10;
 
@@ -262,6 +262,10 @@ namespace CStrike2D
             sb.Draw(driver.Assets.PixelTexture, mapArea, Color.CornflowerBlue);
             Vector2 screenDimensions = input.ScreenToWorld(driver.Model.Dimensions, driver.Model.Camera, driver.Model.Center);
             Vector2 screenStart = input.ScreenToWorld(new Vector2(0, 0), driver.Model.Camera, driver.Model.Center);
+
+            Rectangle destRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
+            Rectangle srcRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
+
             // Draws all tiles placed and the properties highlighted overthem
             for (int x = 0; x < numCols; x++)
             {
@@ -274,70 +278,36 @@ namespace CStrike2D
                          y * 32 + 32 > screenStart.Y - mapArea.Y)
                         )
                     {
-                        int srcX = (int)(tiles[x, y].TileType % 8 * TILE_SIZE);
-                        int srcY = (int)(tiles[x, y].TileType / 8 * TILE_SIZE);
-                        Rectangle tileSrcRec = new Rectangle(srcX, srcY, (int)TILE_SIZE, (int)TILE_SIZE);
-
-                        sb.Draw(driver.Assets.TileSet, new Rectangle((int)(x * TILE_SIZE + mapArea.X),
-                                                                     (int)(y * TILE_SIZE + mapArea.Y),
-                                                                     (int)TILE_SIZE,
-                                                                     (int)TILE_SIZE),
-                                                                     tileSrcRec,
-                                                                     Color.White);
+                        srcRect.X = (tiles[x, y].TileType % 8 * TILE_SIZE);
+                        srcRect.Y = (tiles[x, y].TileType / 8 * TILE_SIZE);
+                        destRect.X = x*TILE_SIZE + mapArea.X;
+                        destRect.Y = y*TILE_SIZE + mapArea.Y;
+                        //Rectangle tileSrcRec = new Rectangle(srcX, srcY, (int)TILE_SIZE, (int)TILE_SIZE);
+                        sb.Draw(driver.Assets.TileSet, destRect, srcRect, Color.White);
 
                         if(tiles[x, y].IsPlantSpot)
                         {
-                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * TILE_SIZE + mapArea.X),
-                                                                     (int)(y * TILE_SIZE + mapArea.Y),
-                                                                     (int)TILE_SIZE,
-                                                                     (int)TILE_SIZE),
-                                                                     new Rectangle(0, 0, 32, 32),
-                                                                     Color.Yellow * 0.5f);
+                            sb.Draw(driver.Assets.PixelTexture, destRect, Color.Yellow * 0.5f);
                         }
                         if (tiles[x, y].IsSaveSpot)
                         {
-                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * TILE_SIZE + mapArea.X),
-                                                                     (int)(y * TILE_SIZE + mapArea.Y),
-                                                                     (int)TILE_SIZE,
-                                                                     (int)TILE_SIZE),
-                                                                     new Rectangle(0, 0, 32, 32),
-                                                                     Color.Green * 0.5f);
+                            sb.Draw(driver.Assets.PixelTexture, destRect, Color.Green * 0.5f);
                         }
                         if (tiles[x, y].IsSolid)
                         {
-                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * TILE_SIZE + mapArea.X),
-                                                                     (int)(y * TILE_SIZE + mapArea.Y),
-                                                                     (int)TILE_SIZE,
-                                                                     (int)TILE_SIZE),
-                                                                     new Rectangle(0, 0, 32, 32),
-                                                                     Color.Red * 0.5f);
+                            sb.Draw(driver.Assets.PixelTexture, destRect, Color.Red * 0.5f);
                         }
                         if (tiles[x, y].IsCTSpawnPoint)
                         {
-                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * TILE_SIZE + mapArea.X),
-                                                                     (int)(y * TILE_SIZE + mapArea.Y),
-                                                                     (int)TILE_SIZE,
-                                                                     (int)TILE_SIZE),
-                                                                     new Rectangle(0, 0, 32, 32),
-                                                                     Color.Blue * 0.5f);
+                            sb.Draw(driver.Assets.PixelTexture, destRect, Color.Blue * 0.5f);
                         }
                         if (tiles[x, y].IsTSpawnPoint)
                         {
-                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * TILE_SIZE + mapArea.X),
-                                                                     (int)(y * TILE_SIZE + mapArea.Y),
-                                                                     (int)TILE_SIZE,
-                                                                     (int)TILE_SIZE),
-                                                                     new Rectangle(0, 0, 32, 32),
-                                                                     Color.Orange * 0.5f);
+                            sb.Draw(driver.Assets.PixelTexture, destRect, Color.Orange * 0.5f);
                         }
                         if (tiles[x, y].IsSiteDefencePoint)
                         {
-                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(x * TILE_SIZE + mapArea.X),
-                                                                     (int)(y * TILE_SIZE + mapArea.Y),
-                                                                     (int)TILE_SIZE,
-                                                                     (int)TILE_SIZE),
-                                                                     new Rectangle(0, 0, 32, 32),
-                                                                     Color.Purple * 0.5f);
+                            sb.Draw(driver.Assets.PixelTexture, destRect, Color.Purple * 0.5f);
                         }
                     }
                 }
