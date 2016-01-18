@@ -139,11 +139,11 @@ namespace CStrike2D
                     // Add the specified properties to the properties string if that property is true
                     if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot)
                     {
-                        properties += "Plant, ";
+                        properties += "Plant Spot, ";
                     }
                     if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot)
                     {
-                        properties += "Save, ";
+                        properties += "Save Spot, ";
                     }
                     if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid)
                     {
@@ -151,15 +151,15 @@ namespace CStrike2D
                     }
                     if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsCTSpawnPoint)
                     {
-                        properties += "CT, ";
+                        properties += "CT Spawn Point, ";
                     }
                     if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsTSpawnPoint)
                     {
-                        properties += "T, ";
+                        properties += "T Spawn Point, ";
                     }
                     if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSiteDefencePoint)
                     {
-                        properties += "Defence ";
+                        properties += "Defence Point ";
                     }
                 }
             }
