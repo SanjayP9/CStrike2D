@@ -154,11 +154,11 @@ namespace CStrike2D
             }
             if (input.Tapped(Keys.Enter))
             {
-                SaveFile("world.txt");
+                SaveFile("de_cache.txt");
             }
             if (input.Tapped(Keys.L))
             {
-                LoadFile("world.txt");
+                LoadFile("de_cache.txt");
             }
         }
 
@@ -191,7 +191,7 @@ namespace CStrike2D
                                                                      (int)tileSize,
                                                                      (int)tileSize),
                                                                      new Rectangle(0, 0, 32, 32),
-                                                                     Color.Red * 0.5f);
+                                                                     Color.Yellow * 0.5f);
                         }
                         if (tiles[x, y].IsSaveSpot)
                         {
@@ -200,7 +200,7 @@ namespace CStrike2D
                                                                      (int)tileSize,
                                                                      (int)tileSize),
                                                                      new Rectangle(0, 0, 32, 32),
-                                                                     Color.Yellow * 0.5f);
+                                                                     Color.Green * 0.5f);
                         }
                         if (tiles[x, y].IsSolid)
                         {
@@ -209,7 +209,7 @@ namespace CStrike2D
                                                                      (int)tileSize,
                                                                      (int)tileSize),
                                                                      new Rectangle(0, 0, 32, 32),
-                                                                     Color.Blue * 0.5f);
+                                                                     Color.Red * 0.5f);
                         }
                         if (tiles[x, y].IsCTSpawnPoint)
                         {
@@ -218,7 +218,7 @@ namespace CStrike2D
                                                                      (int)tileSize,
                                                                      (int)tileSize),
                                                                      new Rectangle(0, 0, 32, 32),
-                                                                     Color.Brown * 0.5f);
+                                                                     Color.Blue * 0.5f);
                         }
                         if (tiles[x, y].IsTSpawnPoint)
                         {
@@ -227,7 +227,7 @@ namespace CStrike2D
                                                                      (int)tileSize,
                                                                      (int)tileSize),
                                                                      new Rectangle(0, 0, 32, 32),
-                                                                     Color.Green * 0.5f);
+                                                                     Color.Orange * 0.5f);
                         }
                         if (tiles[x, y].IsSiteDefencePoint)
                         {
