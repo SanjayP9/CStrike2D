@@ -13,13 +13,23 @@ namespace CStrike2D
         // Used to store the point of interseciton after the raycast is complete
         public Vector2 CollisionPos { get; private set; }
 
-        // 
+        // Stores the Vector2 point where the ray is emitted from
         private Vector2 emitPos;
-        private Vector2 directionVect;
-        private  float rayLength;
-        private  float angle;
-        private RayCastResult rayCastLine;
 
+        // Stores direction vector
+        private Vector2 directionVect;
+
+        // records the length of the ray. From emitPos to CollisionPos
+        private  float rayLength;
+
+        // Stores the angle of the ray
+        private  float angle;
+
+        // Stores an instance of raycast ressult which is used to
+        // store the isColliding bool and the collsion point
+        public RayCastResult RayCastLine { get; private set; }
+
+        // Controls color of the ray line
         public Color RayColor;
 
         /// <summary>
@@ -27,13 +37,24 @@ namespace CStrike2D
         /// </summary>
         public RayCast()
         {
-            rayCastLine = new RayCastResult();
+            RayCastLine = new RayCastResult();
         }
 
+        /// <summary>
+        /// Runs update logic for a raycast
+        /// </summary>
+        /// <param name="emitPos"> Passes through ray emit vector </param>
+        /// <param name="directionVect"> passes throguh direction vector for the ray </param>
+        /// <param name="rayLineLength"> Passes through the max length of the ray </param>
+        /// <param name="tiles"> Passes through the tiles on the map </param>
+        /// <param name="angle"> Passes through the angle of the ray </param>
         public void Update(Vector2 emitPos, Vector2 directionVect, float rayLineLength, Tile[,] tiles, float angle)
         {
-            rayCastLine = RayCastMethod(emitPos, directionVect, rayLineLength, tiles, angle);
-            CollisionPos = rayCastLine.CollisionPos;
+            // Runs raycast method for and stores the returned result in RayCastLine
+            RayCastLine = RayCastMethod(emitPos, directionVect, rayLineLength, tiles, angle);
+            
+            //
+            CollisionPos = RayCastLine.CollisionPos;
 
             if (GetRayLength() > 400f)
             {
@@ -50,16 +71,17 @@ namespace CStrike2D
         }
 
         /// <summary>
-        /// 
+        /// This method returns the the collision point and a bool stating whether a collision has been found
         /// </summary>
-        /// <param name="emitPos"></param>
-        /// <param name="directionVect"></param>
-        /// <param name="rayLineLength"></param>
-        /// <param name="tiles"></param>
-        /// <param name="angle"></param>
+        /// <param name="emitPos"> Passes through the ray emitter vector </param>
+        /// <param name="directionVect"> specifies the direction vector of the ray </param>
+        /// <param name="rayLineLength"> Passes through the max ray length </param>
+        /// <param name="tiles"> Passes through the map tiles </param>
+        /// <param name="angle"> Passes through the angle of the ray </param>
         /// <returns></returns>
         public RayCastResult RayCastMethod(Vector2 emitPos, Vector2 directionVect, float rayLineLength, Tile[,] tiles, float angle)
         {
+            // Sets global variables to variables
             this.emitPos = emitPos;
             this.directionVect = directionVect;
             this.rayLength = rayLineLength;
@@ -248,7 +270,7 @@ namespace CStrike2D
         /// <returns></returns>
         public float GetRayLength()
         {
-            return (rayCastLine.CollisionPos - emitPos).Length();
+            return (RayCastLine.CollisionPos - emitPos).Length();
         }
 
         /// <summary>
