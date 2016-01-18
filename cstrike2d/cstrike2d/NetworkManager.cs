@@ -106,14 +106,18 @@ namespace CStrike2D
                                         // Get data of all currently connected players
                                         while ((msg = client.ReadMessage()) != null)
                                         {
-                                            if (msg.ReadByte() == ServerClientInterface.SYNC_COMPLETE)
+                                            code = msg.ReadByte();
+                                            if (code == ServerClientInterface.SYNC_COMPLETE)
                                             {
                                                 break;
                                             }
 
-                                            engine.SyncPlayer(msg.ReadInt16(), msg.ReadString(),
-                                                msg.ReadByte(), msg.ReadFloat(), msg.ReadFloat(),
-                                                msg.ReadFloat(), msg.ReadByte());
+                                            if (code == ServerClientInterface.SYNC_CHUNK)
+                                            {
+                                                engine.SyncPlayer(msg.ReadInt16(), msg.ReadString(),
+                                                    msg.ReadByte(), msg.ReadFloat(), msg.ReadFloat(),
+                                                    msg.ReadFloat(), msg.ReadByte());
+                                            }
                                         }
                                         // The client has all data of the server, enter the game
                                         engine.CurState = GameEngine.GameEngineState.Active;
