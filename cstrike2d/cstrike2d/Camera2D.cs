@@ -39,10 +39,10 @@ namespace CStrike2D
             }
             else
             {
-                ZoomFactor += 0.5f;
+                ZoomFactor += 0.05f;
             }
 
-            ZoomFactor = MathHelper.Clamp(ZoomFactor, 0.5f, 2f);
+            ZoomFactor = MathHelper.Clamp(ZoomFactor, 0.05f, 2f);
         }
 
         public void DecreaseZoom()
@@ -53,10 +53,10 @@ namespace CStrike2D
             }
             else
             {
-                ZoomFactor -= 0.5f;
+                ZoomFactor -= 0.05f;
             }
 
-            ZoomFactor = MathHelper.Clamp(ZoomFactor, 0.5f, 2f);
+            ZoomFactor = MathHelper.Clamp(ZoomFactor, 0.05f, 2f);
         }
 
         public void ResetZoom()
