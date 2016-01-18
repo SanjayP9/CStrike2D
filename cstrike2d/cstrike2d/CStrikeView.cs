@@ -153,7 +153,8 @@ namespace CStrike2D
 
                     break;
                 case CStrikeModel.State.LevelEditor:
-                    sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, null, model.Camera.GetTransform(model.DriverInstance.GraphicsDevice));
+                    sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, cullableRasterizer, null, model.Camera.GetTransform(model.DriverInstance.GraphicsDevice));
+                    sb.GraphicsDevice.ScissorRectangle = new Rectangle(0, 0, 1280, 720);
                     model.Editor.DrawWorld(sb);
                     sb.End();
 
