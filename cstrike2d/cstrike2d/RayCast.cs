@@ -9,7 +9,6 @@ namespace CStrike2D
 {
     class RayCast
     {
-        //Newest Version
 
         // Used to store the point of interseciton after the raycast is complete
         public Vector2 CollisionPos { get; private set; }
@@ -260,6 +259,7 @@ namespace CStrike2D
         /// <param name="circleTexture"></param>
         public void Draw(SpriteBatch sb, Texture2D pixelTexture, Texture2D circleTexture)
         {
+            // Draws the ray with a 1x1 texture with the given angle as the rotation
             sb.Draw(pixelTexture,
                     new Rectangle((int)emitPos.X, (int)emitPos.Y, (int)GetRayLength(), 2),
                     null,
