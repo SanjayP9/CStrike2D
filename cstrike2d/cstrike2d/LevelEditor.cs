@@ -50,7 +50,7 @@ namespace CStrike2D
         {
             // Holds the mouse position according to the world
             mouseWorld = input.ScreenToWorld(input.MousePosition, driver.Model.Camera, driver.Model.Center);
-            LoadFile("de_cache.txt");
+            //LoadFile("de_cache.txt");
 
             // If left mouse is clicked
             if (input.LeftClick())
@@ -154,7 +154,11 @@ namespace CStrike2D
             }
             if (input.Tapped(Keys.Enter))
             {
-                SaveFile("de_cache.txt");
+                SaveFile("world.txt");
+            }
+            if (input.Tapped(Keys.L))
+            {
+                LoadFile("world.txt");
             }
         }
 
@@ -239,11 +243,11 @@ namespace CStrike2D
             }
 
             // Draws a grid line for the map each line being 1 pixel thick
-            for (int x = 0; x <= numRows; x++)
+            for (int x = 0; x <= numCols; x++)
             {
                 sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(placementArea.X + x * tileSize), (int)placementArea.Y, 1, (int)placementArea.Height), Color.Black);
             }
-            for (int y = 0; y <= numCols; y++)
+            for (int y = 0; y <= numRows; y++)
             {
                 sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)placementArea.X, (int)(placementArea.Y + y * tileSize), (int)placementArea.Width, 1), Color.Black);
             }
@@ -251,7 +255,7 @@ namespace CStrike2D
 
         public void DrawUI(SpriteBatch sb)
         {
-            sb.DrawString(driver.Assets.DefaultFont, "" + input.ScreenToWorld(input.MousePosition, driver.Model.Camera, driver.Model.Center), new Vector2(100, 0), Color.White);
+            sb.DrawString(driver.Assets.DefaultFont, "" + Math.Floor(placedTilePos.X) + "|" + Math.Floor(placedTilePos.Y), new Vector2(100, 0), Color.White);
             sb.DrawString(driver.Assets.DefaultFont, "" + selectedTile, new Vector2(0, 0), Color.White);
 
             // Draw the tile set
@@ -349,7 +353,7 @@ namespace CStrike2D
                         }
 
                         // Initialize each property of the tile
-                        tiles[cols, rows] = new Tile(Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 6)), isSaveSpot, isPlantSpot, isSolid, isCTSpawnPoint, isTSpawnPoint, isSiteDefencePoint);
+                        tiles[cols, rows] = new Tile(Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 6)), isPlantSpot, isSaveSpot, isSolid, isCTSpawnPoint, isTSpawnPoint, isSiteDefencePoint);
                     }
                 }
             }
@@ -398,7 +402,7 @@ namespace CStrike2D
                         }
                         if (tiles[cols, rows].IsSolid)
                         {
-                            outFile.Write("0");
+                            outFile.Write("1");
                         }
                         else
                         {
