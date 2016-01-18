@@ -153,6 +153,19 @@ namespace CStrike2D
                    mouseState.RightButton == ButtonState.Pressed;
         }
 
+
+        public bool MiddleClick()
+        {
+            return prevMouseState.MiddleButton == ButtonState.Pressed &&
+                   mouseState.MiddleButton == ButtonState.Released;
+        }
+
+        public bool MiddleClickImmediate()
+        {
+            return prevMouseState.MiddleButton == ButtonState.Released &&
+                   mouseState.MiddleButton == ButtonState.Pressed;
+        }
+
         public float MouseRotation(Camera2D origin)
         {
             Vector2 delta = MousePosition - Vector2.Transform(origin.Position, origin.Transform);
@@ -173,7 +186,7 @@ namespace CStrike2D
 
         public Vector2 ScreenToWorld(Vector2 vector, Camera2D origin, Vector2 center)
         {
-            return (((vector - center) / 1.2f) + origin.Position);
+            return (((vector - center) / origin.ZoomFactor) + origin.Position);
         }
 
         public int GetRow(Camera2D origin, Vector2 center)

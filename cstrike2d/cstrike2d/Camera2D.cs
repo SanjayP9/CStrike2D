@@ -13,20 +13,36 @@ namespace CStrike2D
     {
         public Matrix Transform { get; private set; }
         public Vector2 Position;
+        public float ZoomFactor { get; private set; }
 
         public Camera2D()
         {
             Position = Vector2.Zero;
+            ZoomFactor = 1.2f;
         }
 
         public Matrix GetTransform(GraphicsDevice graphics)
         {
             Transform = Matrix.CreateTranslation(new Vector3(-Position.X, -Position.Y, 0))*
                      Matrix.CreateRotationX(0)*
-                     Matrix.CreateScale(new Vector3(1.2f, 1.2f, 0))*
+                     Matrix.CreateScale(new Vector3(ZoomFactor, ZoomFactor, 0))*
                      Matrix.CreateTranslation(new Vector3(graphics.Viewport.Width*0.5f, graphics.Viewport.Height*0.5f, 0));
 
             return Transform;
+        }
+
+        public void IncreaseZoom()
+        {
+            ZoomFactor += 0.1f;
+
+            MathHelper.Clamp(ZoomFactor, 0.1f, 2f);
+        }
+
+        public void DecreaseZoom()
+        {
+            ZoomFactor -= 0.1f;
+
+            MathHelper.Clamp(ZoomFactor, 0.1f, 2f);
         }
 
         public int Row()
