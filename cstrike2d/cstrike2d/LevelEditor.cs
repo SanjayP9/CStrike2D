@@ -206,6 +206,7 @@ namespace CStrike2D
 
         public void DrawWorld(SpriteBatch sb)
         {
+            // Draws the background of the map
             sb.Draw(driver.Assets.PixelTexture, mapArea, Color.CornflowerBlue);
 
             // Draws all tiles placed and the properties highlighted overthem
@@ -317,7 +318,7 @@ namespace CStrike2D
         }
         public void LoadFile(string fileName)
         {
-            // 
+            // Creates a stream reader instance of the text file
             StreamReader inFile = File.OpenText(fileName);
 
             // Count the amount of lines in the text file
@@ -410,7 +411,7 @@ namespace CStrike2D
         }
         private void SaveFile(string fileName)
         {
-            //
+            // Creates a stream writer instance of the text file
             StreamWriter outFile = File.CreateText(fileName);
 
             // Write the number of columns in a line

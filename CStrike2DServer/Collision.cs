@@ -92,24 +92,32 @@ namespace CStrike2D
             // If a P.O.I is not within the rectangle return false
             return false;
         }
-        
+
         public static bool CircleToRectangle(Vector2 circle, Rectangle rect, float radius)
         {
+            // Sets the rectangle x and y coordinates to be the centre of the rectangle
+            rect.X += rect.Width / 2;
+            rect.Y += rect.Height / 2;
+
+            // Finds the distance between the centre of the circle and the centre of the rectangle
             Vector2 circleDistance = new Vector2(Math.Abs(circle.X - rect.X), Math.Abs(circle.Y - rect.Y));
 
-            if (circleDistance.X > (rect.Width * 0.5f + radius) || circleDistance.Y > (rect.Height * 0.5f + radius)) 
+            // If the circle is far enough away from the rectangle return false
+            if (circleDistance.X > (rect.Width * 0.5f + radius) || circleDistance.Y > (rect.Height * 0.5f + radius))
             {
-                return false; 
+                return false;
             }
 
-            if (circleDistance.X <= (rect.Width * 0.5f) || circleDistance.Y <= (rect.Height * 0.5f)) 
+            // If the circle is close enough for a garanteed intersection return true
+            if (circleDistance.X <= (rect.Width * 0.5f) || circleDistance.Y <= (rect.Height * 0.5f))
             {
-                return true; 
+                return true;
             }
 
+            // Check to see if the circle intersects to corner of the rectangle by checking to see if the distance
+            // from the centre of the circle to the corner is less than or equal to the radius
             float cornerDistance_sq = (circleDistance.X - rect.Width / 2) * (circleDistance.X - rect.Width / 2) +
                                       (circleDistance.Y - rect.Height / 2) * (circleDistance.Y - rect.Height / 2);
-
             return (cornerDistance_sq <= (radius * radius));
         }
     }
