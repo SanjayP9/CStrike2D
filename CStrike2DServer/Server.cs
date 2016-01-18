@@ -506,6 +506,8 @@ namespace CStrike2DServer
 
                                 // Sync the new player with everyone else on the server
                                 SyncNewPlayer(player);
+
+                                // Send data about everyone else to the new player
                                 SyncCurrentPlayers(msg.SenderConnection);
 
                                 Console.WriteLine("\"" + username + "\" has joined the server");
