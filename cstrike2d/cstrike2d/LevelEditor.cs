@@ -61,219 +61,239 @@ namespace CStrike2D
         // Stores the map area
         Rectangle mapArea = new Rectangle(-225, -250, 2400, 1600);
 
+        public enum EditorStates
+        {
+            Edit,
+            ShowHotkeys
+        };
+
+        private EditorStates currentState = EditorStates.Edit;
+
         public LevelEditor(CStrikeModel model)
         {
             driver = model.DriverInstance;
             input = model.Input;
             audio = model.AudioManager;
         }
-
+        
         public void Update(float gameTime)
         {
-            // Holds the mouse position according to the world
-            mouseMap = input.ScreenToWorld(input.MousePosition, driver.Model.Camera, driver.Model.Center);
-
-            // Reset the properties
-            properties = "";
-            // If mouse is over the tile set
-            if (input.MousePosition.X > tileSetOffset.X &&
-                input.MousePosition.X < tileSetOffset.X + tileSetOffset.Width &&
-                input.MousePosition.Y > tileSetOffset.Y &&
-                input.MousePosition.Y < tileSetOffset.Y + tileSetOffset.Height &&
-                displayTileSet)
+            switch (currentState)
             {
-                // If left mouse is clicked
-                if (input.LeftClick())
-                {
-                    // Set the selected tile to be the one that they have clicked
-                    selectedTile = (int)((input.MousePosition.Y - tileSetOffset.Y) / TILE_SIZE) * TILE_SET_WIDTH +
-                                   (int)((input.MousePosition.X - tileSetOffset.X) / TILE_SIZE);
-                }
-            }
-            // If the mouse is over the map region
-            else if (mouseMap.X > mapArea.X &&
-                mouseMap.X < mapArea.X + mapArea.Width &&
-                mouseMap.Y > mapArea.Y &&
-                mouseMap.Y < mapArea.Y + mapArea.Height)
-            {
-                // Find the tile the mouse is on
-                placedTilePos = new Vector2(((mouseMap.X - mapArea.X) / TILE_SIZE), (mouseMap.Y - mapArea.Y) / TILE_SIZE);
+                case EditorStates.Edit:
 
-                // If the left mouse button is held
-                if (input.LeftHold())
-                {
-                    // Set the selected tile to be in that tile position according to the mouse keeping the properties if any
-                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null &&
-                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].TileType != selectedTile)
-                    {
-                        BackUp();
-                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetTileType(selectedTile);
-                    }
-                    else if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] == null)
-                    {
-                        BackUp();
-                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = new Tile(selectedTile, false, false, false, false, false, false);
-                    }
-                }
-                // If the right mouse button is held
-                else if (input.RightClick())
-                {
-                    BackUp();
-                    // Set the tile that the mouse is on to be empty
-                    tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = null;
-                }
+                    // Holds the mouse position according to the world
+                    mouseMap = input.ScreenToWorld(input.MousePosition, driver.Model.Camera, driver.Model.Center);
 
-                // If the tile the mouse is on is not null
-                if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
-                {
-                    // 
-                    if (input.Tapped(Keys.D1))
+                    // Reset the properties
+                    properties = "";
+                    // If mouse is over the tile set
+                    if (input.MousePosition.X > tileSetOffset.X &&
+                        input.MousePosition.X < tileSetOffset.X + tileSetOffset.Width &&
+                        input.MousePosition.Y > tileSetOffset.Y &&
+                        input.MousePosition.Y < tileSetOffset.Y + tileSetOffset.Height &&
+                        displayTileSet)
                     {
-                        BackUp();
-                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsPlantSpot(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot);
-                    }
-                    // 
-                    else if (input.Tapped(Keys.D2))
-                    {
-                        BackUp();
-                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSaveSpot(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot);
-                    }
-                    // 
-                    else if (input.Tapped(Keys.D3))
-                    {
-                        BackUp();
-                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSolid(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid);
-                    }
-                    // 
-                    else if (input.Tapped(Keys.D4))
-                    {
-                        BackUp();
-                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsCTSpawnPoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsCTSpawnPoint);
-                    }
-                    // 
-                    else if (input.Tapped(Keys.D5))
-                    {
-                        BackUp();
-                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsTSpawnPoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsTSpawnPoint);
-                    }
-                    // 
-                    else if (input.Tapped(Keys.D6))
-                    {
-                        BackUp();
-                        tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSiteDefencePoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSiteDefencePoint);
-                    }
-
-                    // Add the specified properties to the properties string if that property is true
-                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot)
-                    {
-                        properties += "Plant Spot, ";
-                    }
-                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot)
-                    {
-                        properties += "Save Spot, ";
-                    }
-                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid)
-                    {
-                        properties += "Collidable, ";
-                    }
-                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsCTSpawnPoint)
-                    {
-                        properties += "CT Spawn Point, ";
-                    }
-                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsTSpawnPoint)
-                    {
-                        properties += "T Spawn Point, ";
-                    }
-                    if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSiteDefencePoint)
-                    {
-                        properties += "Defence Point ";
-                    }
-                }
-            }
-            if (input.Held(Keys.LeftControl))
-            {
-                if (input.Tapped(Keys.S))
-                {
-                    SaveFileDialog saveDialog = new SaveFileDialog();
-                    saveDialog.Filter = "Map Files (.txt)|*.txt";
-                    saveDialog.FilterIndex = 1;
-
-                    DialogResult result = saveDialog.ShowDialog();
-                    if (result == DialogResult.OK)
-                    {
-                        SaveFile(saveDialog.FileName);
-                    }
-                }
-                else if (input.Tapped(Keys.O))
-                {
-                    OpenFileDialog openDialog = new OpenFileDialog();
-                    openDialog.Filter = "Map Files (.txt)|*.txt";
-                    openDialog.FilterIndex = 1;
-                    openDialog.Multiselect = false;
-
-                    DialogResult result = openDialog.ShowDialog();
-                    if (result == DialogResult.OK)
-                    {
-                        LoadFile(openDialog.FileName);
-                    }
-                }
-                else if (input.Tapped(Keys.D0))
-                {
-                    driver.Model.Camera.ResetZoom();
-                }
-                else if (input.Tapped(Keys.A))
-                {
-                    BackUp();
-                    for (int x = 0; x < numCols; x++)
-                    {
-                        for (int y = 0; y < numRows; y++)
+                        // If left mouse is clicked
+                        if (input.LeftClick())
                         {
-                            tiles[x, y] = new Tile(selectedTile, false, false, false, false, false, false);
+                            // Set the selected tile to be the one that they have clicked
+                            selectedTile = (int)((input.MousePosition.Y - tileSetOffset.Y) / TILE_SIZE) * TILE_SET_WIDTH +
+                                           (int)((input.MousePosition.X - tileSetOffset.X) / TILE_SIZE);
                         }
                     }
-                }
-                else if (input.Tapped(Keys.Delete))
-                {
-                    BackUp();
-                    tiles = new Tile[numCols, numRows];
-                }
-                else if (input.Tapped(Keys.Z))
-                {
-                    Revert();
-                }
+                    // If the mouse is over the map region
+                    else if (mouseMap.X > mapArea.X &&
+                        mouseMap.X < mapArea.X + mapArea.Width &&
+                        mouseMap.Y > mapArea.Y &&
+                        mouseMap.Y < mapArea.Y + mapArea.Height)
+                    {
+                        // Find the tile the mouse is on
+                        placedTilePos = new Vector2(((mouseMap.X - mapArea.X) / TILE_SIZE), (mouseMap.Y - mapArea.Y) / TILE_SIZE);
+
+                        // If the left mouse button is held
+                        if (input.LeftHold())
+                        {
+                            // Set the selected tile to be in that tile position according to the mouse keeping the properties if any
+                            if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null &&
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].TileType != selectedTile)
+                            {
+                                BackUp();
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetTileType(selectedTile);
+                            }
+                            else if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] == null)
+                            {
+                                BackUp();
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = new Tile(selectedTile, false, false, false, false, false, false);
+                            }
+                        }
+                        // If the right mouse button is held
+                        else if (input.RightHold() && tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                        {
+                            BackUp();
+                            // Set the tile that the mouse is on to be empty
+                            tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = null;
+                        }
+
+                        // If the tile the mouse is on is not null
+                        if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                        {
+                            // 
+                            if (input.Tapped(Keys.D1))
+                            {
+                                BackUp();
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsPlantSpot(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot);
+                            }
+                            // 
+                            else if (input.Tapped(Keys.D2))
+                            {
+                                BackUp();
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSaveSpot(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot);
+                            }
+                            // 
+                            else if (input.Tapped(Keys.D3))
+                            {
+                                BackUp();
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSolid(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid);
+                            }
+                            // 
+                            else if (input.Tapped(Keys.D4))
+                            {
+                                BackUp();
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsCTSpawnPoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsCTSpawnPoint);
+                            }
+                            // 
+                            else if (input.Tapped(Keys.D5))
+                            {
+                                BackUp();
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsTSpawnPoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsTSpawnPoint);
+                            }
+                            // 
+                            else if (input.Tapped(Keys.D6))
+                            {
+                                BackUp();
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSiteDefencePoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSiteDefencePoint);
+                            }
+
+                            // Add the specified properties to the properties string if that property is true
+                            if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot)
+                            {
+                                properties += "Plant Spot, ";
+                            }
+                            if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot)
+                            {
+                                properties += "Save Spot, ";
+                            }
+                            if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid)
+                            {
+                                properties += "Collidable, ";
+                            }
+                            if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsCTSpawnPoint)
+                            {
+                                properties += "CT Spawn Point, ";
+                            }
+                            if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsTSpawnPoint)
+                            {
+                                properties += "T Spawn Point, ";
+                            }
+                            if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSiteDefencePoint)
+                            {
+                                properties += "Defence Point ";
+                            }
+                        }
+                    }
+                    if (input.Held(Keys.LeftControl))
+                    {
+                        if (input.Tapped(Keys.S))
+                        {
+                            SaveFileDialog saveDialog = new SaveFileDialog();
+                            saveDialog.Filter = "Map Files (.txt)|*.txt";
+                            saveDialog.FilterIndex = 1;
+
+                            DialogResult result = saveDialog.ShowDialog();
+                            if (result == DialogResult.OK)
+                            {
+                                SaveFile(saveDialog.FileName);
+                            }
+                        }
+                        else if (input.Tapped(Keys.O))
+                        {
+                            OpenFileDialog openDialog = new OpenFileDialog();
+                            openDialog.Filter = "Map Files (.txt)|*.txt";
+                            openDialog.FilterIndex = 1;
+                            openDialog.Multiselect = false;
+
+                            DialogResult result = openDialog.ShowDialog();
+                            if (result == DialogResult.OK)
+                            {
+                                LoadFile(openDialog.FileName);
+                            }
+                        }
+                        else if (input.Tapped(Keys.D0))
+                        {
+                            driver.Model.Camera.ResetZoom();
+                        }
+                        else if (input.Tapped(Keys.A))
+                        {
+                            BackUp();
+                            for (int x = 0; x < numCols; x++)
+                            {
+                                for (int y = 0; y < numRows; y++)
+                                {
+                                    tiles[x, y] = new Tile(selectedTile, false, false, false, false, false, false);
+                                }
+                            }
+                        }
+                        else if (input.Tapped(Keys.Delete))
+                        {
+                            BackUp();
+                            tiles = new Tile[numCols, numRows];
+                        }
+                        else if (input.Tapped(Keys.Z))
+                        {
+                            Revert();
+                        }
+                    }
+                    // Move the camera left when the A key is held
+                    else if (input.Held(Keys.A))
+                    {
+                        driver.Model.Camera.Position.X -= 5;
+                    }
+                    // Move the camera right when the D key is held
+                    else if (input.Held(Keys.D))
+                    {
+                        driver.Model.Camera.Position.X += 5;
+                    }
+                    // Move the camera up when the W key is held
+                    if (input.Held(Keys.W))
+                    {
+                        driver.Model.Camera.Position.Y -= 5;
+                    }
+                    // Move the camera down when the S key is held
+                    else if (input.Held(Keys.S))
+                    {
+                        driver.Model.Camera.Position.Y += 5;
+                    }
+                    if (input.ScrollUp())
+                    {
+                        driver.Model.Camera.IncreaseZoom();
+                    }
+                    else if (input.ScrollDown())
+                    {
+                        driver.Model.Camera.DecreaseZoom();
+                    }
+                    if (input.Tapped(Keys.Tab))
+                    {
+                        displayTileSet = !displayTileSet;
+                    }
+                    break;
+
+                case EditorStates.ShowHotkeys:
+
+                    break;
             }
-            // Move the camera left when the A key is held
-            else if (input.Held(Keys.A))
-            {
-                driver.Model.Camera.Position.X -= 5;
-            }
-            // Move the camera right when the D key is held
-            else if (input.Held(Keys.D))
-            {
-                driver.Model.Camera.Position.X += 5;
-            }
-            // Move the camera up when the W key is held
-            if (input.Held(Keys.W))
-            {
-                driver.Model.Camera.Position.Y -= 5;
-            }
-            // Move the camera down when the S key is held
-            else if (input.Held(Keys.S))
-            {
-                driver.Model.Camera.Position.Y += 5;
-            }
-            if (input.ScrollUp())
-            {
-                driver.Model.Camera.IncreaseZoom();
-            }
-            else if (input.ScrollDown())
-            {
-                driver.Model.Camera.DecreaseZoom();
-            }
-            if (input.Tapped(Keys.Tab))
-            {
-                displayTileSet = !displayTileSet;
-            }
+
+            
         }
 
         public void BackUp()
