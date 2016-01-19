@@ -141,7 +141,7 @@ namespace CStrike2DServer
                     SecondaryWeapon = new ServerWeapon(WeaponData.Weapon.Usp, this);
                     break;
                 case ServerClientInterface.Team.Terrorist:
-                    SecondaryWeapon = new ServerWeapon(WeaponData.Weapon.Glock18, this);
+                    SecondaryWeapon = new ServerWeapon(WeaponData.Weapon.Glock, this);
                     break;
             }
             CurrentWeapon = Knife;

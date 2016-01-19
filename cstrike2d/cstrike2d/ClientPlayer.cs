@@ -117,13 +117,23 @@ namespace CStrike2D
 
         }
 
+        public void Plant()
+        {
+            
+        }
+
+        public void Defuse()
+        {
+            
+        }
+
         /// <summary>
         /// Used by the server
         /// </summary>
         /// <param name="weapon"></param>
         public void SetCurrentWeapon(WeaponData.Weapon weapon)
         {
-            
+            CurrentWeapon = new ClientWeapon(weapon, this);
         }
 
         /// <summary>
@@ -138,7 +148,7 @@ namespace CStrike2D
                     SecondaryWeapon = new ClientWeapon(WeaponData.Weapon.Usp, this);
                     break;
                 case ServerClientInterface.Team.Terrorist:
-                    SecondaryWeapon = new ClientWeapon(WeaponData.Weapon.Glock18, this);
+                    SecondaryWeapon = new ClientWeapon(WeaponData.Weapon.Glock, this);
                     break;
             }
             PrimaryWeapon = new ClientWeapon(WeaponData.Weapon.None, this);

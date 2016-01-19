@@ -3,6 +3,11 @@
 // Description: Used in polygon triangulation
 // - Edits were made including converting all FloatF types
 // into Vector2s. Everything else is the same
+
+// More information can be found at
+// http://csharphelper.com/blog/2014/07/triangulate-a-polygon-in-c/
+// This method was based off of Ian Garton's method which can be found at
+// http://www-cgrl.cs.mcgill.ca/~godfried/teaching/cg-projects/97/Ian/cutting_ears.html
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

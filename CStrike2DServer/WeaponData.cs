@@ -20,7 +20,7 @@ namespace CStrike2DServer
         {
             Knife,
             Ak47,
-            Glock18,
+            Glock,
             Awp,
             Usp,
             M4A1,
@@ -40,7 +40,7 @@ namespace CStrike2DServer
                     return WEAPON_KNIFE;
                 case Weapon.Ak47:
                     return WEAPON_AK47;
-                case Weapon.Glock18:
+                case Weapon.Glock:
                     return WEAPON_GLOCK;
                 case Weapon.Awp:
                     return WEAPON_AWP;
@@ -69,7 +69,7 @@ namespace CStrike2DServer
                 case WEAPON_AK47:
                     return Weapon.Ak47;
                 case WEAPON_GLOCK:
-                    return Weapon.Glock18;
+                    return Weapon.Glock;
                 case WEAPON_AWP:
                     return Weapon.Awp;
                 case WEAPON_USP:

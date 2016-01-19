@@ -170,7 +170,7 @@ namespace CStrike2D
             return new Vector2(point.Y, point.X);
         }
 
-
+        
         /// <summary>
         /// Given a Vector2 point and the tiles that are on the map it will return whether or not the Vector2 is inside or on a wall
         /// </summary>
@@ -193,10 +193,10 @@ namespace CStrike2D
 
             // Using tileX and tileY checks if the tile stored in the 2D tile array at that location is collidable
             // If point is collidable it cannot be accessible
-            return !(tiles[tileX, tileY].IsSolid);
+            return tiles[tileX, tileY].Property != Tile.SOLID;
 
         }
-
+        
 
         /// <summary>
         /// 

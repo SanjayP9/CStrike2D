@@ -67,11 +67,8 @@
     <Folder Include="sound\sfx\player\" />
     <Folder Include="texture\weapon\aug\" />
     <Folder Include="texture\weapon\famas\" />
-    <Folder Include="texture\weapon\glock\" />
-    <Folder Include="texture\weapon\m4a1\" />
     <Folder Include="texture\weapon\mp7\" />
     <Folder Include="texture\weapon\p90\" />
-    <Folder Include="texture\weapon\usp\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="sound\sfx\weapon\ak47d.wav">
@@ -246,6 +243,67 @@
       <Name>terwin</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="texture\weapon\m4a1\m4a1.png">
+      <Name>m4a1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="texture\weapon\m4a1\m4a1_d.png">
+      <Name>m4a1_d</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="texture\weapon\m4a1\m4a1_m.png">
+      <Name>m4a1_m</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="texture\weapon\m4a1\m4a1_silenced.png">
+      <Name>m4a1_silenced</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="texture\weapon\usp\usp.png">
+      <Name>usp</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="texture\weapon\usp\usp_d.png">
+      <Name>usp_d</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="texture\weapon\usp\usp_m.png">
+      <Name>usp_m</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="texture\weapon\usp\usp_silenced.png">
+      <Name>usp_silenced</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="texture\weapon\glock\glock.png">
+      <Name>glock</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="texture\weapon\glock\glock_d.png">
+      <Name>glock_d</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="texture\weapon\glock\glock_m.png">
+      <Name>glock_m</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

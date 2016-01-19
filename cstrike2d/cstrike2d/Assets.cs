@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using CStrike2DServer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -120,12 +121,12 @@ namespace CStrike2D
         /// </summary>
         public void LoadGameContent()
         {
-            string[] weaponNames = Enum.GetNames(typeof (WeaponInfo.Weapon));
+            string[] weaponNames = Enum.GetNames(typeof (WeaponData.Weapon));
             weaponTextures = new Texture2D[weaponNames.Length, 3];
 
             for (int i = 0; i < weaponNames.Length; i++)
             {
-                if (weaponNames[i].Contains("Weapon_Knife"))
+                if (weaponNames[i].Contains("Knife"))
                 {
                     string filePath = "texture/weapon/" + weaponNames[i].Remove(0, 7).ToLower() + "/" +
                                       weaponNames[i].Remove(0, 7).ToLower();
@@ -145,7 +146,6 @@ namespace CStrike2D
             SmokeParticle = gameContentLoader.Load<Texture2D>("texture/Textures/newparticle");
             DebrisParticle = gameContentLoader.Load<Texture2D>("texture/Textures/rocks");
             ShellTexture = gameContentLoader.Load<Texture2D>("texture/Textures/bullet");
-
 
             GameContentLoaded = true;
         }

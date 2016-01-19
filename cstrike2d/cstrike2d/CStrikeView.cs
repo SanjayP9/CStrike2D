@@ -155,12 +155,12 @@ namespace CStrike2D
                 case CStrikeModel.State.LevelEditor:
                     sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, cullableRasterizer, null, model.Camera.GetTransform(model.DriverInstance.GraphicsDevice));
                     sb.GraphicsDevice.ScissorRectangle = new Rectangle(0, 0, 1280, 720);
-                    model.Editor.DrawWorld(sb);
+                    //model.Editor.DrawWorld(sb);
                     sb.End();
 
                     sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null,
                         null, null);
-                    model.Editor.DrawUI(sb);
+                    //model.Editor.DrawUI(sb);
                     break;
                 case CStrikeModel.State.InGame:
                     model.Shader.BeginRender();
