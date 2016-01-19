@@ -108,7 +108,7 @@ namespace CStrike2D
         /// <param name="username"></param>
         /// <param name="?"></param>
         public void SyncPlayer(short identifier, string username, byte team, float posX, float posY,
-            float rot, byte weapon)
+            float rot, byte weapon, byte state)
         {
             ClientPlayer player = Players.Find(ply => ply.Identifier == identifier) ??
                                   new ClientPlayer(username, identifier, assets);
@@ -116,6 +116,8 @@ namespace CStrike2D
             player.SetPosition(new Vector2(posX, posY));
             player.SetRotation(rot);
             player.SetCurrentWeapon(WeaponData.ByteToWeapon(weapon));
+            player.SetTeam(team);
+            player.SetState(state);
             Players.Add(player);
         }
 
@@ -563,14 +565,14 @@ namespace CStrike2D
                     {
                         case ServerClientInterface.Team.CounterTerrorist:
                             sb.DrawString(assets.DefaultFont, player.UserName + " | " +
-                                                              ((player.State == ClientPlayer.PlayerState.Dead) ? "DEAD" : ""), new Vector2(95, 75 + (numCts * 50)),
+                                                              ((player.State == ServerClientInterface.PlayerState.Dead) ? "DEAD" : ""), new Vector2(95, 75 + (numCts * 50)),
                                 ServerClientInterface.CT_Color);
 
                             numCts++;
                             break;
                         case ServerClientInterface.Team.Terrorist:
                             sb.DrawString(assets.DefaultFont, player.UserName + " | " +
-                                                              ((player.State == ClientPlayer.PlayerState.Dead) ? "DEAD" : ""), new Vector2(645, 75 + (numTs * 50)),
+                                                              ((player.State == ServerClientInterface.PlayerState.Dead) ? "DEAD" : ""), new Vector2(645, 75 + (numTs * 50)),
                                 ServerClientInterface.T_Color);
                             numTs++;
 

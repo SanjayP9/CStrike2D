@@ -1,4 +1,5 @@
 ﻿using System;
+using CStrike2D;
 using Microsoft.Xna.Framework;
 
 namespace CStrike2DServer
@@ -72,11 +73,20 @@ namespace CStrike2DServer
 
         public const byte BUY_WEAPON = 32;
 
+        public const byte ALIVE = 33;
+        public const byte DEAD = 44;
+
         public enum Team
         {
             CounterTerrorist,
             Terrorist,
             Spectator
+        }
+
+        public enum PlayerState
+        {
+            Alive,
+            Dead
         }
         
         /// <summary>
@@ -116,6 +126,32 @@ namespace CStrike2DServer
                     return Team.Terrorist;
                 case TEAM_SPECTATOR:
                     return Team.Spectator;
+                default:
+                    throw new Exception("Somehow this happened");
+            }
+        }
+
+        public static byte StateToByte(PlayerState state)
+        {
+            switch (state)
+            {
+                case PlayerState.Alive:
+                    return ALIVE;
+                case PlayerState.Dead:
+                    return DEAD;
+                default:
+                    throw new Exception("Somehow this happened");
+            }
+        }
+
+        public static PlayerState ByteToState(byte state)
+        {
+            switch (state)
+            {
+                case ALIVE:
+                    return PlayerState.Alive;
+                case DEAD:
+                    return PlayerState.Dead;
                 default:
                     throw new Exception("Somehow this happened");
             }

@@ -615,6 +615,7 @@ namespace CStrike2DServer
                     outMsg.Write(ply.Position.Y);
                     outMsg.Write(ply.Rotation);
                     outMsg.Write(WeaponData.WeaponToByte(ply.CurrentWeapon.Weapon));
+                    outMsg.Write(ServerClientInterface.StateToByte(ply.State));
                     server.SendMessage(outMsg, client, NetDeliveryMethod.ReliableSequenced);
                 }
             }
@@ -682,9 +683,9 @@ namespace CStrike2DServer
                 ply.SetHealth(100);
                 ply.SetArmor(0);
 
-                if (ply.State == ServerPlayer.PlayerState.Dead)
+                if (ply.State == ServerClientInterface.PlayerState.Dead)
                 {
-                    ply.SetState(ServerPlayer.PlayerState.Alive);
+                    ply.SetState(ServerClientInterface.PlayerState.Alive);
                 }
             }
         }
