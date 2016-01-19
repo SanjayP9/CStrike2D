@@ -18,7 +18,7 @@ namespace CStrike2D
         public const byte T_SPAWN_POINT = 6;
         public const byte A_SITE_DEFENCE_POINT = 7;
         public const byte B_SITE_DEFENCE_POINT = 8;
-        public int TileType { get; private set; }
+        public byte TileType { get; private set; }
         //public bool IsSolid { get; private set; }
         //public bool IsAPlantSpot { get; private set; }
         //public bool IsBPlantSpot { get; private set; }
@@ -40,7 +40,7 @@ namespace CStrike2D
         //    IsASiteDefencePoint = isASiteDefencePoint;
         //    IsBSiteDefencePoint = isBSiteDefencePoint;
         //}
-        public Tile(int tileType, byte property)
+        public Tile(byte tileType, byte property)
         {
             TileType = tileType;
             Property = property;
@@ -91,10 +91,10 @@ namespace CStrike2D
         //            break;
         //    }
         //}
-        //public void SetTileType(int tileType)
-        //{
-        //    TileType = tileType;
-        //}
+        public void SetTileType(byte tileType)
+        {
+            TileType = tileType;
+        }
         //public void SetIsSolid(bool isSolid)
         //{
         //    IsSolid = isSolid;

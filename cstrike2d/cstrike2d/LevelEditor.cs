@@ -19,21 +19,18 @@ namespace CStrike2D
         //
         Tile[,] prevTiles = new Tile[75, 50];
 
-        //
-        byte[,] property = new byte[75, 50];
+        Color tileColor = Color.White;
 
         // Stores the selected tile of the tile set
-        int selectedTile;
-
-        
+        byte selectedTile;
 
         // Stores the constants of the tile size and the width/height of the tile set
         const int TILE_SIZE = 32;
-        const int TILE_SET_WIDTH = 8;
-        const int TILES_SET_HEIGHT = 10;
+        const byte TILE_SET_WIDTH = 8;
+        const byte TILES_SET_HEIGHT = 10;
 
         // Stores all the properties of a tile in a string
-        string properties = "";
+        string property = "";
 
         // Variables used to store the number of columns and rows
         int numCols = 75;
@@ -47,20 +44,12 @@ namespace CStrike2D
 
         bool displayTileSet = true;
 
-        // Stores the status of the properties of a tile
-        bool isPlantSpot;
-        bool isSaveSpot;
-        bool isSolid;
-        bool isCTSpawnPoint;
-        bool isTSpawnPoint;
-        bool isSiteDefencePoint;
-
         private InputManager input;
         private AudioManager audio;
         private CStrike2D driver;
 
         // Stores the tile set of set position
-        Rectangle tileSetOffset = new Rectangle(50, 100, 256, 320);
+        Rectangle tileSetOffset = new Rectangle(50, 50, 256, 320);
 
         // Stores the map area
         Rectangle mapArea = new Rectangle(-225, -250, 2400, 1600);
@@ -90,7 +79,7 @@ namespace CStrike2D
                     mouseMap = input.ScreenToWorld(input.MousePosition, driver.Model.Camera, driver.Model.Center);
 
                     // Reset the properties
-                    properties = "";
+                    property = "";
                     // If mouse is over the tile set
                     if (input.MousePosition.X > tileSetOffset.X &&
                         input.MousePosition.X < tileSetOffset.X + tileSetOffset.Width &&
@@ -102,8 +91,8 @@ namespace CStrike2D
                         if (input.LeftClick())
                         {
                             // Set the selected tile to be the one that they have clicked
-                            selectedTile = (int)((input.MousePosition.Y - tileSetOffset.Y) / TILE_SIZE) * TILE_SET_WIDTH +
-                                           (int)((input.MousePosition.X - tileSetOffset.X) / TILE_SIZE);
+                            selectedTile = (byte)((int)((input.MousePosition.Y - tileSetOffset.Y) / TILE_SIZE) * TILE_SET_WIDTH +
+                                           (int)((input.MousePosition.X - tileSetOffset.X) / TILE_SIZE));
                         }
                     }
                     // If the mouse is over the map region
@@ -142,13 +131,18 @@ namespace CStrike2D
                         // If the tile the mouse is on is not null
                         if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
                         {
-                            if (input.Tapped(Keys.D1))
+                            if (input.Tapped(Keys.D0))
+                            {
+                                BackUp();
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.NO_PROPERTY);
+                            }
+                            else if (input.Tapped(Keys.D1))
                             {
                                 BackUp();
                                 tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.SOLID);
                             }
                             // 
-                            if (input.Tapped(Keys.D2))
+                            else if (input.Tapped(Keys.D2))
                             {
                                 BackUp();
                                 tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.A_PLANT_SPOT);
@@ -191,30 +185,36 @@ namespace CStrike2D
                             }
 
                             // Add the specified properties to the properties string if that property is true
-                            //if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot)
-                            //{
-                            //    properties += "Plant Spot, ";
-                            //}
-                            //if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot)
-                            //{
-                            //    properties += "Save Spot, ";
-                            //}
-                            //if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid)
-                            //{
-                            //    properties += "Collidable, ";
-                            //}
-                            //if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsCTSpawnPoint)
-                            //{
-                            //    properties += "CT Spawn Point, ";
-                            //}
-                            //if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsTSpawnPoint)
-                            //{
-                            //    properties += "T Spawn Point, ";
-                            //}
-                            //if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSiteDefencePoint)
-                            //{
-                            //    properties += "Defence Point ";
-                            //}
+                            switch (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].Property)
+                            {
+                                case Tile.NO_PROPERTY:
+                                    property = "No Property";
+                                    break;
+                                case Tile.SOLID:
+                                    property = "Collidable Tile";
+                                    break;
+                                case Tile.A_PLANT_SPOT:
+                                    property = "A Plant Tile";
+                                    break;
+                                case Tile.B_PLANT_SPOT:
+                                    property = "B Plant Tile";
+                                    break;
+                                case Tile.SAVE_SPOT:
+                                    property = "Save Tile";
+                                    break;
+                                case Tile.CT_SPAWN_POINT:
+                                    property = "CT Spawn Tile";
+                                    break;
+                                case Tile.T_SPAWN_POINT:
+                                    property = "T Spawn Tile";
+                                    break;
+                                case Tile.A_SITE_DEFENCE_POINT:
+                                    property = "A Site Defence Tile";
+                                    break;
+                                case Tile.B_SITE_DEFENCE_POINT:
+                                    property = "B Site Defence Tile";
+                                    break;
+                            }
                         }
                     }
                     if (input.Held(Keys.LeftControl))
@@ -357,35 +357,37 @@ namespace CStrike2D
                         srcRect.Y = (tiles[col, row].TileType / 8 * TILE_SIZE);
                         destRect.X = col * TILE_SIZE + mapArea.X;
                         destRect.Y = row * TILE_SIZE + mapArea.Y;
-                        //Rectangle tileSrcRec = new Rectangle(srcX, srcY, (int)TILE_SIZE, (int)TILE_SIZE);
-                        sb.Draw(driver.Assets.TileSet, destRect, srcRect, Color.White);
-                        if (displayTileSet)
+                        switch (tiles[col, row].Property)
                         {
-                            if (tiles[col, row].IsPlantSpot)
-                            {
-                                sb.Draw(driver.Assets.PixelTexture, destRect, Color.Yellow*0.5f);
-                            }
-                            if (tiles[col, row].IsSaveSpot)
-                            {
-                                sb.Draw(driver.Assets.PixelTexture, destRect, Color.Green*0.5f);
-                            }
-                            if (tiles[col, row].IsSolid)
-                            {
-                                sb.Draw(driver.Assets.PixelTexture, destRect, Color.Red*0.5f);
-                            }
-                            if (tiles[col, row].IsCTSpawnPoint)
-                            {
-                                sb.Draw(driver.Assets.PixelTexture, destRect, Color.Blue*0.5f);
-                            }
-                            if (tiles[col, row].IsTSpawnPoint)
-                            {
-                                sb.Draw(driver.Assets.PixelTexture, destRect, Color.Orange*0.5f);
-                            }
-                            if (tiles[col, row].IsSiteDefencePoint)
-                            {
-                                sb.Draw(driver.Assets.PixelTexture, destRect, Color.Purple*0.5f);
-                            }
+                            case Tile.NO_PROPERTY:
+                                tileColor = Color.White;
+                                break;
+                            case Tile.SOLID:
+                                tileColor = Color.Red;
+                                break;
+                            case Tile.A_PLANT_SPOT:
+                                tileColor = Color.Yellow;
+                                break;
+                            case Tile.B_PLANT_SPOT:
+                                tileColor = Color.Yellow;
+                                break;
+                            case Tile.SAVE_SPOT:
+                                tileColor = Color.Green;
+                                break;
+                            case Tile.CT_SPAWN_POINT:
+                                tileColor = Color.Blue;
+                                break;
+                            case Tile.T_SPAWN_POINT:
+                                tileColor = Color.Orange;
+                                break;
+                            case Tile.A_SITE_DEFENCE_POINT:
+                                tileColor = Color.Purple;
+                                break;
+                            case Tile.B_SITE_DEFENCE_POINT:
+                                tileColor = Color.Purple;
+                                break;
                         }
+                        sb.Draw(driver.Assets.TileSet, destRect, srcRect, tileColor);
                     }
                 }
             }
@@ -408,7 +410,7 @@ namespace CStrike2D
             // Drawn the UI, includes map tile index, the selected tile #, and the properties of the tile the mouse is on
             sb.DrawString(driver.Assets.DefaultFont, "Map Tile Index: " + Math.Floor(placedTilePos.X) + "|" + Math.Floor(placedTilePos.Y), new Vector2(175, 0), Color.White);
             sb.DrawString(driver.Assets.DefaultFont, "Selected Tile #: " + selectedTile, new Vector2(0, 0), Color.White);
-            sb.DrawString(driver.Assets.DefaultFont, "Properties: " + properties, new Vector2(360, 0), Color.White);
+            sb.DrawString(driver.Assets.DefaultFont, "Properties: " + property, new Vector2(360, 0), Color.White);
 
             if (displayTileSet)
             {
@@ -439,7 +441,7 @@ namespace CStrike2D
             numRows = Convert.ToInt32(inFile.ReadLine());
 
             // Changes the placement area according to the number of columns and rows
-            mapArea = new Rectangle(-200, -250, 32 * numCols, 32 * numRows);
+            mapArea = new Rectangle(-200, -250, TILE_SIZE * numCols, TILE_SIZE * numRows);
 
             prevTiles = new Tile[numCols, numRows];
             BackUp();
@@ -459,59 +461,8 @@ namespace CStrike2D
                     // If the data in the column is not blank
                     if (rowData[cols] != "")
                     {
-                        // According to each character in the text check to see for the 0/1
-                        // for each property and set the property to be true or false accordingly
-                        if (rowData[cols][rowData[cols].Length - 6] == '1')
-                        {
-                            isPlantSpot = true;
-                        }
-                        else
-                        {
-                            isPlantSpot = false;
-                        }
-                        if (rowData[cols][rowData[cols].Length - 5] == '1')
-                        {
-                            isSaveSpot = true;
-                        }
-                        else
-                        {
-                            isSaveSpot = false;
-                        }
-                        if (rowData[cols][rowData[cols].Length - 4] == '1')
-                        {
-                            isSolid = true;
-                        }
-                        else
-                        {
-                            isSolid = false;
-                        }
-                        if (rowData[cols][rowData[cols].Length - 3] == '1')
-                        {
-                            isCTSpawnPoint = true;
-                        }
-                        else
-                        {
-                            isCTSpawnPoint = false;
-                        }
-                        if (rowData[cols][rowData[cols].Length - 2] == '1')
-                        {
-                            isTSpawnPoint = true;
-                        }
-                        else
-                        {
-                            isTSpawnPoint = false;
-                        }
-                        if (rowData[cols][rowData[cols].Length - 1] == '1')
-                        {
-                            isSiteDefencePoint = true;
-                        }
-                        else
-                        {
-                            isSiteDefencePoint = false;
-                        }
-
                         // Initialize each property of the tile
-                        tiles[cols, rows] = new Tile(Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 6)), isPlantSpot, isSaveSpot, isSolid, isCTSpawnPoint, isTSpawnPoint, isSiteDefencePoint);
+                        tiles[cols, rows] = new Tile(Convert.ToByte(rowData[cols].Substring(0, rowData[cols].Length - 1)), Convert.ToByte(rowData[cols][rowData[cols].Length - 1]));
                     }
                 }
             }
@@ -540,56 +491,7 @@ namespace CStrike2D
                     {
                         // Write the tile type
                         outFile.Write(Convert.ToString(tiles[cols, rows].TileType));
-
-                        // Write each property of the tile using "1" or "0" representing true or false
-                        if (tiles[cols, rows].IsPlantSpot)
-                        {
-                            outFile.Write("1");
-                        }
-                        else
-                        {
-                            outFile.Write("0");
-                        }
-                        if (tiles[cols, rows].IsSaveSpot)
-                        {
-                            outFile.Write("1");
-                        }
-                        else
-                        {
-                            outFile.Write("0");
-                        }
-                        if (tiles[cols, rows].IsSolid)
-                        {
-                            outFile.Write("1");
-                        }
-                        else
-                        {
-                            outFile.Write("0");
-                        }
-                        if (tiles[cols, rows].IsCTSpawnPoint)
-                        {
-                            outFile.Write("1");
-                        }
-                        else
-                        {
-                            outFile.Write("0");
-                        }
-                        if (tiles[cols, rows].IsTSpawnPoint)
-                        {
-                            outFile.Write("1");
-                        }
-                        else
-                        {
-                            outFile.Write("0");
-                        }
-                        if (tiles[cols, rows].IsSiteDefencePoint)
-                        {
-                            outFile.Write("1");
-                        }
-                        else
-                        {
-                            outFile.Write("0");
-                        }
+                        outFile.Write(Convert.ToString(tiles[cols, rows].Property));
                     }
 
                     // Write a comma before going to the next column
