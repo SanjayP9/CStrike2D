@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO.Ports;
 using System.Threading;
 using CStrike2DServer;
 using Lidgren.Network;
@@ -94,14 +95,19 @@ namespace CStrike2D
                                 code = msg.ReadByte();
                                 if (engine.CurState == GameEngine.GameEngineState.Loaded)
                                 {
+                                    if (code == ServerClientInterface.HANDSHAKE_COMPLETE)
+                                    {
+                                        // Sync the client's own player instance
+                                        UniqueIdentifier = msg.ReadInt16();
+                                        engine.SyncClient(ClientName, UniqueIdentifier);
+                                    }
+
                                     if (code == ServerClientInterface.SYNC_CHUNK)
                                     {
                                         // Get data of all currently connected players
                                         engine.SyncPlayer(msg.ReadInt16(), msg.ReadString(),
                                             msg.ReadByte(), msg.ReadFloat(), msg.ReadFloat(),
                                             msg.ReadFloat(), msg.ReadByte());
-                                        
-                                        
                                     }
 
                                     if (code == ServerClientInterface.SYNC_COMPLETE)
@@ -115,11 +121,6 @@ namespace CStrike2D
                                     short id;
                                     switch (code)
                                     {
-                                        case ServerClientInterface.HANDSHAKE_COMPLETE:
-                                            // Sync the client's own player instance
-                                            UniqueIdentifier = msg.ReadInt16();
-                                            engine.SyncClient(ClientName, UniqueIdentifier);
-                                            break;
                                         case ServerClientInterface.SYNC_NEW_PLAYER:
                                             engine.SyncNewPlayer(msg.ReadString(), msg.ReadInt16());
                                             break;

@@ -144,7 +144,7 @@ namespace CStrike2D
                     }
                     else // If the firtindex is at the emitter position incriment the index
                     {
-
+                        // 
                         index++;
 
 

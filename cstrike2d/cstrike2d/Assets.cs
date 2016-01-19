@@ -6,6 +6,7 @@
 // Description: Stores all assets required in the game and is globally accessible
 
 using System;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -36,6 +37,8 @@ namespace CStrike2D
         public Texture2D ShellTexture { get; private set; }
 
         public Effect BlurEffect { get; private set; }
+
+        public Map MapData { get; private set; }
 
 
         /// <summary>
@@ -109,6 +112,7 @@ namespace CStrike2D
         public void LoadMapContent()
         {
 
+            MapData.Load("de_cache", this);
         }
 
         /// <summary>
