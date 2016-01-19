@@ -60,7 +60,7 @@ namespace CStrike2D
             ShowHotkeys
         };
 
-        private EditorStates currentState = EditorStates.ShowHotkeys;
+        private EditorStates currentState = EditorStates.Edit;
 
         public LevelEditor(CStrikeModel model)
         {
