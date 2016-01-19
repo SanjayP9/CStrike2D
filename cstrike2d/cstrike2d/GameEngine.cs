@@ -119,6 +119,13 @@ namespace CStrike2D
             Players.Add(player);
         }
 
+        public void SetWeapon(short identifier, byte weapon)
+        {
+            ClientPlayer player = Players.Find(ply => ply.Identifier == identifier);
+
+            player.SetCurrentWeapon(WeaponData.ByteToWeapon(weapon));
+        }
+
 
         /// <summary>
         /// Syncs a new player that has just joined the server
@@ -252,7 +259,7 @@ namespace CStrike2D
 
                                         if (driver.Model.InterfaceManager.Clicked(input, "tRifleButtonMenu", "ak47MenuButton"))
                                         {
-                                            //network.RequestBuy(NetInterface.WEAPON_AK47);
+
                                             driver.Model.InterfaceManager.HidePage("tRifleButtonMenu");
                                         }
                                     }

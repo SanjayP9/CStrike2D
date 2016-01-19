@@ -14,7 +14,6 @@ namespace CStrike2DServer
 
         public static float MOVEMENT_SPEED = 5f;
 
-
         /// <summary>
         /// Request sent by the server for the client to 
         /// exchange primary information such as their username
@@ -70,6 +69,8 @@ namespace CStrike2DServer
 
         public const byte SPAWN_PLAYER = 30;
         public const byte RESPAWN_PLAYER = 31;
+
+        public const byte BUY_WEAPON = 32;
 
         public enum Team
         {

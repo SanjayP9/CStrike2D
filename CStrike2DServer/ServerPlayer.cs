@@ -177,6 +177,12 @@ namespace CStrike2DServer
             State = state;
         }
 
+        public void SetWeapon(WeaponData.Weapon weapon)
+        {
+            PrimaryWeapon = new ServerWeapon(weapon, this);
+            CurrentWeapon = PrimaryWeapon;
+        }
+
         /// <summary>
         /// Kills the player
         /// </summary>

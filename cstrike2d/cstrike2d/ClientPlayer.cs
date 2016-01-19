@@ -79,9 +79,9 @@ namespace CStrike2D
             State = PlayerState.Dead;
             Health = 100;
             Armor = 0;
-            PrimaryWeapon = new ClientWeapon(WeaponData.Weapon.None, this);
-            SecondaryWeapon = new ClientWeapon(WeaponData.Weapon.None, this);
-            Knife = new ClientWeapon(WeaponData.Weapon.Knife, this);
+            PrimaryWeapon = new ClientWeapon(WeaponData.Weapon.None, this, assets);
+            SecondaryWeapon = new ClientWeapon(WeaponData.Weapon.None, this, assets);
+            Knife = new ClientWeapon(WeaponData.Weapon.Knife, this, assets);
             CurrentWeapon = Knife;
         }
 
@@ -133,7 +133,7 @@ namespace CStrike2D
         /// <param name="weapon"></param>
         public void SetCurrentWeapon(WeaponData.Weapon weapon)
         {
-            CurrentWeapon = new ClientWeapon(weapon, this);
+            CurrentWeapon = new ClientWeapon(weapon, this, Assets);
         }
 
         /// <summary>
@@ -145,14 +145,14 @@ namespace CStrike2D
             switch (CurrentTeam)
             {
                 case ServerClientInterface.Team.CounterTerrorist:
-                    SecondaryWeapon = new ClientWeapon(WeaponData.Weapon.Usp, this);
+                    SecondaryWeapon = new ClientWeapon(WeaponData.Weapon.Usp, this, Assets);
                     break;
                 case ServerClientInterface.Team.Terrorist:
-                    SecondaryWeapon = new ClientWeapon(WeaponData.Weapon.Glock, this);
+                    SecondaryWeapon = new ClientWeapon(WeaponData.Weapon.Glock, this, Assets);
                     break;
             }
-            PrimaryWeapon = new ClientWeapon(WeaponData.Weapon.None, this);
-            Knife = new ClientWeapon(WeaponData.Weapon.Knife, this);
+            PrimaryWeapon = new ClientWeapon(WeaponData.Weapon.None, this, Assets);
+            Knife = new ClientWeapon(WeaponData.Weapon.Knife, this, Assets);
             CurrentWeapon = Knife;
         }
 

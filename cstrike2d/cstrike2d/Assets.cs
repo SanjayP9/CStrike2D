@@ -128,14 +128,14 @@ namespace CStrike2D
             {
                 if (weaponNames[i].Contains("Knife"))
                 {
-                    string filePath = "texture/weapon/" + weaponNames[i].Remove(0, 7).ToLower() + "/" +
-                                      weaponNames[i].Remove(0, 7).ToLower();
+                    string filePath = "texture/weapon/" + weaponNames[i].ToLower() + "/" +
+                                      weaponNames[i].ToLower();
                     weaponTextures[i, 0] = gameContentLoader.Load<Texture2D>(filePath);
                 }
-                else
+                else if (!weaponNames[i].Contains("None"))
                 {
-                    string filePath = "texture/weapon/" + weaponNames[i].Remove(0, 7).ToLower() + "/" +
-                                      weaponNames[i].Remove(0, 7).ToLower();
+                    string filePath = "texture/weapon/" + weaponNames[i].ToLower() + "/" +
+                                      weaponNames[i].ToLower();
                     weaponTextures[i, 0] = gameContentLoader.Load<Texture2D>(filePath);
                     weaponTextures[i, 1] = gameContentLoader.Load<Texture2D>(filePath + "_d");
                     weaponTextures[i, 2] = gameContentLoader.Load<Texture2D>(filePath + "_m");

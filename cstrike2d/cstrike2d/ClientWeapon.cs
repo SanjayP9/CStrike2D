@@ -16,6 +16,8 @@ namespace CStrike2D
 
         public WeaponData.Weapon Weapon { get; private set; }
 
+        private Assets assets;
+
         public void FireWeapon()
         {
             if (!Fired)
@@ -24,10 +26,11 @@ namespace CStrike2D
             }
         }
 
-        public ClientWeapon(WeaponData.Weapon weapon, ClientPlayer owner)
+        public ClientWeapon(WeaponData.Weapon weapon, ClientPlayer owner, Assets assets)
         {
             Owner = owner;
             Weapon = weapon;
+            this.assets = assets;
         }
 
         public void Update(float gameTime)
@@ -58,7 +61,7 @@ namespace CStrike2D
         public void Draw(SpriteBatch sb)
         {
             // Draw particles
-            sb.Draw(Assets.GetWeaponTexture(Weapon), Position, null, Color.White, Rotation, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            sb.Draw(assets.GetWeaponTexture(Weapon), Position, null, Color.White, Rotation, Vector2.Zero, 1f, SpriteEffects.None, 0f);
         }
     }
 }

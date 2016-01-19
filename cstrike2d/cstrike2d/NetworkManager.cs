@@ -157,6 +157,9 @@ namespace CStrike2D
                                             engine.Players.Find(ply => ply.Identifier == id)
                                                 .SetRotation(msg.ReadFloat());
                                             break;
+                                        case ServerClientInterface.BUY_WEAPON:
+                                            engine.SetWeapon(msg.ReadInt16(), msg.ReadByte());
+                                            break;
                                     }
                                 }
                                 break;
@@ -199,6 +202,14 @@ namespace CStrike2D
             outMsg = client.CreateMessage();
             outMsg.Write(direction);
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
+        }
+
+        public void BuyWeapon(WeaponData.Weapon weapon)
+        {
+            outMsg = client.CreateMessage();
+            outMsg.Write(ServerClientInterface.BUY_WEAPON);
+            outMsg.Write(WeaponData.WEAPON_AK47);
+            client.SendMessage(outMsg, NetDeliveryMethod.ReliableSequenced);
         }
 
         public void SyncWorld()

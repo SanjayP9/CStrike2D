@@ -552,6 +552,10 @@ namespace CStrike2DServer
                             case ServerClientInterface.ROTATE_PLAYER:
                                 Rotate(msg.ReadFloat(), msg.SenderConnection.RemoteUniqueIdentifier);
                                 break;
+                            case ServerClientInterface.BUY_WEAPON:
+                                byte wep = msg.ReadByte();
+                                SpawnWeapon(msg.SenderConnection.RemoteUniqueIdentifier, wep);
+                                break;
                         }
                         break;
                 }
@@ -689,9 +693,17 @@ namespace CStrike2DServer
             }
         }
 
-        static void SpawnWeapon(long playerIdentifier, ServerWeapon weapon)
+        static void SpawnWeapon(long identifier, byte weapon)
         {
             // TODO: Gives a weapon to a player
+            ServerPlayer player = players.Find(ply => ply.ConnectionIdentifier == identifier);
+            player.SetWeapon(WeaponData.ByteToWeapon(weapon));
+            
+            outMsg = server.CreateMessage();
+            outMsg.Write(ServerClientInterface.BUY_WEAPON);
+            outMsg.Write(player.Identifier);
+            outMsg.Write(weapon);
+            server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
         }
 
         static void SpawnPlayer(long playerIdentifier, Vector2 location)
