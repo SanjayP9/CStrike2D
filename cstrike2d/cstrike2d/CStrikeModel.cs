@@ -520,6 +520,7 @@ namespace CStrike2D
                             else
                             {
                                 DriverInstance.Assets.LoadGameContent();
+                                DriverInstance.Assets.LoadMapContent();
                             }
                             break;
                     }

@@ -83,6 +83,11 @@ namespace CStrike2D
                 {
                     if (TileMap[col, row] != null)
                     {
+                        srcRect.X = (TileMap[col, row].TileType % 8 * TILE_SIZE);
+                        srcRect.Y = (TileMap[col, row].TileType / 8 * TILE_SIZE);
+                        destRect.X = col * TILE_SIZE + mapArea.X;
+                        destRect.Y = row * TILE_SIZE + mapArea.Y;
+
                         sb.Draw(assets.TileSet, destRect, srcRect, Color.White);
                     }
                 }

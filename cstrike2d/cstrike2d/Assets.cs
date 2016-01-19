@@ -112,8 +112,8 @@ namespace CStrike2D
         /// </summary>
         public void LoadMapContent()
         {
-
-            MapData.Load("de_cache", this);
+            MapData = new Map();
+            MapData.Load("de_cache.txt", this);
         }
 
         /// <summary>
