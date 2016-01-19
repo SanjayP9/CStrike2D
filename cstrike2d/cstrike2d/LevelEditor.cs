@@ -25,7 +25,7 @@ namespace CStrike2D
         byte selectedTile;
 
         // Stores the constants of the tile size and the width/height of the tile set
-        const int TILE_SIZE = 32;
+        const byte TILE_SIZE = 32;
         const byte TILE_SET_WIDTH = 8;
         const byte TILES_SET_HEIGHT = 10;
 
