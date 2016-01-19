@@ -51,8 +51,8 @@ namespace CStrike2D
             float distance = Vector2.Distance(new Vector2(enemyPlayer.X, enemyPlayer.Y), centre);
 
             // Holds the points of the rectangle before being rotated
-            float x = enemyPlayer.X;
-            float y = enemyPlayer.Y;
+            float x = enemyPlayer.X - centre.X;
+            float y = enemyPlayer.Y - centre.Y;
 
             /////////////////////////////////////////////
             // FIND ROTATED COORDINATES OF EACH CORNER //
@@ -60,18 +60,18 @@ namespace CStrike2D
             Vector2 topLeft = new Vector2((float)(x * Math.Cos(shotAngle) - y * Math.Sin(shotAngle)) + centre.X,
                                           (float)(y * Math.Cos(shotAngle) + x * Math.Sin(shotAngle)) + centre.Y);
 
-            x = enemyPlayer.X + enemyPlayer.Width;
-            y = enemyPlayer.Y;
+            x = enemyPlayer.X + enemyPlayer.Width - centre.Y;
+            y = enemyPlayer.Y - centre.Y;
             Vector2 topRight = new Vector2((float)(x * Math.Cos(shotAngle) - y * Math.Sin(shotAngle)) + centre.X,
                                            (float)(y * Math.Cos(shotAngle) + x * Math.Sin(shotAngle)) + centre.Y);
 
-            x = enemyPlayer.X;
-            y = enemyPlayer.Y + enemyPlayer.Height;
+            x = enemyPlayer.X - centre.Y;
+            y = enemyPlayer.Y + enemyPlayer.Height - centre.Y;
             Vector2 bottomLeft = new Vector2((float)(x * Math.Cos(shotAngle) - y * Math.Sin(shotAngle)) + centre.X,
                                              (float)(y * Math.Cos(shotAngle) + x * Math.Sin(shotAngle)) + centre.Y);
 
-            x = enemyPlayer.X + enemyPlayer.Width;
-            y = enemyPlayer.Y + enemyPlayer.Height;
+            x = enemyPlayer.X + enemyPlayer.Width - centre.Y;
+            y = enemyPlayer.Y + enemyPlayer.Height - centre.Y;
             Vector2 bottomRight = new Vector2((float)(x * Math.Cos(shotAngle) - y * Math.Sin(shotAngle)) + centre.X,
                                               (float)(y * Math.Cos(shotAngle) + x * Math.Sin(shotAngle)) + centre.Y);
 
