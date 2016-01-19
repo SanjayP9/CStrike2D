@@ -208,7 +208,7 @@ namespace CStrike2D
         {
             outMsg = client.CreateMessage();
             outMsg.Write(ServerClientInterface.BUY_WEAPON);
-            outMsg.Write(WeaponData.WEAPON_AK47);
+            outMsg.Write(WeaponData.WeaponToByte(weapon));
             client.SendMessage(outMsg, NetDeliveryMethod.ReliableSequenced);
         }
 

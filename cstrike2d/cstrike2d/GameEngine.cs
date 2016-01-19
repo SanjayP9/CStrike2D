@@ -126,7 +126,6 @@ namespace CStrike2D
             player.SetCurrentWeapon(WeaponData.ByteToWeapon(weapon));
         }
 
-
         /// <summary>
         /// Syncs a new player that has just joined the server
         /// </summary>
@@ -259,8 +258,9 @@ namespace CStrike2D
 
                                         if (driver.Model.InterfaceManager.Clicked(input, "tRifleButtonMenu", "ak47MenuButton"))
                                         {
-
+                                            network.BuyWeapon(WeaponData.Weapon.Ak47);
                                             driver.Model.InterfaceManager.HidePage("tRifleButtonMenu");
+                                            CurMenuState = MenuState.MainMenu;
                                         }
                                     }
                                     break;

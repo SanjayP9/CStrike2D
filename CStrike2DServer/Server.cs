@@ -135,9 +135,9 @@ namespace CStrike2DServer
             netUpdateTimer.Start();
             while (server.Status == NetPeerStatus.Running)
             {
-                Console.Clear();   
-                Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop);
-                Console.WriteLine("Players " + numPlayers + "/" + maxPlayers);
+                //Console.Clear();   
+                //Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop);
+                //Console.WriteLine("Players " + numPlayers + "/" + maxPlayers);
 
                 if (Console.KeyAvailable)
                 {
@@ -486,6 +486,18 @@ namespace CStrike2DServer
                                 outMsg.Write(player.Identifier);
                                 server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
                                 Console.WriteLine("\"" + player.UserName + "\" has left the server");
+
+                                switch (player.CurrentTeam)
+                                {
+                                    case ServerClientInterface.Team.CounterTerrorist:
+                                        numCts--;
+                                        break;
+                                    case ServerClientInterface.Team.Terrorist:
+                                        numTs--;
+                                        break;
+                                }
+                                numPlayers--;
+                                
                                 players.Remove(player);
                                 break;
                         }
@@ -704,6 +716,7 @@ namespace CStrike2DServer
             outMsg.Write(player.Identifier);
             outMsg.Write(weapon);
             server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
+            Console.WriteLine("\"" + player.UserName + "\" purchased weapon " + WeaponData.ByteToWeapon(weapon));
         }
 
         static void SpawnPlayer(long playerIdentifier, Vector2 location)

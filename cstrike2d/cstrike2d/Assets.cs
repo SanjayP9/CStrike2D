@@ -185,9 +185,9 @@ namespace CStrike2D
                 case WeaponData.Weapon.Knife:
                     return weaponTextures[index, 0];
                 case WeaponData.Weapon.Awp:
-                    return weaponTextures[0, 1];
+                    return weaponTextures[index, 1];
                 case WeaponData.Weapon.Ak47:
-                    return weaponTextures[2, 0];
+                    return weaponTextures[index, 0];
                 default:
                     throw new ArgumentOutOfRangeException("weapon", weapon, null);
             }

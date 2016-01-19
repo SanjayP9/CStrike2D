@@ -307,9 +307,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="maps\de_cache.txt">
+    <None Include="maps\de_cache.txt">
       <Name>de_cache</Name>
-    </Compile>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!--  To modify your build process, add your task inside one of the targets below and uncomment it. 
