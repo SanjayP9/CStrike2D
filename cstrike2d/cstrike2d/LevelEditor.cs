@@ -498,8 +498,7 @@ namespace CStrike2D
                     if (tiles[cols, rows] != null)
                     {
                         // Write the tile type
-                        outFile.Write(Convert.ToString(tiles[cols, rows].TileType));
-                        outFile.Write(Convert.ToString(tiles[cols, rows].Property));
+                        outFile.Write(Convert.ToString(tiles[cols, rows].TileType) + Convert.ToString(tiles[cols, rows].Property));
                     }
 
                     // Write a comma before going to the next column
