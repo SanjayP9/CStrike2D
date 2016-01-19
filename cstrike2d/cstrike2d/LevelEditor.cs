@@ -16,9 +16,10 @@ namespace CStrike2D
         // Stores the tiles 
         Tile[,] tiles = new Tile[75, 50];
 
-        //
-        Tile[,] prevTiles = new Tile[75, 50];
+        // Stores the undo tiles
+        Tile[,] undoTiles = new Tile[75, 50];
 
+        // Stores the tile color
         Color tileColor = Color.White;
 
         // Stores the selected tile of the tile set
@@ -40,9 +41,10 @@ namespace CStrike2D
         // Stores the position of the mouse according to the map
         Vector2 mouseMap;
 
-        // 
+        //  Stores the position of the tile on the map
         Vector2 mapTilePos;
 
+        // Bool to show or not show the edit view
         bool showEditView = true;
 
         private InputManager input;
@@ -55,12 +57,16 @@ namespace CStrike2D
         // Stores the map area
         Rectangle mapArea = new Rectangle(-225, -250, 2400, 1600);
 
+        /// <summary>
+        /// Represents states of the level editor
+        /// </summary>
         public enum EditorStates
         {
             Edit,
             ShowHotkeys
         };
 
+        // Stores the current enum state
         private EditorStates currentState = EditorStates.Edit;
 
         public LevelEditor(CStrikeModel model)
@@ -72,15 +78,17 @@ namespace CStrike2D
         
         public void Update(float gameTime)
         {
+            // Updates logic according to the state
             switch (currentState)
             {
                 case EditorStates.Edit:
 
-                    // Holds the mouse position according to the world
+                    // Holds the mouse position according to the map
                     mouseMap = input.ScreenToWorld(input.MousePosition, driver.Model.Camera, driver.Model.Center);
 
-                    // Reset the properties
+                    // Reset the property word
                     property = "";
+
                     // If mouse is over the tile set
                     if (input.MousePosition.X > tileSetOffset.X &&
                         input.MousePosition.X < tileSetOffset.X + tileSetOffset.Width &&
@@ -108,80 +116,73 @@ namespace CStrike2D
                         // If the left mouse button is held
                         if (input.LeftHold())
                         {
-                            // Set the selected tile to be in that tile position according to the mouse keeping the properties if any
+                            // Set the selected tile to be in that map tile position according to the mouse keeping the properties if any
                             if (tiles[(int)mapTilePos.X, (int)mapTilePos.Y] != null &&
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].TileType != selectedTile)
                             {
-                                BackUp();
+                                tempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetTileType(selectedTile);
                             }
                             else if (tiles[(int)mapTilePos.X, (int)mapTilePos.Y] == null)
                             {
-                                BackUp();
+                                tempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y] = new Tile(selectedTile, Tile.NO_PROPERTY);
                             }
                         }
                         // If the right mouse button is held
                         else if (input.RightHold() && tiles[(int)mapTilePos.X, (int)mapTilePos.Y] != null)
                         {
-                            BackUp();
+                            tempSave();
                             // Set the tile that the mouse is on to be empty
                             tiles[(int)mapTilePos.X, (int)mapTilePos.Y] = null;
                         }
 
-                        // If the tile the mouse is on is not null
+                        // If the tile the mouse is on is not null set a property according to the key press
                         if (tiles[(int)mapTilePos.X, (int)mapTilePos.Y] != null)
                         {
                             if (input.Tapped(Keys.D0))
                             {
-                                BackUp();
+                                tempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.NO_PROPERTY);
                             }
                             else if (input.Tapped(Keys.D1))
                             {
-                                BackUp();
+                                tempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.SOLID);
                             }
-                            // 
                             else if (input.Tapped(Keys.D2))
                             {
-                                BackUp();
+                                tempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.A_PLANT_SPOT);
                             }
-                            // 
                             else if (input.Tapped(Keys.D3))
                             {
-                                BackUp();
+                                tempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.B_PLANT_SPOT);
                             }
-                            // 
                             else if (input.Tapped(Keys.D4))
                             {
-                                BackUp();
+                                tempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.SAVE_SPOT);
                             }
-                            // 
                             else if (input.Tapped(Keys.D5))
                             {
-                                BackUp();
+                                tempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.CT_SPAWN_POINT);
                             }
-                            // 
                             else if (input.Tapped(Keys.D6))
                             {
-                                BackUp();
+                                tempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.T_SPAWN_POINT);
                             }
-                            // 
                             else if (input.Tapped(Keys.D7))
                             {
-                                BackUp();
+                                tempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.A_SITE_DEFENCE_POINT);
                             }
-                            // 
                             else if (input.Tapped(Keys.D8))
                             {
-                                BackUp();
+                                tempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.B_SITE_DEFENCE_POINT);
                             }
 
@@ -218,8 +219,12 @@ namespace CStrike2D
                             }
                         }
                     }
+
+                    // If the left control key is held
                     if (input.Held(Keys.LeftControl))
                     {
+                        // Prompts the user to save using a dialog prompt for the location
+                        // When the S key is pressed
                         if (input.Tapped(Keys.S))
                         {
                             SaveFileDialog saveDialog = new SaveFileDialog();
@@ -232,6 +237,8 @@ namespace CStrike2D
                                 SaveFile(saveDialog.FileName);
                             }
                         }
+                        // Prompts the user to open a file using a dialog promt for the location
+                        // When the O key is pressed
                         else if (input.Tapped(Keys.O))
                         {
                             OpenFileDialog openDialog = new OpenFileDialog();
@@ -245,13 +252,15 @@ namespace CStrike2D
                                 LoadFile(openDialog.FileName);
                             }
                         }
+                        // If 0 key is pressed reset the camera zoom
                         else if (input.Tapped(Keys.D0))
                         {
                             driver.Model.Camera.ResetZoom();
                         }
+                        // If the A key is pressed set all the tiles to be the selected tile
                         else if (input.Tapped(Keys.A))
                         {
-                            BackUp();
+                            tempSave();
                             for (int col = 0; col < numCols; col++)
                             {
                                 for (int row = 0; row < numRows; row++)
@@ -260,14 +269,16 @@ namespace CStrike2D
                                 }
                             }
                         }
+                        // If the delete key is pressed it removes all tiles placed
                         else if (input.Tapped(Keys.Delete))
                         {
-                            BackUp();
+                            tempSave();
                             tiles = new Tile[numCols, numRows];
                         }
+                        // If the undo key is pressed it undoes the last action
                         else if (input.Tapped(Keys.Z))
                         {
-                            Revert();
+                            Undo();
                         }
                     }
                     // Move the camera left when the A key is held
@@ -290,18 +301,25 @@ namespace CStrike2D
                     {
                         driver.Model.Camera.Position.Y += CAMERA_MOVE_SPEED;
                     }
+
+                    // If the scroll up key is used zoom in
                     if (input.ScrollUp())
                     {
                         driver.Model.Camera.IncreaseZoom();
                     }
+                    // If the scroll down key is used zoom out
                     else if (input.ScrollDown())
                     {
                         driver.Model.Camera.DecreaseZoom();
                     }
+
+                    // If the tab key is pressed toggle the show edit view
                     if (input.Tapped(Keys.Tab))
                     {
                         showEditView = !showEditView;
                     }
+
+                    // If the escape key is pressed change the state to the hot key state
                     if (input.Tapped(Keys.Escape))
                     {
                         currentState = EditorStates.ShowHotkeys;
@@ -309,6 +327,7 @@ namespace CStrike2D
                     break;
 
                 case EditorStates.ShowHotkeys:
+                    // If the escape key is pressed change the state to the edit state
                     if (input.Tapped(Keys.Escape))
                     {
                         currentState = EditorStates.Edit;
@@ -317,27 +336,38 @@ namespace CStrike2D
             }
         }
 
-        public void BackUp()
+        /// <summary>
+        /// Temporary saves the map
+        /// </summary>
+        public void tempSave()
         {
-            for (int row = 0; row < prevTiles.GetLength(1); row++)
+            for (int row = 0; row < undoTiles.GetLength(1); row++)
             {
-                for (int col = 0; col < prevTiles.GetLength(0); col++)
+                for (int col = 0; col < undoTiles.GetLength(0); col++)
                 {
-                    prevTiles[col, row] = tiles[col, row];
-                }
-            }
-        }
-        public void Revert()
-        {
-            for (int row = 0; row < prevTiles.GetLength(1); row++)
-            {
-                for (int col = 0; col < prevTiles.GetLength(0); col++)
-                {
-                    tiles[col, row] = prevTiles[col, row];
+                    undoTiles[col, row] = tiles[col, row];
                 }
             }
         }
 
+        /// <summary>
+        /// Undoes the last action
+        /// </summary>
+        public void Undo()
+        {
+            for (int row = 0; row < undoTiles.GetLength(1); row++)
+            {
+                for (int col = 0; col < undoTiles.GetLength(0); col++)
+                {
+                    tiles[col, row] = undoTiles[col, row];
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draws the map according to the camea position
+        /// </summary>
+        /// <param name="sb">Passes through spritebatch instance in order to use draw method</param>
         public void DrawWorld(SpriteBatch sb)
         {
             switch (currentState)
@@ -351,7 +381,7 @@ namespace CStrike2D
                     Rectangle destRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
                     Rectangle srcRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
 
-                    // Draws all tiles placed and the properties highlighted overthem
+                    // Draws all tiles placed on the map and colors the tile according to the property
                     for (int col = 0; col < numCols; col++)
                     {
                         for (int row = 0; row < numRows; row++)
@@ -362,6 +392,7 @@ namespace CStrike2D
                                 row * TILE_SIZE < screenDimensions.Y - mapArea.Y &&
                                 row * (TILE_SIZE * 2) > screenStart.Y - mapArea.Y*/)
                             {
+                                // If show edit view is true change the color of the tile according to the property
                                 if (showEditView)
                                 {
                                     switch (tiles[col, row].Property)
@@ -399,14 +430,19 @@ namespace CStrike2D
                                 {
                                     tileColor = Color.White;
                                 }
+
+                                // Find the source rectangle and the destination retangle
                                 srcRect.X = (tiles[col, row].TileType % 8 * TILE_SIZE);
                                 srcRect.Y = (tiles[col, row].TileType / 8 * TILE_SIZE);
                                 destRect.X = col * TILE_SIZE + mapArea.X;
                                 destRect.Y = row * TILE_SIZE + mapArea.Y;
+
+                                // Draw the tile
                                 sb.Draw(driver.Assets.TileSet, destRect, srcRect, tileColor);
                             }
                         }
                     }
+                    // If show edit view is true
                     if (showEditView)
                     {
                         // Draws a grid line for the map each line being 1 pixel thick
@@ -426,17 +462,23 @@ namespace CStrike2D
             }
         }
 
+        /// <summary>
+        /// Draws the UI according to the screen dimensions
+        /// </summary>
+        /// <param name="sb">Passes through spritebatch instance in order to use draw method</param>
         public void DrawUI(SpriteBatch sb)
         {
             switch (currentState)
             {
                 case EditorStates.Edit:
-                    // Drawn the UI, includes map tile index, the selected tile #, and the properties of the tile the mouse is on
+
+                    // Draw the UI which includes map tile index, the selected tile #, and the properties of the tile the mouse is on
                     sb.DrawString(driver.Assets.DefaultFont, "Map Tile Index: " + Math.Floor(mapTilePos.X) + "|" + Math.Floor(mapTilePos.Y), new Vector2(200, 0), Color.White);
                     sb.DrawString(driver.Assets.DefaultFont, "Selected Tile #: " + selectedTile, new Vector2(25, 0), Color.White);
                     sb.DrawString(driver.Assets.DefaultFont, "Property: " + property, new Vector2(385, 0), Color.White);
                     sb.DrawString(driver.Assets.DefaultFont, "Press 'ESCAPE' to view controls", new Vector2(25, 675), Color.White);
 
+                    // If show edit view is true draw the tile set and grid lines for it
                     if (showEditView)
                     {
                         // Draw the tile set
@@ -453,6 +495,8 @@ namespace CStrike2D
                         }
                     }
                     break;
+
+                    // Draw the 
                 case EditorStates.ShowHotkeys:
                     sb.DrawString(driver.Assets.DefaultFont, "MOUSE1 -> SELECT/PLACE TILE\n\nMOUSE2-> REMOVE TILE\n\nCTRL + S -> SAVE FILE\n\nCTRL + O -> OPEN FILE\n\nCTRL + A -> SET ALL TILES\n\nCTRL + DEL -> DELETE ALL TILES\n\nCTRL + Z -> Undo\n\nSCROLL WHEEL -> ZOOM\n\nWASD -> MOVE CAMERA\n\nTAB -> TOGGLE EDIT VIEW", new Vector2(250, 75), Color.White);
                     sb.DrawString(driver.Assets.DefaultFont, "1 -> COLLIDABLE\n\n2-> A SITE PLANT SPOT\n\n3 -> B SITE PLANT SPOT\n\n4 -> SAVE SPOT\n\n5 - > CT SPAWN POINT\n\n6 -> T SPAWN POINT\n\n7 -> A SITE DEFENCE POINT\n\n8 -> B SITE DEFENCE POINT\n\n\n\n0 -> RESET PROPERTY", new Vector2(825, 75), Color.White);
@@ -477,8 +521,8 @@ namespace CStrike2D
             mapArea.Width = TILE_SIZE * numCols;
             mapArea.Height = TILE_SIZE * numRows;
 
-            prevTiles = new Tile[numCols, numRows];
-            BackUp();
+            undoTiles = new Tile[numCols, numRows];
+            tempSave();
             
             // Initialize the number of tiles to be according the the number of columns and rows
             tiles = new Tile[numCols, numRows];
@@ -540,12 +584,12 @@ namespace CStrike2D
         }
         private void AddColumn()
         {
-            BackUp();
+            tempSave();
             numCols++;
             tiles = new Tile[numCols, numRows];
             mapArea.Width = TILE_SIZE * numCols;
             //mapArea.Height = TILE_SIZE * numRows;
-            Revert();
+            Undo();
         }
     }
 }
