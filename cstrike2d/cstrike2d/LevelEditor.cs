@@ -301,6 +301,10 @@ namespace CStrike2D
                     {
                         displayTileSet = !displayTileSet;
                     }
+                    if (input.Tapped(Keys.Escape))
+                    {
+                        currentState = EditorStates.ShowHotkeys;
+                    }
                     break;
 
                 case EditorStates.ShowHotkeys:
@@ -351,11 +355,11 @@ namespace CStrike2D
                     {
                         for (int row = 0; row < numRows; row++)
                         {
-                            if (tiles[col, row] != null &&
+                            if (tiles[col, row] != null /*&&
                                 col * TILE_SIZE < screenDimensions.X - mapArea.X &&
                                 col * (TILE_SIZE * 2) > screenStart.X - mapArea.X &&
                                 row * TILE_SIZE < screenDimensions.Y - mapArea.Y &&
-                                row * (TILE_SIZE * 2) > screenStart.Y - mapArea.Y)
+                                row * (TILE_SIZE * 2) > screenStart.Y - mapArea.Y*/)
                             {
                                 srcRect.X = (tiles[col, row].TileType % 8 * TILE_SIZE);
                                 srcRect.Y = (tiles[col, row].TileType / 8 * TILE_SIZE);
@@ -420,9 +424,10 @@ namespace CStrike2D
             {
                 case EditorStates.Edit:
                     // Drawn the UI, includes map tile index, the selected tile #, and the properties of the tile the mouse is on
-                    sb.DrawString(driver.Assets.DefaultFont, "Map Tile Index: " + Math.Floor(mapTilePos.X) + "|" + Math.Floor(mapTilePos.Y), new Vector2(175, 0), Color.White);
-                    sb.DrawString(driver.Assets.DefaultFont, "Selected Tile #: " + selectedTile, new Vector2(0, 0), Color.White);
-                    sb.DrawString(driver.Assets.DefaultFont, "Property: " + property, new Vector2(360, 0), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Map Tile Index: " + Math.Floor(mapTilePos.X) + "|" + Math.Floor(mapTilePos.Y), new Vector2(200, 0), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Selected Tile #: " + selectedTile, new Vector2(25, 0), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Property: " + property, new Vector2(385, 0), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Press 'ESCAPE' to view controls", new Vector2(25, 675), Color.White);
 
                     if (displayTileSet)
                     {
@@ -442,8 +447,8 @@ namespace CStrike2D
                     break;
                 case EditorStates.ShowHotkeys:
                     sb.DrawString(driver.Assets.DefaultFont, "MOUSE1 -> SELECT/PLACE TILE\n\nMOUSE2-> REMOVE TILE\n\nCTRL + S -> SAVE FILE\n\nCTRL + O -> OPEN FILE\n\nCTRL + A -> SET ALL TILES\n\nCTRL + DEL -> DELETE ALL TILES\n\nCTRL + Z -> Undo\n\nSCROLL WHEEL -> ZOOM\n\nWASD -> MOVE CAMERA\n\nTAB -> TOGGLE EDIT VIEW", new Vector2(250, 75), Color.White);
-                    sb.DrawString(driver.Assets.DefaultFont, "1 -> COLLIADABE\n\n2-> A SITE PLANT SPOT\n\n3 -> B SITE PLANT SPOT\n\n4 -> SAVE SPOT\n\n5 - > CT SPAWN POINT\n\n6 -> T SPAWN POINT\n\n7 -> A SITE DEFENCE POINT\n\n8 -> B SITE DEFENCE POINT\n\n\n\n0 -> RESET PROPERTY", new Vector2(600, 75), Color.White);
-                    sb.DrawString(driver.Assets.DefaultFont, "Press 'ESCAPE' to return to editor", new Vector2(550, 675), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "1 -> COLLIADABE\n\n2-> A SITE PLANT SPOT\n\n3 -> B SITE PLANT SPOT\n\n4 -> SAVE SPOT\n\n5 - > CT SPAWN POINT\n\n6 -> T SPAWN POINT\n\n7 -> A SITE DEFENCE POINT\n\n8 -> B SITE DEFENCE POINT\n\n\n\n0 -> RESET PROPERTY", new Vector2(825, 75), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Press 'ESCAPE' to return to editor", new Vector2(525, 675), Color.White);
                     //sb.Draw(driver.Assets.PixelTexture, new Rectangle(700, 75, 50, 50), Color.White);
                     break;
             }
