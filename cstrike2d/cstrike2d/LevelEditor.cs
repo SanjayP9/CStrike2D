@@ -219,6 +219,14 @@ namespace CStrike2D
                     }
                     if (input.Held(Keys.LeftControl))
                     {
+                        if (input.RightHold())
+                        {
+                            if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null &&
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].Property != Tile.NO_PROPERTY)
+                            {
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.NO_PROPERTY);
+                            }
+                        }
                         if (input.Tapped(Keys.S))
                         {
                             SaveFileDialog saveDialog = new SaveFileDialog();
@@ -462,7 +470,7 @@ namespace CStrike2D
                     if (rowData[cols] != "")
                     {
                         // Initialize each property of the tile
-                        tiles[cols, rows] = new Tile(Convert.ToByte(rowData[cols].Substring(0, rowData[cols].Length - 1)), Convert.ToByte(rowData[cols][rowData[cols].Length - 1]));
+                        tiles[cols, rows] = new Tile((byte)Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 1)), (byte)Convert.ToInt32(rowData[cols].Substring(rowData[cols].Length - 1, 1)));
                     }
                 }
             }
