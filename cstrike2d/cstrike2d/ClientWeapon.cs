@@ -27,7 +27,7 @@ namespace CStrike2D
         public ClientWeapon(WeaponData.Weapon weapon, ClientPlayer owner)
         {
             Owner = owner;
-            
+            Weapon = weapon;
         }
 
         public void Update(float gameTime)
