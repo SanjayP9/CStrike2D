@@ -60,7 +60,7 @@ namespace CStrike2D
             ShowHotkeys
         };
 
-        private EditorStates currentState = EditorStates.Edit;
+        private EditorStates currentState = EditorStates.ShowHotkeys;
 
         public LevelEditor(CStrikeModel model)
         {
@@ -219,14 +219,6 @@ namespace CStrike2D
                     }
                     if (input.Held(Keys.LeftControl))
                     {
-                        if (input.RightHold())
-                        {
-                            if (tiles[(int)mapTilePos.X, (int)mapTilePos.Y] != null &&
-                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y].Property != Tile.NO_PROPERTY)
-                            {
-                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.NO_PROPERTY);
-                            }
-                        }
                         if (input.Tapped(Keys.S))
                         {
                             SaveFileDialog saveDialog = new SaveFileDialog();
@@ -312,7 +304,10 @@ namespace CStrike2D
                     break;
 
                 case EditorStates.ShowHotkeys:
-
+                    if (input.Tapped(Keys.Escape))
+                    {
+                        currentState = EditorStates.Edit;
+                    }
                     break;
             }
         }
@@ -340,74 +335,82 @@ namespace CStrike2D
 
         public void DrawWorld(SpriteBatch sb)
         {
-            // Draws the background of the map
-            sb.Draw(driver.Assets.PixelTexture, mapArea, Color.CornflowerBlue);
-            Vector2 screenDimensions = input.ScreenToWorld(driver.Model.Dimensions, driver.Model.Camera, driver.Model.Center);
-            Vector2 screenStart = input.ScreenToWorld(new Vector2(0, 0), driver.Model.Camera, driver.Model.Center);
-
-            Rectangle destRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
-            Rectangle srcRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
-
-            // Draws all tiles placed and the properties highlighted overthem
-            for (int col = 0; col < numCols; col++)
+            switch (currentState)
             {
-                for (int row = 0; row < numRows; row++)
-                {
-                    if (tiles[col, row] != null &&
-                        col * TILE_SIZE < screenDimensions.X - mapArea.X &&
-                        col * (TILE_SIZE * 2) > screenStart.X - mapArea.X &&
-                        row * TILE_SIZE < screenDimensions.Y - mapArea.Y &&
-                        row * (TILE_SIZE * 2) > screenStart.Y - mapArea.Y)
+                case EditorStates.Edit:
+                    // Draws the background of the map
+                    sb.Draw(driver.Assets.PixelTexture, mapArea, Color.CornflowerBlue);
+                    Vector2 screenDimensions = input.ScreenToWorld(driver.Model.Dimensions, driver.Model.Camera, driver.Model.Center);
+                    Vector2 screenStart = input.ScreenToWorld(new Vector2(0, 0), driver.Model.Camera, driver.Model.Center);
+
+                    Rectangle destRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
+                    Rectangle srcRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
+
+                    // Draws all tiles placed and the properties highlighted overthem
+                    for (int col = 0; col < numCols; col++)
                     {
-                        srcRect.X = (tiles[col, row].TileType % 8 * TILE_SIZE);
-                        srcRect.Y = (tiles[col, row].TileType / 8 * TILE_SIZE);
-                        destRect.X = col * TILE_SIZE + mapArea.X;
-                        destRect.Y = row * TILE_SIZE + mapArea.Y;
-                        switch (tiles[col, row].Property)
+                        for (int row = 0; row < numRows; row++)
                         {
-                            case Tile.NO_PROPERTY:
-                                tileColor = Color.White;
-                                break;
-                            case Tile.SOLID:
-                                tileColor = Color.Red;
-                                break;
-                            case Tile.A_PLANT_SPOT:
-                                tileColor = Color.Yellow;
-                                break;
-                            case Tile.B_PLANT_SPOT:
-                                tileColor = Color.Yellow;
-                                break;
-                            case Tile.SAVE_SPOT:
-                                tileColor = Color.Green;
-                                break;
-                            case Tile.CT_SPAWN_POINT:
-                                tileColor = Color.Blue;
-                                break;
-                            case Tile.T_SPAWN_POINT:
-                                tileColor = Color.Orange;
-                                break;
-                            case Tile.A_SITE_DEFENCE_POINT:
-                                tileColor = Color.Purple;
-                                break;
-                            case Tile.B_SITE_DEFENCE_POINT:
-                                tileColor = Color.Purple;
-                                break;
+                            if (tiles[col, row] != null &&
+                                col * TILE_SIZE < screenDimensions.X - mapArea.X &&
+                                col * (TILE_SIZE * 2) > screenStart.X - mapArea.X &&
+                                row * TILE_SIZE < screenDimensions.Y - mapArea.Y &&
+                                row * (TILE_SIZE * 2) > screenStart.Y - mapArea.Y)
+                            {
+                                srcRect.X = (tiles[col, row].TileType % 8 * TILE_SIZE);
+                                srcRect.Y = (tiles[col, row].TileType / 8 * TILE_SIZE);
+                                destRect.X = col * TILE_SIZE + mapArea.X;
+                                destRect.Y = row * TILE_SIZE + mapArea.Y;
+                                switch (tiles[col, row].Property)
+                                {
+                                    case Tile.NO_PROPERTY:
+                                        tileColor = Color.White;
+                                        break;
+                                    case Tile.SOLID:
+                                        tileColor = Color.Red;
+                                        break;
+                                    case Tile.A_PLANT_SPOT:
+                                        tileColor = Color.Yellow;
+                                        break;
+                                    case Tile.B_PLANT_SPOT:
+                                        tileColor = Color.Yellow;
+                                        break;
+                                    case Tile.SAVE_SPOT:
+                                        tileColor = Color.Green;
+                                        break;
+                                    case Tile.CT_SPAWN_POINT:
+                                        tileColor = Color.Blue;
+                                        break;
+                                    case Tile.T_SPAWN_POINT:
+                                        tileColor = Color.Orange;
+                                        break;
+                                    case Tile.A_SITE_DEFENCE_POINT:
+                                        tileColor = Color.Purple;
+                                        break;
+                                    case Tile.B_SITE_DEFENCE_POINT:
+                                        tileColor = Color.Purple;
+                                        break;
+                                }
+                                sb.Draw(driver.Assets.TileSet, destRect, srcRect, tileColor);
+                            }
                         }
-                        sb.Draw(driver.Assets.TileSet, destRect, srcRect, tileColor);
                     }
-                }
-            }
-            if (displayTileSet)
-            {
-                // Draws a grid line for the map each line being 1 pixel thick
-                for (int col = 0; col <= numCols; col++)
-                {
-                    sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(mapArea.X + col * TILE_SIZE), (int)mapArea.Y, 1, (int)mapArea.Height), Color.Black);
-                }
-                for (int row = 0; row <= numRows; row++)
-                {
-                    sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)mapArea.X, (int)(mapArea.Y + row * TILE_SIZE), (int)mapArea.Width, 1), Color.Black);
-                }
+                    if (displayTileSet)
+                    {
+                        // Draws a grid line for the map each line being 1 pixel thick
+                        for (int col = 0; col <= numCols; col++)
+                        {
+                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(mapArea.X + col * TILE_SIZE), (int)mapArea.Y, 1, (int)mapArea.Height), Color.Black);
+                        }
+                        for (int row = 0; row <= numRows; row++)
+                        {
+                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)mapArea.X, (int)(mapArea.Y + row * TILE_SIZE), (int)mapArea.Width, 1), Color.Black);
+                        }
+                    }
+                    break;
+                case EditorStates.ShowHotkeys:
+                    
+                    break;
             }
         }
 
@@ -436,6 +439,12 @@ namespace CStrike2D
                             sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)tileSetOffset.X, (int)(tileSetOffset.Y + row * TILE_SIZE), (int)tileSetOffset.Width, 1), Color.Black);
                         }
                     }
+                    break;
+                case EditorStates.ShowHotkeys:
+                    sb.DrawString(driver.Assets.DefaultFont, "MOUSE1 -> SELECT/PLACE TILE\n\nMOUSE2-> REMOVE TILE\n\nCTRL + S -> SAVE FILE\n\nCTRL + O -> OPEN FILE\n\nCTRL + A -> SET ALL TILES\n\nCTRL + DEL -> DELETE ALL TILES\n\nCTRL + Z -> Undo\n\nSCROLL WHEEL -> ZOOM\n\nWASD -> MOVE CAMERA\n\nTAB -> TOGGLE EDIT VIEW", new Vector2(250, 75), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "1 -> COLLIADABE\n\n2-> A SITE PLANT SPOT\n\n3 -> B SITE PLANT SPOT\n\n4 -> SAVE SPOT\n\n5 - > CT SPAWN POINT\n\n6 -> T SPAWN POINT\n\n7 -> A SITE DEFENCE POINT\n\n8 -> B SITE DEFENCE POINT\n\n\n\n0 -> RESET PROPERTY", new Vector2(600, 75), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Press 'ESCAPE' to return to editor", new Vector2(550, 675), Color.White);
+                    //sb.Draw(driver.Assets.PixelTexture, new Rectangle(700, 75, 50, 50), Color.White);
                     break;
             }
         }
