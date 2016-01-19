@@ -236,11 +236,11 @@ namespace CStrike2D
                         else if (input.Tapped(Keys.A))
                         {
                             BackUp();
-                            for (int x = 0; x < numCols; x++)
+                            for (int col = 0; col < numCols; col++)
                             {
-                                for (int y = 0; y < numRows; y++)
+                                for (int row = 0; row < numRows; row++)
                                 {
-                                    tiles[x, y] = new Tile(selectedTile, false, false, false, false, false, false);
+                                    tiles[col, row] = new Tile(selectedTile, false, false, false, false, false, false);
                                 }
                             }
                         }
@@ -328,46 +328,45 @@ namespace CStrike2D
             Rectangle srcRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
 
             // Draws all tiles placed and the properties highlighted overthem
-            for (int x = 0; x < numCols; x++)
+            for (int col = 0; col < numCols; col++)
             {
-                for (int y = 0; y < numRows; y++)
+                for (int row = 0; row < numRows; row++)
                 {
-                    if (tiles[x, y] != null &&
-                        (x * 32 < screenDimensions.X - mapArea.X &&
-                         x * 32 + 32 > screenStart.X - mapArea.X) &&
-                        (y * 32 < screenDimensions.Y - mapArea.Y &&
-                         y * 32 + 32 > screenStart.Y - mapArea.Y)
-                        )
+                    if (tiles[col, row] != null &&
+                        col * TILE_SIZE < screenDimensions.X - mapArea.X &&
+                        col * (TILE_SIZE * 2) > screenStart.X - mapArea.X &&
+                        row * TILE_SIZE < screenDimensions.Y - mapArea.Y &&
+                        row * (TILE_SIZE * 2) > screenStart.Y - mapArea.Y)
                     {
-                        srcRect.X = (tiles[x, y].TileType % 8 * TILE_SIZE);
-                        srcRect.Y = (tiles[x, y].TileType / 8 * TILE_SIZE);
-                        destRect.X = x*TILE_SIZE + mapArea.X;
-                        destRect.Y = y*TILE_SIZE + mapArea.Y;
+                        srcRect.X = (tiles[col, row].TileType % 8 * TILE_SIZE);
+                        srcRect.Y = (tiles[col, row].TileType / 8 * TILE_SIZE);
+                        destRect.X = col * TILE_SIZE + mapArea.X;
+                        destRect.Y = row * TILE_SIZE + mapArea.Y;
                         //Rectangle tileSrcRec = new Rectangle(srcX, srcY, (int)TILE_SIZE, (int)TILE_SIZE);
                         sb.Draw(driver.Assets.TileSet, destRect, srcRect, Color.White);
                         if (displayTileSet)
                         {
-                            if (tiles[x, y].IsPlantSpot)
+                            if (tiles[col, row].IsPlantSpot)
                             {
                                 sb.Draw(driver.Assets.PixelTexture, destRect, Color.Yellow*0.5f);
                             }
-                            if (tiles[x, y].IsSaveSpot)
+                            if (tiles[col, row].IsSaveSpot)
                             {
                                 sb.Draw(driver.Assets.PixelTexture, destRect, Color.Green*0.5f);
                             }
-                            if (tiles[x, y].IsSolid)
+                            if (tiles[col, row].IsSolid)
                             {
                                 sb.Draw(driver.Assets.PixelTexture, destRect, Color.Red*0.5f);
                             }
-                            if (tiles[x, y].IsCTSpawnPoint)
+                            if (tiles[col, row].IsCTSpawnPoint)
                             {
                                 sb.Draw(driver.Assets.PixelTexture, destRect, Color.Blue*0.5f);
                             }
-                            if (tiles[x, y].IsTSpawnPoint)
+                            if (tiles[col, row].IsTSpawnPoint)
                             {
                                 sb.Draw(driver.Assets.PixelTexture, destRect, Color.Orange*0.5f);
                             }
-                            if (tiles[x, y].IsSiteDefencePoint)
+                            if (tiles[col, row].IsSiteDefencePoint)
                             {
                                 sb.Draw(driver.Assets.PixelTexture, destRect, Color.Purple*0.5f);
                             }
@@ -378,13 +377,13 @@ namespace CStrike2D
             if (displayTileSet)
             {
                 // Draws a grid line for the map each line being 1 pixel thick
-                for (int x = 0; x <= numCols; x++)
+                for (int col = 0; col <= numCols; col++)
                 {
-                    sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(mapArea.X + x * TILE_SIZE), (int)mapArea.Y, 1, (int)mapArea.Height), Color.Black);
+                    sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(mapArea.X + col * TILE_SIZE), (int)mapArea.Y, 1, (int)mapArea.Height), Color.Black);
                 }
-                for (int y = 0; y <= numRows; y++)
+                for (int row = 0; row <= numRows; row++)
                 {
-                    sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)mapArea.X, (int)(mapArea.Y + y * TILE_SIZE), (int)mapArea.Width, 1), Color.Black);
+                    sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)mapArea.X, (int)(mapArea.Y + row * TILE_SIZE), (int)mapArea.Width, 1), Color.Black);
                 }
             }
         }
@@ -402,13 +401,13 @@ namespace CStrike2D
                 sb.Draw(driver.Assets.TileSet, tileSetOffset, Color.White);
 
                 // Drawn the grid line for the tile set each line being 1 pixel thick
-                for (int x = 0; x <= TILE_SET_WIDTH; x++)
+                for (int col = 0; col <= TILE_SET_WIDTH; col++)
                 {
-                    sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(tileSetOffset.X + x * TILE_SIZE), (int)tileSetOffset.Y, 1, (int)tileSetOffset.Height), Color.Black);
+                    sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(tileSetOffset.X + col * TILE_SIZE), (int)tileSetOffset.Y, 1, (int)tileSetOffset.Height), Color.Black);
                 }
-                for (int y = 0; y <= TILES_SET_HEIGHT; y++)
+                for (int row = 0; row <= TILES_SET_HEIGHT; row++)
                 {
-                    sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)tileSetOffset.X, (int)(tileSetOffset.Y + y * TILE_SIZE), (int)tileSetOffset.Width, 1), Color.Black);
+                    sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)tileSetOffset.X, (int)(tileSetOffset.Y + row * TILE_SIZE), (int)tileSetOffset.Width, 1), Color.Black);
                 }
             }
         }
@@ -417,17 +416,12 @@ namespace CStrike2D
             // Creates a stream reader instance of the text file
             StreamReader inFile = File.OpenText(filePath);
 
-            // Count the amount of lines in the text file
-            int lineCount = File.ReadLines(filePath).Count();
-
             // Stores the data for a single line as a time
             string[] rowData;
 
             // Checks the first and second line of the text to set the number of columns and the number of rows
             numCols = Convert.ToInt32(inFile.ReadLine());
             numRows = Convert.ToInt32(inFile.ReadLine());
-
-
 
             // Changes the placement area according to the number of columns and rows
             mapArea = new Rectangle(-200, -250, 32 * numCols, 32 * numRows);
