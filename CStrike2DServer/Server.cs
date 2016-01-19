@@ -135,6 +135,9 @@ namespace CStrike2DServer
             netUpdateTimer.Start();
             while (server.Status == NetPeerStatus.Running)
             {
+                Console.Clear();   
+                Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop);
+                Console.WriteLine("Players " + numPlayers + "/" + maxPlayers);
 
                 if (Console.KeyAvailable)
                 {
@@ -599,6 +602,7 @@ namespace CStrike2DServer
             }
             outMsg = server.CreateMessage();
             outMsg.Write(ServerClientInterface.SYNC_COMPLETE);
+            server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
         }
 
         /// <summary>

@@ -10,21 +10,26 @@ namespace CStrike2D
         public int TileType { get; private set; }
         public Rectangle Bounds { get; private set; }
         public bool IsSolid { get; private set; }
-        public bool IsPlantSpot { get; private set; }
+        public bool IsAPlantSpot { get; private set; }
+        public bool IsBPlantSpot { get; private set; }
         public bool IsSaveSpot { get; private set; }
         public bool IsCTSpawnPoint { get; private set; }
         public bool IsTSpawnPoint { get; private set; }
-        public bool IsSiteDefencePoint { get; private set; }
+        public bool IsASiteDefencePoint { get; private set; }
+        public bool IsBSiteBDefencePoint { get; private set; }
 
-        public Tile(int tileType, bool isPlantSpot, bool isSaveSpot, bool isSolid, bool isCTSpawnPoint, bool isTSpawnPoint, bool isSiteDefencePoint)
+        public Tile(int tileType, bool iSolid,bool isAPlantSpot, bool isBPlantSpot, bool isSaveSpot, bool isCTSpawnPoint, bool isTSpawnPoint, bool isASiteDefencePoint, bool isBSiteDefence)
         {
+            //TileType = tileType;
+            //IsAPlantSpot = isAPlantSpot;
+            //IsBPlantSpot = isBPlantSpot;
+            //IsSaveSpot = isSaveSpot;
+            //IsSolid = isSolid;
+            //IsCTSpawnPoint = isCTSpawnPoint;
+            //IsTSpawnPoint = isTSpawnPoint;
+            //IsSiteDefencePoint = isSiteDefencePoint;
             TileType = tileType;
-            IsPlantSpot = isPlantSpot;
-            IsSaveSpot = isSaveSpot;
-            IsSolid = isSolid;
-            IsCTSpawnPoint = isCTSpawnPoint;
-            IsTSpawnPoint = isTSpawnPoint;
-            IsSiteDefencePoint = isSiteDefencePoint;
+            IsSolid = isSolidbool isAPlantSpot, bool isBPlantSpot, bool isSaveSpot, bool isCTSpawnPoint, bool isTSpawnPoint, bool isASiteDefencePoint, bool isBSiteDefence
         }
         public void SetTileType(int tileType)
         {
