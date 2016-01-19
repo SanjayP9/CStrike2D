@@ -538,9 +538,12 @@ namespace CStrike2D
         /// <param name="sb"></param>
         public void DrawWorld(SpriteBatch sb)
         {
-            sb.Draw(assets.PixelTexture, new Rectangle(0, 0, (int)driver.Model.Dimensions.X, (int)driver.Model.Dimensions.Y), Color.White);
+            //sb.Draw(assets.PixelTexture, new Rectangle(0, 0, (int)driver.Model.Dimensions.X, (int)driver.Model.Dimensions.Y), Color.White);
+            
             if (CurState == GameEngineState.Active)
             {
+                assets.MapData.Draw(sb);
+
                 foreach (ClientPlayer ply in Players)
                 {
                     ply.Draw(sb);

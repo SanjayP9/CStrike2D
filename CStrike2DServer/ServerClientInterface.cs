@@ -13,7 +13,7 @@ namespace CStrike2DServer
 
         public static readonly Color S_Color = new Color(40, 40, 40);
 
-        public static float MOVEMENT_SPEED = 5f;
+        public static float MOVEMENT_SPEED = 3f;
 
         /// <summary>
         /// Request sent by the server for the client to 
