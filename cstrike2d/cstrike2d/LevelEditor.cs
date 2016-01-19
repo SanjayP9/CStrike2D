@@ -19,9 +19,13 @@ namespace CStrike2D
         //
         Tile[,] prevTiles = new Tile[75, 50];
 
+        //
+        byte[,] property = new byte[75, 50];
 
         // Stores the selected tile of the tile set
         int selectedTile;
+
+        
 
         // Stores the constants of the tile size and the width/height of the tile set
         const int TILE_SIZE = 32;
@@ -104,9 +108,9 @@ namespace CStrike2D
                     }
                     // If the mouse is over the map region
                     else if (mouseMap.X > mapArea.X &&
-                        mouseMap.X < mapArea.X + mapArea.Width &&
-                        mouseMap.Y > mapArea.Y &&
-                        mouseMap.Y < mapArea.Y + mapArea.Height)
+                             mouseMap.X < mapArea.X + mapArea.Width &&
+                             mouseMap.Y > mapArea.Y &&
+                             mouseMap.Y < mapArea.Y + mapArea.Height)
                     {
                         // Find the tile the mouse is on
                         placedTilePos = new Vector2(((mouseMap.X - mapArea.X) / TILE_SIZE), (mouseMap.Y - mapArea.Y) / TILE_SIZE);
@@ -124,7 +128,7 @@ namespace CStrike2D
                             else if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] == null)
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = new Tile(selectedTile, false, false, false, false, false, false);
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = new Tile(selectedTile, Tile.NO_PROPERTY);
                             }
                         }
                         // If the right mouse button is held
@@ -138,68 +142,79 @@ namespace CStrike2D
                         // If the tile the mouse is on is not null
                         if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
                         {
-                            // 
                             if (input.Tapped(Keys.D1))
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsPlantSpot(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot);
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.SOLID);
                             }
                             // 
-                            else if (input.Tapped(Keys.D2))
+                            if (input.Tapped(Keys.D2))
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSaveSpot(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot);
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.A_PLANT_SPOT);
                             }
                             // 
                             else if (input.Tapped(Keys.D3))
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSolid(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid);
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.B_PLANT_SPOT);
                             }
                             // 
                             else if (input.Tapped(Keys.D4))
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsCTSpawnPoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsCTSpawnPoint);
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.SAVE_SPOT);
                             }
                             // 
                             else if (input.Tapped(Keys.D5))
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsTSpawnPoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsTSpawnPoint);
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.CT_SPAWN_POINT);
                             }
                             // 
                             else if (input.Tapped(Keys.D6))
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetIsSiteDefencePoint(!tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSiteDefencePoint);
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.T_SPAWN_POINT);
+                            }
+                            // 
+                            else if (input.Tapped(Keys.D7))
+                            {
+                                BackUp();
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.A_SITE_DEFENCE_POINT);
+                            }
+                            // 
+                            else if (input.Tapped(Keys.D8))
+                            {
+                                BackUp();
+                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.B_SITE_DEFENCE_POINT);
                             }
 
                             // Add the specified properties to the properties string if that property is true
-                            if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot)
-                            {
-                                properties += "Plant Spot, ";
-                            }
-                            if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot)
-                            {
-                                properties += "Save Spot, ";
-                            }
-                            if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid)
-                            {
-                                properties += "Collidable, ";
-                            }
-                            if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsCTSpawnPoint)
-                            {
-                                properties += "CT Spawn Point, ";
-                            }
-                            if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsTSpawnPoint)
-                            {
-                                properties += "T Spawn Point, ";
-                            }
-                            if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSiteDefencePoint)
-                            {
-                                properties += "Defence Point ";
-                            }
+                            //if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsPlantSpot)
+                            //{
+                            //    properties += "Plant Spot, ";
+                            //}
+                            //if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSaveSpot)
+                            //{
+                            //    properties += "Save Spot, ";
+                            //}
+                            //if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSolid)
+                            //{
+                            //    properties += "Collidable, ";
+                            //}
+                            //if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsCTSpawnPoint)
+                            //{
+                            //    properties += "CT Spawn Point, ";
+                            //}
+                            //if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsTSpawnPoint)
+                            //{
+                            //    properties += "T Spawn Point, ";
+                            //}
+                            //if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].IsSiteDefencePoint)
+                            //{
+                            //    properties += "Defence Point ";
+                            //}
                         }
                     }
                     if (input.Held(Keys.LeftControl))
@@ -240,7 +255,7 @@ namespace CStrike2D
                             {
                                 for (int row = 0; row < numRows; row++)
                                 {
-                                    tiles[col, row] = new Tile(selectedTile, false, false, false, false, false, false);
+                                    tiles[col, row] = new Tile(selectedTile, Tile.NO_PROPERTY);
                                 }
                             }
                         }
