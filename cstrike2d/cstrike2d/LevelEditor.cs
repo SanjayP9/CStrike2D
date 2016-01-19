@@ -413,25 +413,30 @@ namespace CStrike2D
 
         public void DrawUI(SpriteBatch sb)
         {
-            // Drawn the UI, includes map tile index, the selected tile #, and the properties of the tile the mouse is on
-            sb.DrawString(driver.Assets.DefaultFont, "Map Tile Index: " + Math.Floor(mapTilePos.X) + "|" + Math.Floor(mapTilePos.Y), new Vector2(175, 0), Color.White);
-            sb.DrawString(driver.Assets.DefaultFont, "Selected Tile #: " + selectedTile, new Vector2(0, 0), Color.White);
-            sb.DrawString(driver.Assets.DefaultFont, "Properties: " + property, new Vector2(360, 0), Color.White);
-
-            if (displayTileSet)
+            switch (currentState)
             {
-                // Draw the tile set
-                sb.Draw(driver.Assets.TileSet, tileSetOffset, Color.White);
+                case EditorStates.Edit:
+                    // Drawn the UI, includes map tile index, the selected tile #, and the properties of the tile the mouse is on
+                    sb.DrawString(driver.Assets.DefaultFont, "Map Tile Index: " + Math.Floor(mapTilePos.X) + "|" + Math.Floor(mapTilePos.Y), new Vector2(175, 0), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Selected Tile #: " + selectedTile, new Vector2(0, 0), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Property: " + property, new Vector2(360, 0), Color.White);
 
-                // Drawn the grid line for the tile set each line being 1 pixel thick
-                for (int col = 0; col <= TILE_SET_WIDTH; col++)
-                {
-                    sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(tileSetOffset.X + col * TILE_SIZE), (int)tileSetOffset.Y, 1, (int)tileSetOffset.Height), Color.Black);
-                }
-                for (int row = 0; row <= TILES_SET_HEIGHT; row++)
-                {
-                    sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)tileSetOffset.X, (int)(tileSetOffset.Y + row * TILE_SIZE), (int)tileSetOffset.Width, 1), Color.Black);
-                }
+                    if (displayTileSet)
+                    {
+                        // Draw the tile set
+                        sb.Draw(driver.Assets.TileSet, tileSetOffset, Color.White);
+
+                        // Drawn the grid line for the tile set each line being 1 pixel thick
+                        for (int col = 0; col <= TILE_SET_WIDTH; col++)
+                        {
+                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)(tileSetOffset.X + col * TILE_SIZE), (int)tileSetOffset.Y, 1, (int)tileSetOffset.Height), Color.Black);
+                        }
+                        for (int row = 0; row <= TILES_SET_HEIGHT; row++)
+                        {
+                            sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)tileSetOffset.X, (int)(tileSetOffset.Y + row * TILE_SIZE), (int)tileSetOffset.Width, 1), Color.Black);
+                        }
+                    }
+                    break;
             }
         }
         public void LoadFile(string filePath)
