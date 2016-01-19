@@ -37,7 +37,7 @@ namespace CStrike2D
         /// </summary>
         public RayCast()
         {
-            RayCastLine = new RayCastResult();
+           // RayCastLine = new RayCastResult();
         }
 
         /// <summary>
@@ -53,9 +53,10 @@ namespace CStrike2D
             // Runs raycast method for and stores the returned result in RayCastLine
             RayCastLine = RayCastMethod(emitPos, directionVect, rayLineLength, tiles, angle);
             
-            //
+            // Sets global Collision Pos to the one obtained from RayCastLine
             CollisionPos = RayCastLine.CollisionPos;
 
+            // Sets Ray line oclor based on distance from collision pos
             if (GetRayLength() > 400f)
             {
                 RayColor = Color.Green;
@@ -81,15 +82,16 @@ namespace CStrike2D
         /// <returns></returns>
         public RayCastResult RayCastMethod(Vector2 emitPos, Vector2 directionVect, float rayLineLength, Tile[,] tiles, float angle)
         {
-            // Sets global variables to variables
+            // Sets global variables values to values btained from local variables
             this.emitPos = emitPos;
             this.directionVect = directionVect;
             this.rayLength = rayLineLength;
             this.angle = angle;
 
-
+            // Creates an instance of rayCastResult
             RayCastResult castResult = new RayCastResult();
 
+            // If the rayLineLength is 0 then t
             if (rayLineLength == 0f)
             {
                 castResult.CollisionPos = emitPos;
@@ -98,42 +100,53 @@ namespace CStrike2D
                 return castResult;
             }
 
-            // 
+            // Normalizes direction vect so that its equivilant to one unit
             directionVect.Normalize();
 
+            // Returns each of the points that are in the ray an stores it in the pointsOnRay array
             Vector2[] pointsOnRay = GetPointsOnRay(emitPos, emitPos + (directionVect * rayLineLength));
 
+            // If theres more than 1 point on the ray run logic below
             if (pointsOnRay.Length > 0)
             {
                 int index = 0;
 
+                // If the first element is not at the emit position set the index to the last element in the array
                 if (pointsOnRay[0] != emitPos)
                 {
                     index = pointsOnRay.Length - 1;
                 }
 
+                // Starts while loop
                 while (true)
                 {
+                    // Sets the tempPoint vector tot the point on the index
                     Vector2 tempPoint = pointsOnRay[index];
 
+                    // If the vector at the point above is not accessible then a collision point is found
                     if (!(IsVectorAccessible(tempPoint, tiles)))
                     {
                         castResult.CollisionPos = tempPoint;
                         castResult.IsColliding = true;
                         break;
                     }
+
+                    // If the first element in pointsOnRAy is not at the emit poisiton yet then decrement current Index
                     if (pointsOnRay[0] != emitPos)
                     {
                         index--;
 
+                        //  If the index gets out of bounds then break form the loop
                         if (index < 0)
                         {
                             break;
                         }
                     }
-                    else
+                    else // If the firtindex is at the emitter position incriment the index
                     {
+
                         index++;
+
 
                         if (index >= pointsOnRay.Length)
                         {
@@ -274,7 +287,7 @@ namespace CStrike2D
         }
 
         /// <summary>
-        /// 
+        /// Draws RayCast line
         /// </summary>
         /// <param name="sb"></param>
         /// <param name="pixelTexture"></param>
