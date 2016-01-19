@@ -93,6 +93,11 @@ namespace CStrike2D
             instance.Model.AudioManager.AddSound(new SoundContainer("menuMusic", coreContentLoader.Load<SoundEffect>("sound/music/mainmenu")));
             instance.Model.AudioManager.AddSound(new SoundContainer("ak47shot", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/ak47")));
             instance.Model.AudioManager.AddSound(new SoundContainer("ak47shotdistant", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/ak47d")));
+
+
+            instance.Model.AudioManager.AddSound(new SoundContainer("m4a1shot", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/m4a1")));
+
+            
             instance.Model.AudioManager.AddSound(new SoundContainer("buttonclick", coreContentLoader.Load<SoundEffect>("sound/sfx/ui/buttonclick")));
             instance.Model.AudioManager.AddSound(new SoundContainer("awpshot", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/awp")));
             instance.Model.AudioManager.AddSound(new SoundContainer("flashbang1", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/flashbang_explode1")));
@@ -185,8 +190,10 @@ namespace CStrike2D
                 case WeaponData.Weapon.Knife:
                     return weaponTextures[index, 0];
                 case WeaponData.Weapon.Awp:
-                    return weaponTextures[index, 1];
+                    return weaponTextures[index, 0];
                 case WeaponData.Weapon.Ak47:
+                    return weaponTextures[index, 0];
+                case WeaponData.Weapon.M4A1:
                     return weaponTextures[index, 0];
                 default:
                     throw new ArgumentOutOfRangeException("weapon", weapon, null);

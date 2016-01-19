@@ -160,6 +160,12 @@ namespace CStrike2D
                                         case ServerClientInterface.BUY_WEAPON:
                                             engine.SetWeapon(msg.ReadInt16(), msg.ReadByte());
                                             break;
+                                        case ServerClientInterface.FIRE_WEAPON:
+                                            engine.FireWeapon(msg.ReadInt16());
+                                            break;
+                                        case ServerClientInterface.EXPLODE_FLASHBANG:
+                                            engine.FlashPlayer();
+                                            break;
                                     }
                                 }
                                 break;
@@ -204,6 +210,13 @@ namespace CStrike2D
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
+        public void FireWeapon()
+        {
+            outMsg = client.CreateMessage();
+            outMsg.Write(ServerClientInterface.FIRE_WEAPON);
+            client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
+        }
+
         public void BuyWeapon(WeaponData.Weapon weapon)
         {
             outMsg = client.CreateMessage();
@@ -242,6 +255,13 @@ namespace CStrike2D
         {
             // TODO: Spawns a bomb at a site
 
+        }
+
+        public void Flash()
+        {
+            outMsg = client.CreateMessage();
+            outMsg.Write(ServerClientInterface.EXPLODE_FLASHBANG);
+            client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
         /*
         public void Update()

@@ -151,6 +151,43 @@ namespace CStrike2D
             player.SetTeam(team);
         }
 
+        public void FireWeapon(short identifier)
+        {
+            ClientPlayer shooter = Players.Find(ply => ply.Identifier == identifier);
+            PlaySound(shooter);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <param name="soundID"></param>
+        public void PlaySound(ClientPlayer shooter)
+        {
+            if (shooter != null)
+            {
+                switch (shooter.CurrentWeapon.Weapon)
+                {
+                    case WeaponData.Weapon.Ak47:
+                        audioManager.PlaySound("ak47shot", audioManager.SoundEffectVolume,
+                            Client.Position, shooter.Position);
+                        break;
+                    case WeaponData.Weapon.M4A1:
+                        audioManager.PlaySound("m4a1shot", audioManager.SoundEffectVolume,
+                            Client.Position, shooter.Position);
+                        break;
+                }
+            }
+        }
+
+        public void FlashPlayer()
+        {
+            audioManager.PlaySound("flashbang1", audioManager.SoundEffectVolume, Client.Position,
+                Client.Position);
+            Flashed = true;
+            flashTimer = 20f;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -250,9 +287,18 @@ namespace CStrike2D
                                         driver.Model.InterfaceManager.HidePage("ctRifleButtonMenu");
                                         CurMenuState = MenuState.MainMenu;
                                     }
+
+
                                     if (Client.CurrentTeam == ServerClientInterface.Team.CounterTerrorist)
                                     {
                                         driver.Model.InterfaceManager.ShowPage("ctRifleButtonMenu");
+
+                                        if (driver.Model.InterfaceManager.Clicked(input, "ctRifleButtonMenu", "m4a1MenuButton"))
+                                        {
+                                            network.BuyWeapon(WeaponData.Weapon.M4A1);
+                                            driver.Model.InterfaceManager.HidePage("ctRifleButtonMenu");
+                                            CurMenuState = MenuState.MainMenu;
+                                        }
                                     }
                                     else
                                     {
@@ -292,10 +338,7 @@ namespace CStrike2D
 
                             if (input.Tapped(Keys.K))
                             {
-                                audioManager.PlaySound("flashbang1", audioManager.SoundEffectVolume, Client.Position,
-                                    Client.Position);
-                                Flashed = true;
-                                flashTimer = 20f;
+                                network.Flash();
                             }
                         }
 
@@ -367,7 +410,7 @@ namespace CStrike2D
 
                         if (input.LeftClickImmediate() && !showMenu)
                         {
-                            //network.SendInputData(NetInterface.FIRE);
+                            network.FireWeapon();
                         }
 
                         if (Players.Count > 0)
@@ -477,31 +520,6 @@ namespace CStrike2D
         public void AddEntity(Entity entity)
         {
             Entities.Add(entity);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="playerID"></param>
-        /// <param name="soundID"></param>
-        public void PlaySound(long playerID, short soundID)
-        {
-            Player player = Players.Find(ply => ply.PlayerID == playerID);
-
-            if (player != null)
-            {
-                switch (soundID)
-                {
-                    case NetInterface.AK47_SHOT:
-                        audioManager.PlaySound("awpshot", audioManager.SoundEffectVolume,
-                            clientPlayer.Position, player.Position);
-                        break;
-                    case NetInterface.AWP_SHOT:
-                        audioManager.PlaySound("awpshot", audioManager.SoundEffectVolume,
-                            clientPlayer.Position, player.Position);
-                        break;
-                }
-            }
         }
 
         /// <summary>

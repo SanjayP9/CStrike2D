@@ -76,6 +76,10 @@ namespace CStrike2DServer
         public const byte ALIVE = 33;
         public const byte DEAD = 44;
 
+        public const byte FIRE_WEAPON = 45;
+
+        public const byte EXPLODE_FLASHBANG = 46;
+
         public enum Team
         {
             CounterTerrorist,

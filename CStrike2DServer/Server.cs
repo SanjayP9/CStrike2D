@@ -568,6 +568,13 @@ namespace CStrike2DServer
                                 byte wep = msg.ReadByte();
                                 SpawnWeapon(msg.SenderConnection.RemoteUniqueIdentifier, wep);
                                 break;
+                            case ServerClientInterface.FIRE_WEAPON:
+                                FireWeapon(msg.SenderConnection.RemoteUniqueIdentifier);
+                                break;
+                            case ServerClientInterface.EXPLODE_FLASHBANG:
+                                outMsg.Write(ServerClientInterface.EXPLODE_FLASHBANG);
+                                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+                                break;
                         }
                         break;
                 }
@@ -622,6 +629,15 @@ namespace CStrike2DServer
             outMsg = server.CreateMessage();
             outMsg.Write(ServerClientInterface.SYNC_COMPLETE);
             server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
+        }
+
+        static void FireWeapon(long identifier)
+        {
+            ServerPlayer player = players.Find(ply => ply.ConnectionIdentifier == identifier);
+            
+            outMsg.Write(ServerClientInterface.FIRE_WEAPON);
+            outMsg.Write(player.Identifier);
+            server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
         /// <summary>
