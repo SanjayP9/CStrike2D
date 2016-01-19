@@ -216,6 +216,7 @@ namespace CStrike2DServer
 
         static void LoadMap(string mapName)
         {
+            /*
             if (!File.Exists(mapName))
             {
                 Console.WriteLine("Missing map: "+ mapName);
@@ -270,6 +271,7 @@ namespace CStrike2DServer
 
             // Close the file
             inFile.Close();
+            */
         }
 
         #region Old Code

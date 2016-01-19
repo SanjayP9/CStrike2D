@@ -525,7 +525,7 @@ namespace CStrike2D
                     }
                     break;
                 case State.LevelEditor:
-                    Editor.Update(gameTime);
+                    //Editor.Update(gameTime);
                     break;
                 case State.InGame:
                     GameEngine.Update(gameTime);

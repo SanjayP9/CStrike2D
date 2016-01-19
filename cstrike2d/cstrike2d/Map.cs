@@ -19,6 +19,7 @@ namespace CStrike2D
 
         public void Load(string mapName, Assets assets)
         {
+            /*
             this.assets = assets;
 
             if (!File.Exists(mapName))
@@ -75,6 +76,8 @@ namespace CStrike2D
 
             // Close the file
             inFile.Close();
+
+            */
         }
 
 
