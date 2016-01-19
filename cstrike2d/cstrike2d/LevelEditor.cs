@@ -40,7 +40,7 @@ namespace CStrike2D
         Vector2 mouseMap;
 
         // 
-        Vector2 placedTilePos;
+        Vector2 mapTilePos;
 
         bool displayTileSet = true;
 
@@ -102,90 +102,90 @@ namespace CStrike2D
                              mouseMap.Y < mapArea.Y + mapArea.Height)
                     {
                         // Find the tile the mouse is on
-                        placedTilePos = new Vector2(((mouseMap.X - mapArea.X) / TILE_SIZE), (mouseMap.Y - mapArea.Y) / TILE_SIZE);
+                        mapTilePos = new Vector2(((mouseMap.X - mapArea.X) / TILE_SIZE), (mouseMap.Y - mapArea.Y) / TILE_SIZE);
 
                         // If the left mouse button is held
                         if (input.LeftHold())
                         {
                             // Set the selected tile to be in that tile position according to the mouse keeping the properties if any
-                            if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null &&
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].TileType != selectedTile)
+                            if (tiles[(int)mapTilePos.X, (int)mapTilePos.Y] != null &&
+                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y].TileType != selectedTile)
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetTileType(selectedTile);
+                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetTileType(selectedTile);
                             }
-                            else if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] == null)
+                            else if (tiles[(int)mapTilePos.X, (int)mapTilePos.Y] == null)
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = new Tile(selectedTile, Tile.NO_PROPERTY);
+                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y] = new Tile(selectedTile, Tile.NO_PROPERTY);
                             }
                         }
                         // If the right mouse button is held
-                        else if (input.RightHold() && tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                        else if (input.RightHold() && tiles[(int)mapTilePos.X, (int)mapTilePos.Y] != null)
                         {
                             BackUp();
                             // Set the tile that the mouse is on to be empty
-                            tiles[(int)placedTilePos.X, (int)placedTilePos.Y] = null;
+                            tiles[(int)mapTilePos.X, (int)mapTilePos.Y] = null;
                         }
 
                         // If the tile the mouse is on is not null
-                        if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null)
+                        if (tiles[(int)mapTilePos.X, (int)mapTilePos.Y] != null)
                         {
                             if (input.Tapped(Keys.D0))
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.NO_PROPERTY);
+                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.NO_PROPERTY);
                             }
                             else if (input.Tapped(Keys.D1))
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.SOLID);
+                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.SOLID);
                             }
                             // 
                             else if (input.Tapped(Keys.D2))
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.A_PLANT_SPOT);
+                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.A_PLANT_SPOT);
                             }
                             // 
                             else if (input.Tapped(Keys.D3))
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.B_PLANT_SPOT);
+                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.B_PLANT_SPOT);
                             }
                             // 
                             else if (input.Tapped(Keys.D4))
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.SAVE_SPOT);
+                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.SAVE_SPOT);
                             }
                             // 
                             else if (input.Tapped(Keys.D5))
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.CT_SPAWN_POINT);
+                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.CT_SPAWN_POINT);
                             }
                             // 
                             else if (input.Tapped(Keys.D6))
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.T_SPAWN_POINT);
+                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.T_SPAWN_POINT);
                             }
                             // 
                             else if (input.Tapped(Keys.D7))
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.A_SITE_DEFENCE_POINT);
+                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.A_SITE_DEFENCE_POINT);
                             }
                             // 
                             else if (input.Tapped(Keys.D8))
                             {
                                 BackUp();
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.B_SITE_DEFENCE_POINT);
+                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.B_SITE_DEFENCE_POINT);
                             }
 
                             // Add the specified properties to the properties string if that property is true
-                            switch (tiles[(int)placedTilePos.X, (int)placedTilePos.Y].Property)
+                            switch (tiles[(int)mapTilePos.X, (int)mapTilePos.Y].Property)
                             {
                                 case Tile.NO_PROPERTY:
                                     property = "No Property";
@@ -221,10 +221,10 @@ namespace CStrike2D
                     {
                         if (input.RightHold())
                         {
-                            if (tiles[(int)placedTilePos.X, (int)placedTilePos.Y] != null &&
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].Property != Tile.NO_PROPERTY)
+                            if (tiles[(int)mapTilePos.X, (int)mapTilePos.Y] != null &&
+                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y].Property != Tile.NO_PROPERTY)
                             {
-                                tiles[(int)placedTilePos.X, (int)placedTilePos.Y].SetProperty(Tile.NO_PROPERTY);
+                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.NO_PROPERTY);
                             }
                         }
                         if (input.Tapped(Keys.S))
@@ -315,15 +315,13 @@ namespace CStrike2D
 
                     break;
             }
-
-            
         }
 
         public void BackUp()
         {
-            for (int row = 0; row < numRows; row++)
+            for (int row = 0; row < prevTiles.GetLength(1); row++)
             {
-                for (int col = 0; col < numCols; col++)
+                for (int col = 0; col < prevTiles.GetLength(0); col++)
                 {
                     prevTiles[col, row] = tiles[col, row];
                 }
@@ -331,9 +329,9 @@ namespace CStrike2D
         }
         public void Revert()
         {
-            for (int row = 0; row < numRows; row++)
+            for (int row = 0; row < prevTiles.GetLength(1); row++)
             {
-                for (int col = 0; col < numCols; col++)
+                for (int col = 0; col < prevTiles.GetLength(0); col++)
                 {
                     tiles[col, row] = prevTiles[col, row];
                 }
@@ -416,7 +414,7 @@ namespace CStrike2D
         public void DrawUI(SpriteBatch sb)
         {
             // Drawn the UI, includes map tile index, the selected tile #, and the properties of the tile the mouse is on
-            sb.DrawString(driver.Assets.DefaultFont, "Map Tile Index: " + Math.Floor(placedTilePos.X) + "|" + Math.Floor(placedTilePos.Y), new Vector2(175, 0), Color.White);
+            sb.DrawString(driver.Assets.DefaultFont, "Map Tile Index: " + Math.Floor(mapTilePos.X) + "|" + Math.Floor(mapTilePos.Y), new Vector2(175, 0), Color.White);
             sb.DrawString(driver.Assets.DefaultFont, "Selected Tile #: " + selectedTile, new Vector2(0, 0), Color.White);
             sb.DrawString(driver.Assets.DefaultFont, "Properties: " + property, new Vector2(360, 0), Color.White);
 
@@ -448,8 +446,9 @@ namespace CStrike2D
             numCols = Convert.ToInt32(inFile.ReadLine());
             numRows = Convert.ToInt32(inFile.ReadLine());
 
-            // Changes the placement area according to the number of columns and rows
-            mapArea = new Rectangle(-200, -250, TILE_SIZE * numCols, TILE_SIZE * numRows);
+            // Changes the map area according to the number of columns and rows
+            mapArea.Width = TILE_SIZE * numCols;
+            mapArea.Height = TILE_SIZE * numRows;
 
             prevTiles = new Tile[numCols, numRows];
             BackUp();
@@ -511,6 +510,15 @@ namespace CStrike2D
 
             // Close the file
             outFile.Close();
+        }
+        private void AddColumn()
+        {
+            BackUp();
+            numCols++;
+            tiles = new Tile[numCols, numRows];
+            mapArea.Width = TILE_SIZE * numCols;
+            //mapArea.Height = TILE_SIZE * numRows;
+            Revert();
         }
     }
 }
