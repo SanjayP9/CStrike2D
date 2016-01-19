@@ -152,37 +152,42 @@ namespace CStrike2D
 
         public void Move(byte direction)
         {
+            float moveX = 0;
+            float moveY = 0;
             switch (direction)
             {
                 case ServerClientInterface.MOVE_UP:
-                    position.Y -= ServerClientInterface.MOVEMENT_SPEED;
+                    moveY -= ServerClientInterface.MOVEMENT_SPEED;
                     break;
                 case ServerClientInterface.MOVE_DOWN:
-                    position.Y += ServerClientInterface.MOVEMENT_SPEED;
+                    moveY += ServerClientInterface.MOVEMENT_SPEED;
                     break;
                 case ServerClientInterface.MOVE_LEFT:
-                    position.X -= ServerClientInterface.MOVEMENT_SPEED;
+                    moveX -= ServerClientInterface.MOVEMENT_SPEED;
                     break;
                 case ServerClientInterface.MOVE_RIGHT:
-                    position.X += ServerClientInterface.MOVEMENT_SPEED;
+                    moveX += ServerClientInterface.MOVEMENT_SPEED;
                     break;
                 case ServerClientInterface.MOVE_UPLEFT:
-                    position.X -= ServerClientInterface.MOVEMENT_SPEED;
-                    position.Y -= ServerClientInterface.MOVEMENT_SPEED;
+                    moveX -= ServerClientInterface.MOVEMENT_SPEED;
+                    moveY -= ServerClientInterface.MOVEMENT_SPEED;
                     break;
                 case ServerClientInterface.MOVE_UPRIGHT:
-                    position.X += ServerClientInterface.MOVEMENT_SPEED;
-                    position.Y -= ServerClientInterface.MOVEMENT_SPEED;
+                    moveX += ServerClientInterface.MOVEMENT_SPEED;
+                    moveY -= ServerClientInterface.MOVEMENT_SPEED;
                     break;
                 case ServerClientInterface.MOVE_DOWNRIGHT:
-                    position.X += ServerClientInterface.MOVEMENT_SPEED;
-                    position.Y += ServerClientInterface.MOVEMENT_SPEED;
+                    moveX += ServerClientInterface.MOVEMENT_SPEED;
+                    moveY += ServerClientInterface.MOVEMENT_SPEED;
                     break;
                 case ServerClientInterface.MOVE_DOWNLEFT:
-                    position.X -= ServerClientInterface.MOVEMENT_SPEED;
-                    position.Y += ServerClientInterface.MOVEMENT_SPEED;
+                    moveX -= ServerClientInterface.MOVEMENT_SPEED;
+                    moveY += ServerClientInterface.MOVEMENT_SPEED;
                     break;
             }
+
+            Vector2 normalized = Vector2.Normalize(new Vector2(moveX, moveY));
+            position += normalized * ServerClientInterface.MOVEMENT_SPEED;
         }
 
         public void SetHealth(int health)
