@@ -18,6 +18,9 @@ namespace CStrike2D
         public const byte T_SPAWN_POINT = 6;
         public const byte A_SITE_DEFENCE_POINT = 7;
         public const byte B_SITE_DEFENCE_POINT = 8;
+        public int FCost { get; set; }
+        public int GCost { get; set; }
+        public int HCost { get; set; }
         public byte TileType { get; private set; }
         //public bool IsSolid { get; private set; }
         //public bool IsAPlantSpot { get; private set; }
