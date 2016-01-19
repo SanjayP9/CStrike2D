@@ -1,17 +1,14 @@
 ﻿using System;
 using System.IO;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
 {
     public class Map
     {
-        public Tile[,] Tiles { get; private set; }
+        public Tile[,] TileMap { get; private set; }
         public int MaxTiles { get; private set; }
         public int MaxRow { get; private set; }
         public int MaxCol { get; private set; }
-        public Rectangle MapArea { get; private set; }
 
         private const int TILE_SIZE = 32;
 
@@ -121,107 +118,9 @@ namespace CStrike2D
             MaxCol = tileData.GetLength(0);
         }
 
-        public void SaveFile(string fileName)
-        {
-            StreamWriter outFile = File.CreateText(fileName);
 
-            in the homework he had tile size we prob will max tile size a constant
-            outFile.WriteLine(tileSize);
 
-            outFile.WriteLine(MaxRow);
-            outFile.WriteLine(MaxCol);
 
-            for (int rows = 0; rows < MaxRow; rows++)
-            {
-                for (int cols = 0; cols < MaxCol; cols++)
-                {
-                    outFile.Write(tiles[rows, cols] + ",");
-                }
-                outFile.WriteLine();
-            }
-
-            for (int rows = 0; rows < MaxRow; rows++)
-            {
-                for (int cols = 0; cols < MaxCol; cols++)
-                {
-                    outFile.Write(tileProperties[rows, cols] + ",");
-                }
-                outFile.WriteLine();
-            }
-
-            outFile.Close();
-        }
-        
-        public void LoadFile(string fileName)
-        {
-            StreamReader inFile = File.OpenText(fileName);
-
-            string[] rowData;
-
-            tileSize = Convert.ToInt32(inFile.ReadLine());
-            MaxRow = Convert.ToInt32(inFile.ReadLine());
-            MaxCol = Convert.ToInt32(inFile.ReadLine());
-
-            tiles = new byte[MaxRow, MaxCol];
-            tileProperties = new byte[MaxRow, MaxCol];
-
-            for (int rows = 0; rows < MaxRow; rows++)
-            {
-                rowData = inFile.ReadLine().Split(',');
-
-                for (int cols = 0; cols < MaxCol; cols++)
-                {
-                    tiles[rows, cols] = Convert.ToByte(rowData[cols]);
-                }
-            }
-
-            for (int rows = 0; rows < MaxRow; rows++)
-            {
-
-                rowData = inFile.ReadLine().Split(',');
-
-                for (int cols = 0; cols < MaxCol; cols++)
-                {
-                    tileProperties[rows, cols] = Convert.ToByte(rowData[cols]);
-                }
-            }
-
-            inFile.Close();
-        }
-
-        /// <summary>
-        /// Returns the tile type given the tile number
-        /// </summary>
-        /// <param name="tileNumber"></param>
-        /// <returns></returns>
-        public int TypeFromTileNumber(int tileNumber)
-        {
-            int[] rowCol = { tileNumber % MaxCol, tileNumber / MaxCol };
-
-            return TileMap[rowCol[0], rowCol[1]].TileType;
-        }
-
-        /// <summary>
-        /// Returns the coordinate of a tile in [col, row]
-        /// </summary>
-        /// <param name="tileNumber"></param>
-        /// <returns></returns>
-        public int[] FromTile(int tileNumber)
-        {
-            return new[] { tileNumber % MaxCol, tileNumber / MaxCol };
-        }
-
-        /// <summary>
-        /// Gives the tile number given the column and row
-        /// </summary>
-        /// <param name="col"></param>
-        /// <param name="row"></param>
-        /// <returns></returns>
-        public int ToTile(int col, int row)
-        {
-            return (row * MaxCol) + col;
-        }
-        */
     }
 
     static class TileFunctions
