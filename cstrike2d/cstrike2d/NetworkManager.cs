@@ -107,7 +107,7 @@ namespace CStrike2D
                                         // Get data of all currently connected players
                                         engine.SyncPlayer(msg.ReadInt16(), msg.ReadString(),
                                             msg.ReadByte(), msg.ReadFloat(), msg.ReadFloat(),
-                                            msg.ReadFloat(), msg.ReadByte());
+                                            msg.ReadFloat(), msg.ReadByte(), msg.ReadByte());
                                     }
 
                                     if (code == ServerClientInterface.SYNC_COMPLETE)

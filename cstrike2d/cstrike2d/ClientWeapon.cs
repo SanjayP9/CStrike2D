@@ -57,7 +57,6 @@ namespace CStrike2D
             Owner = owner;
         }
 
-
         public void Draw(SpriteBatch sb)
         {
             // Draw particles

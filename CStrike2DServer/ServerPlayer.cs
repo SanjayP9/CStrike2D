@@ -15,7 +15,7 @@ namespace CStrike2DServer
         public long ConnectionIdentifier { get; private set; }
         public short EntityIdentifier { get; private set; }
 
-        public PlayerState State { get; private set; }
+        public ServerClientInterface.PlayerState State { get; private set; }
         public ServerClientInterface.Team CurrentTeam { get; private set; }
         public float Health { get; private set; }
         public float Armor { get; private set; }
@@ -38,12 +38,6 @@ namespace CStrike2DServer
         public ServerWeapon SecondaryWeapon { get; private set; }
         public ServerWeapon Knife { get; private set; }
 
-        public enum PlayerState
-        {
-            Dead,
-            Alive
-        }
-
         public enum Team
         {
             CounterTerrorist,
@@ -57,7 +51,7 @@ namespace CStrike2DServer
             Identifier = identifier;
             ConnectionIdentifier = uniqueIdentifier;
             CurrentTeam = ServerClientInterface.Team.Spectator;
-            State = PlayerState.Dead;
+            State = ServerClientInterface.PlayerState.Dead;
             Knife = new ServerWeapon(WeaponData.Weapon.Knife, this);
             PrimaryWeapon = new ServerWeapon(WeaponData.Weapon.None, this);
             SecondaryWeapon = new ServerWeapon(WeaponData.Weapon.None, this);
@@ -172,7 +166,7 @@ namespace CStrike2DServer
             this.position = position;
         }
 
-        public void SetState(PlayerState state)
+        public void SetState(ServerClientInterface.PlayerState state)
         {
             State = state;
         }
@@ -190,7 +184,7 @@ namespace CStrike2DServer
         {
             Health = 0;
             Armor = 0;
-            State = PlayerState.Dead;
+            State = ServerClientInterface.PlayerState.Dead;
             PrimaryWeapon.Drop();
         }
 
@@ -200,7 +194,7 @@ namespace CStrike2DServer
         public void Respawn(Vector2 location)
         {
             position = location;
-            State = PlayerState.Alive;
+            State = ServerClientInterface.PlayerState.Alive;
             CurrentWeapon = Knife;
             ResetWeapons();
         }
