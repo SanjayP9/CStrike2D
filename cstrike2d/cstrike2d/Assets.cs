@@ -177,16 +177,16 @@ namespace CStrike2D
             gameContentLoader.Unload();
         }
 
-        public Texture2D GetWeaponTexture(WeaponInfo.Weapon weapon)
+        public Texture2D GetWeaponTexture(WeaponData.Weapon weapon)
         {
-            int index = Array.FindIndex((WeaponInfo.WeaponEnums), wepEnum => wepEnum == weapon);
+            int index = Array.FindIndex((WeaponData.WeaponEnums), wepEnum => wepEnum == weapon);
             switch (weapon)
             {
-                case WeaponInfo.Weapon.Weapon_AK47:
+                case WeaponData.Weapon.Knife:
                     return weaponTextures[index, 0];
-                case WeaponInfo.Weapon.Weapon_AWP:
+                case WeaponData.Weapon.Awp:
                     return weaponTextures[0, 1];
-                case WeaponInfo.Weapon.Weapon_Knife:
+                case WeaponData.Weapon.Ak47:
                     return weaponTextures[2, 0];
                 default:
                     throw new ArgumentOutOfRangeException("weapon", weapon, null);

@@ -13,6 +13,10 @@ namespace CStrike2DServer
         public const byte WEAPON_M4A1 = 5;
         public const byte WEAPON_NONE = 255;
 
+        public static readonly string[] WeaponStrings = Enum.GetNames(typeof(Weapon));
+        public static readonly Weapon[] WeaponEnums = (Weapon[])Enum.GetValues(typeof(Weapon));
+        
+
         /// <summary>
         /// Different types of weapons
         /// </summary>

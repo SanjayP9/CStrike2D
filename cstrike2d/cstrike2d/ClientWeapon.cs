@@ -58,7 +58,7 @@ namespace CStrike2D
         public void Draw(SpriteBatch sb)
         {
             // Draw particles
-            sb.Draw(Assets.GetWeaponTexture(WeaponData.), Position, null, Color.White, Rotation, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            sb.Draw(Assets.GetWeaponTexture(Weapon), Position, null, Color.White, Rotation, Vector2.Zero, 1f, SpriteEffects.None, 0f);
         }
     }
 }

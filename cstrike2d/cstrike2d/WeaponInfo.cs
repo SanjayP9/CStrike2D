@@ -2,6 +2,7 @@
 
 namespace CStrike2D
 {
+    [Obsolete]
     public static class WeaponInfo
     {
 

@@ -106,7 +106,7 @@ namespace CStrike2D
         /// <param name="sb"></param>
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(Assets.GetWeaponTexture(WeaponName), Position, null, Color.White, Rotation, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            //sb.Draw(Assets.GetWeaponTexture(WeaponName), Position, null, Color.White, Rotation, Vector2.Zero, 1f, SpriteEffects.None, 0f);
         }
     }
 }

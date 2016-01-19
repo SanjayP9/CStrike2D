@@ -1,14 +1,19 @@
 ﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
 {
     public class Map
     {
+        /*
         public Tile[,] TileMap { get; private set; }
         public int MaxTiles { get; private set; }
         public int MaxRow { get; private set; }
         public int MaxCol { get; private set; }
+
+        public Vector2 MapArea { get; private set; }
 
         private const int TILE_SIZE = 32;
 
@@ -74,7 +79,7 @@ namespace CStrike2D
             // Close the file
             inFile.Close();
 
-            */
+            
         }
 
 
@@ -88,10 +93,10 @@ namespace CStrike2D
             {
                 for (int row = 0; row < MaxRow; row++)
                 {
-                    if (Tiles[col, row] != null)
+                    if (TileMap[col, row] != null)
                     {
-                        srcRect.X = (Tiles[col, row].TileType % 8 * TILE_SIZE);
-                        srcRect.Y = (Tiles[col, row].TileType / 8 * TILE_SIZE);
+                        srcRect.X = (TileMap[col, row].TileType % 8 * TILE_SIZE);
+                        srcRect.Y = (TileMap[col, row].TileType / 8 * TILE_SIZE);
                         destRect.X = col * TILE_SIZE + MapArea.X;
                         destRect.Y = row * TILE_SIZE + MapArea.Y;
                         sb.Draw(assets.TileSet, destRect, srcRect, Color.White);
@@ -100,7 +105,7 @@ namespace CStrike2D
             }
         }
 
-        /*
+        
         public Map(int[,] tileData)
         {
             TileMap = new Tile[tileData.GetLength(0), tileData.GetLength(1)];
@@ -119,7 +124,7 @@ namespace CStrike2D
         }
 
 
-
+        */
 
     }
 
