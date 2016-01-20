@@ -115,7 +115,10 @@ namespace CStrike2D
             
             // Returns if the poi is less than or equal to the radius
             //return Vector2.Distance(new Vector2(poiX, poiY), enemyPlayer) <= playerRadius;
-            return LineRectangle(rect, enemyRot, mPlayer, bPlayer);
+            if (Vector2.Distance(new Vector2(poiX, poiY), enemyPlayer) <= playerRadius)
+            {
+                return LineRectangle(rect, enemyRot, mPlayer, bPlayer);
+            }
         }
 
         /// <summary>
