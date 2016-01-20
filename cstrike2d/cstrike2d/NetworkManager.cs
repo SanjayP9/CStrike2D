@@ -175,6 +175,7 @@ namespace CStrike2D
                                             id = msg.ReadInt16();
                                             player = engine.Players.Find(ply => ply.Identifier == id);
                                             player.Respawn(new Vector2(msg.ReadFloat(), msg.ReadFloat()));
+                                            engine.PlaySound(player, "pickup");
                                             break;
                                         case ServerClientInterface.PLAYER_DISCONNECTED:
                                             id = msg.ReadInt16();
@@ -193,6 +194,9 @@ namespace CStrike2D
                                             break;
                                         case ServerClientInterface.EXPLODE_FLASHBANG:
                                             engine.FlashPlayer();
+                                            break;
+                                        case ServerClientInterface.DAMAGE:
+                                            engine.Damage(msg.ReadInt16(), msg.ReadInt32(), msg.ReadInt32());
                                             break;
                                     }
                                 }

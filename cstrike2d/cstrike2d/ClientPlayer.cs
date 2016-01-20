@@ -226,6 +226,8 @@ namespace CStrike2D
             position = location;
             State = ServerClientInterface.PlayerState.Alive;
             CurrentWeapon = Knife;
+            Health = 100;
+            Armor = 0;
             ResetWeapons();
         }
 

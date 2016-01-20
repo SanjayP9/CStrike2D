@@ -180,12 +180,44 @@ namespace CStrike2D
             }
         }
 
+
+        public void PlaySound(ClientPlayer player, string sound)
+        {
+            audioManager.PlaySound(sound, audioManager.SoundEffectVolume, Client.Position,
+                player.Position);
+        }
+
         public void FlashPlayer()
         {
             audioManager.PlaySound("flashbang1", audioManager.SoundEffectVolume, Client.Position,
                 Client.Position);
             Flashed = true;
             flashTimer = 20f;
+        }
+
+        public void Damage(short identifier, int health, int armor)
+        {
+            ClientPlayer player = Players.Find(ply => ply.Identifier == identifier);
+
+            // Play sound if the player's health isn't the same (they were damaged)
+            if (player.Health != health)
+            {
+                
+            }
+
+            // If they died. Set their state to dead and play a sound
+            if (health <= 0)
+            {
+                player.SetHealth(0);
+                player.SetArmor(0);
+                player.SetState(ServerClientInterface.DEAD);
+                PlaySound(player, "death4");
+            }
+            else
+            {
+                player.SetHealth(health);
+                player.SetArmor(armor);
+            }
         }
 
         /// <summary>
@@ -199,7 +231,8 @@ namespace CStrike2D
                 if (!teamSelect)
                 {
                     byte dir = 0;
-                    if (Client.CurrentTeam != ServerClientInterface.Team.Spectator)
+                    if (Client.CurrentTeam != ServerClientInterface.Team.Spectator &&
+                        Client.State != ServerClientInterface.PlayerState.Dead)
                     {
                         if (input.Tapped(Keys.B))
                         {

@@ -87,6 +87,8 @@ namespace CStrike2DServer
 
         public const byte EXPLODE_FLASHBANG = 46;
 
+        public const byte DAMAGE = 47;
+
         public enum Team
         {
             CounterTerrorist,
