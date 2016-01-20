@@ -197,10 +197,5 @@ namespace CStrike2D
                     throw new ArgumentOutOfRangeException("weapon", weapon, null);
             }
         }
-
-        public Texture2D[] ReturnWeaponTextures(WeaponInfo.Weapon weapon)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
