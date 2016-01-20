@@ -84,15 +84,15 @@ namespace CStrike2D
             {
                 angleQuad = 1;
             }
-            else if (shotAngle > Math.PI/2 || shotAngle <= Math.PI)
+            else if (shotAngle > Math.PI * 0.5f || shotAngle <= Math.PI)
             {
                 angleQuad = 2;
             }
-            else if (shotAngle < Math.PI * -0.5f || shotAngle < Math.PI * -1f)
+            else if (shotAngle < Math.PI * -0.5f || shotAngle >= Math.PI * -1f)
             {
                 angleQuad = 3;
             }
-            else if (shotAngle <= 0 || shotAngle >= Math.PI * -0.5f)
+            else if (shotAngle <= 0 || shotAngle > Math.PI * -0.5f)
             {
                 angleQuad = 4;
             }
