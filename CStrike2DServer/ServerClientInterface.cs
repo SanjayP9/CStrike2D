@@ -92,7 +92,7 @@ namespace CStrike2DServer
             Alive,
             Dead
         }
-        
+
         /// <summary>
         /// Returns the byte equivalent of a team for use in sending
         /// information to/from the server

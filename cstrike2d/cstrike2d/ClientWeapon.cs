@@ -18,11 +18,14 @@ namespace CStrike2D
 
         private Assets assets;
 
+        public float FireRate { get; private set; }
+
         public void FireWeapon()
         {
             if (!Fired)
             {
                 Fired = true;
+                FireRate = WeaponData.FireRate(Weapon);
             }
         }
 
@@ -41,6 +44,18 @@ namespace CStrike2D
             {
                 Position = Owner.Position;
                 Rotation = Owner.Rotation;
+
+                if (Fired)
+                {
+                    if (FireRate >= 0f)
+                    {
+                        FireRate -= gameTime;
+                    }
+                    else
+                    {
+                        Fired = false;
+                    }
+                }
             }
         }
 

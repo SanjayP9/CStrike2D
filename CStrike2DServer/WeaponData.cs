@@ -31,6 +31,30 @@ namespace CStrike2DServer
             None
         }
 
+        public static float FireRate(Weapon weapon)
+        {
+            switch (weapon)
+            {
+                case Weapon.Knife:
+                    return 1.0f;
+                case Weapon.Ak47:
+                    return 0.06f;
+                case Weapon.Glock:
+                    return 0.5f;
+                case Weapon.Awp:
+                    return 1.0f;
+                case Weapon.Usp:
+                    return 0.4f;
+                case Weapon.M4A1:
+                    return 0.06f;
+                case Weapon.None:
+                    return 1.0f;
+                default:
+                    throw new ArgumentOutOfRangeException("weapon");
+            }
+        }
+        
+
         /// <summary>
         /// Returns the byte equivalent of a weapon
         /// </summary>
