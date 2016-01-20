@@ -110,15 +110,18 @@ namespace CStrike2D
         public void SyncPlayer(short identifier, string username, byte team, float posX, float posY,
             float rot, byte weapon, byte state)
         {
-            ClientPlayer player = Players.Find(ply => ply.Identifier == identifier) ??
-                                  new ClientPlayer(username, identifier, assets);
+            ClientPlayer player = Players.Find(ply => ply.Identifier == identifier);
 
-            player.SetPosition(new Vector2(posX, posY));
-            player.SetRotation(rot);
-            player.SetCurrentWeapon(WeaponData.ByteToWeapon(weapon));
-            player.SetTeam(team);
-            player.SetState(state);
-            Players.Add(player);
+            if (player == null)
+            {
+                player = new ClientPlayer(username, identifier, driver.Assets);
+                player.SetPosition(new Vector2(posX, posY));
+                player.SetRotation(rot);
+                player.SetCurrentWeapon(WeaponData.ByteToWeapon(weapon));
+                player.SetTeam(team);
+                player.SetState(state);
+                Players.Add(player);
+            }
         }
 
         public void SetWeapon(short identifier, byte weapon)
