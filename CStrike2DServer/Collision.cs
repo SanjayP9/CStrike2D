@@ -42,6 +42,7 @@ namespace CStrike2D
         /// <returns>if the bullet shot intersects the enemy</returns>
         public static bool BulletToPlayer(Vector2 shootingPlayer, Vector2 enemyPlayer, float shotAngle, float playerRadius)
         {
+            /*
             // Stores the angle from the shooting player to the enemy player
             float enemyToPlayerA = (float)(Math.Atan2(Math.Abs(enemyPlayer.Y - shootingPlayer.Y), Math.Abs(enemyPlayer.X - shootingPlayer.X)));
 
@@ -60,6 +61,7 @@ namespace CStrike2D
             {
                 return false;
             }
+             */
             
             // Find the linear equation of the shot bullet
             float mPlayer = (float)Math.Tan(shotAngle);

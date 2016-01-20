@@ -50,7 +50,7 @@ namespace CStrike2D
 
                 gunSmokeParticle.Launch(direction + Position, Rotation);
 
-                shellParticle.Launch(new Vector2(Position.X + direction.X/2f, Position.Y + direction.Y), Rotation - 1.57f);
+                shellParticle.Launch(new Vector2(Position.X + direction.X/2f, Position.Y + direction.Y), Rotation + 1.57f);
 
                 Fired = true;
                 FireRate = WeaponData.FireRate(Weapon);

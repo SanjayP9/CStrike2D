@@ -54,7 +54,8 @@ namespace CStrike2D
             Smoke,
             GunSmoke,
             Debris,
-            Shell
+            Shell,
+            Blood
         };
         // Stores the current particle type
         public ParticleTypes Type { get; private set; }
@@ -228,6 +229,7 @@ namespace CStrike2D
                     if (!(particleVelocity <= 0.0f))
                     {
                         particleVelocity -= 0.16f;
+                        rotation += rotationChange;
                     }
                     else
                     {
@@ -238,7 +240,7 @@ namespace CStrike2D
                         ParticleTransparency -= 0.05f;
                     }
 
-                    rotation += 0.6f * (float)CStrike2D.Rand.NextDouble();
+                    
                     break;
             }
 

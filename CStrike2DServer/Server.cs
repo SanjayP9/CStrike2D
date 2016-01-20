@@ -572,7 +572,6 @@ namespace CStrike2DServer
         /// <summary>
         /// Sends data of all connected players
         /// </summary>
-        /// <param name="client"></param>
         public static void SyncCurrentPlayers()
         {
             foreach (ServerPlayer ply in players)
@@ -602,6 +601,31 @@ namespace CStrike2DServer
             outMsg.Write(ServerClientInterface.FIRE_WEAPON);
             outMsg.Write(player.Identifier);
             server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+            PlayerToPlayer(player);
+        }
+
+        static bool PlayerToPlayer(ServerPlayer shooter)
+        {
+            // Get the distance between the player and the shooter
+            foreach (ServerPlayer player in players)
+            {
+                // The shooter can't shoot themself, obviously.
+                if (player != shooter)
+                {
+                    Vector2 delta = shooter.Position - player.Position;
+                    float angle = (float)Math.Atan2(delta.Y, delta.X);
+
+                    // If the shot passes through the player 
+                    if (Collision.BulletToPlayer(shooter.Position, player.Position,
+                        angle, 22f))
+                    {
+                        // Check if there are any obstacles in between the player and
+                        // the shooter
+                        Console.WriteLine("fucker got dinked");
+                    }
+                }
+            }
+            return true;
         }
 
         /// <summary>
@@ -846,7 +870,7 @@ namespace CStrike2DServer
                 {
                     if (tile != null && tile.Property == Tile.SOLID)
                     {
-                        if (Collision.CircleToRectangle(player.Position, tile.TileRect, 14f))
+                        if (Collision.PlayerToRectangle(player.Position, tile.TileRect, 14f))
                         {
                             return false;
                         }
