@@ -1,6 +1,6 @@
 ﻿// Author: Sanjay Paraboo
 // File Name: ParticleModel.cs
-// Project Name: Globabl Offensive ISU
+// Project Name: Global Offensive ISU
 // Creation Date: Dec 20th, 2015
 // Modified Date: Jan 18th, 2016
 // Description: Used to implement particle effects. This class stores all logic for
@@ -8,9 +8,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CStrike2D
 {
@@ -35,8 +32,9 @@ namespace CStrike2D
         //Controls particle texture color overlay
         private Color particleColor;
         // Used to change the rotation of the texture when drawing
-        public float rotation;
-
+        private float rotation;
+        // Rate at which the rotation changes;
+        private float rotationChange;
 
         // Records how long the particle has been acitve for
         private float particleLifeTime;
@@ -132,11 +130,13 @@ namespace CStrike2D
                 case ParticleTypes.Shell:
                     particleColor = Color.White;
 
-                    particleDirection = CalcDirectionVect(playerAngle);
+                    particleDirection = CalcDirectionVect(playerAngle + (((CStrike2D.Rand.Next(0, 52) - 52) / 100f)));
                     ParticleTransparency = 1.0f;
-                    particleVelocity = 2.0f;
+                    particleVelocity = CStrike2D.Rand.Next(25, 35) / 10f;
 
-                    particleScale = 0.01f;
+                    particleScale = 0.02f;
+
+                    rotationChange = 0.6f * (float)(CStrike2D.Rand.NextDouble()*(CStrike2D.Rand.Next(0, 2) - 1f));
                     break;
 
                 default:
@@ -218,7 +218,7 @@ namespace CStrike2D
                         particleVelocity = 0.0f;
                     }
 
-                    if (particleLifeTime >= 3000f)
+                    if (particleLifeTime >= 3.0f)
                     {
                         ParticleTransparency -= 0.05f;
                     }
@@ -227,18 +227,18 @@ namespace CStrike2D
                 case ParticleTypes.Shell:
                     if (!(particleVelocity <= 0.0f))
                     {
-                        particleVelocity -= 0.25f;
+                        particleVelocity -= 0.16f;
                     }
                     else
                     {
                         particleVelocity = 0.0f;
                     }
-                    if (particleLifeTime >= 1500f)
+                    if (particleLifeTime >= 0.35f)
                     {
                         ParticleTransparency -= 0.05f;
                     }
 
-                    rotation += 0.3f;
+                    rotation += 0.6f * (float)CStrike2D.Rand.NextDouble();
                     break;
             }
 
@@ -286,7 +286,7 @@ namespace CStrike2D
                     particleColor * ParticleTransparency,   // Uses the colour and transparency calculated in the update code 
                     rotation,                               // Uses roation from update logic
                     new Vector2(particleImg.Width * 0.5f,   // Centres the texture at the middle of the texture
-                                particleImg.Width * 0.5f),
+                                particleImg.Height * 0.5f),
                     particleScale,                          // Scales it using float scale calulated in update logic
                     SpriteEffects.None,                     // No SpriteEffects used
                     0);                                     // Drawn on layer 0
