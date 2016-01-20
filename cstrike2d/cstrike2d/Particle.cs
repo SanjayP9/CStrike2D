@@ -120,6 +120,8 @@ namespace CStrike2D
                     particleVelocity = 1.0f;
                     ParticleTransparency = 1.0f;
                     ParticleScale = 0.01f;
+
+                    Rotation = playerAngle;
                     break;
 
                 case ParticleTypes.Debris:
@@ -226,7 +228,7 @@ namespace CStrike2D
         {
             // When the particle respawns it resets the transparency, position and resets the particle lifetime
             ParticleTransparency = 1.0f;
-            ParticlePosition = emitVect;
+            ParticlePosition = emitVect; 
             ParticleLifeTime = 0.0f;
 
 
@@ -259,7 +261,7 @@ namespace CStrike2D
                     ParticlePosition,                       // Sets it at the ParticlePosition Vector2
                     null,                                   // No Source Rectangle used
                     particleColor * ParticleTransparency,   // Uses the colour and transparency calculated in the update code 
-                    0f,                                     // No rotation used
+                    Rotation,                               // Uses roation from update logic
                     new Vector2(particleImg.Width * 0.5f,   // Centres the texture at the middle of the texture
                                 particleImg.Width * 0.5f),
                     ParticleScale,                          // Scales it using float scale calulated in update logic
