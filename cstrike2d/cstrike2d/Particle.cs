@@ -19,6 +19,7 @@ namespace CStrike2D
         // Constants used to store to control the update frequency
         private const float SMOKE_UPDATE_FREQ = 50.0f;
 
+        //  Used to specify update intercals of certain particles
         private float updateTime = 0.0f;
         private float updateFreq = 0.0f;
 
@@ -133,9 +134,9 @@ namespace CStrike2D
 
                     particleDirection = CalcDirectionVect(playerAngle);
                     ParticleTransparency = 1.0f;
-                    particleVelocity = 1.5f;
+                    particleVelocity = 2.0f;
 
-                    particleScale = 0.1f;
+                    particleScale = 0.01f;
                     break;
 
                 default:
@@ -150,10 +151,9 @@ namespace CStrike2D
         /// <param name="gameTime"> Passes through gameTime in order to record elasped time </param>
         public void Update(float gameTime)
         {
-            // Adds elapsed game time to 
+            // Adds elapsed game time to update time and gametime
             particleLifeTime += gameTime;
             updateTime += gameTime;
-            updateTime = 0.0f;
 
             // Adds the direction multiplied by the speed to the current particle position
             ParticlePosition += particleDirection * particleVelocity;
@@ -238,7 +238,7 @@ namespace CStrike2D
                         ParticleTransparency -= 0.05f;
                     }
 
-                    rotation += 0.01f;
+                    rotation += 0.3f;
                     break;
             }
 
