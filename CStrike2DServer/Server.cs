@@ -612,16 +612,16 @@ namespace CStrike2DServer
                 // The shooter can't shoot themself, obviously.
                 if (player != shooter)
                 {
-                    Vector2 delta = shooter.Position - player.Position;
-                    float angle = (float)Math.Atan2(delta.Y, delta.X);
 
                     // If the shot passes through the player 
                     if (Collision.BulletToPlayer(shooter.Position, player.Position,
-                        angle, 22f))
+                        shooter.Rotation, 22f, new Rectangle(
+                            (int)player.Position.X - 16, (int)player.Position.Y - 16,
+                            32, 32), player.Rotation))
                     {
                         // Check if there are any obstacles in between the player and
                         // the shooter
-                        Console.WriteLine("fucker got dinked");
+                        Console.WriteLine("lit for 99 with weapon_ak47. csgo logic");
                     }
                 }
             }
