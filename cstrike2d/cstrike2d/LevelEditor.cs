@@ -2,20 +2,16 @@
 // File Name: LevelEditor.cs
 // Project Name: Global Offensive
 // Creation Date: Dec 31st, 2015
-// Modified Date: Jan 17th, 2016
+// Modified Date: Jan 19th, 2016
 // Description: Allows ability to edit and view maps using various features including: undo, place/remove, pan, zoom, place nodes,
 //              save file, load file, set all tiles, delete all tiles etc.
 using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System.IO;
 using System.Windows.Forms;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
+
 namespace CStrike2D
 {
     public class LevelEditor

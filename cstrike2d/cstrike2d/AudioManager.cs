@@ -1,8 +1,8 @@
 ﻿// Author: Shawn Verma
 // File Name: AudioManager.cs
-// Project Name: CStrike2D
-// Creation Date: Dec 31st, 2015
-// Modified Date: Dec 31st, 2015
+// Project Name: Global Offensive
+// Creation Date: Dec 23rd, 2015
+// Modified Date: Dec 23rd, 2015
 // Description: Handles all audio output.
 using System;
 using System.Collections.Generic;

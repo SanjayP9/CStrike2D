@@ -1,12 +1,18 @@
-﻿using Microsoft.Xna.Framework;
+﻿// Author: Mark Voong, Shawn Verma, Sanjay Paraboo
+// File Name: Tile.cs
+// Project Name: Global Offensive
+// Creation Date: Nov 23rd, 2015
+// Modified Date: Jan 19th, 2016
+// Description: Holds all of the data a tile including its type,
+//              and various properties such as being a spawnpoint or is
+//              collidable
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace CStrike2D
 {
     public class Tile
     {
-        const int BORDER_THICKNESS = 1;
-
         public Rectangle TileRect
         {
             get

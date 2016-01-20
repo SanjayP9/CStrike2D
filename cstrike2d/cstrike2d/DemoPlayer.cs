@@ -1,10 +1,13 @@
-﻿using System;
+﻿// Author: Mark Voong
+// File Name: DemoPlayer.cs
+// Project Name: Global Offensive
+// Creation Date: Jan 18th, 2015
+// Modified Date: Jan 19th, 2016
+// Description: Handles playback of demo files which are
+//              recordings of gameplay by the server
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
 
 namespace CStrike2D
 {

@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Configuration;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Author: Mark Voong
+// File Name: ServerPlayer.cs
+// Project Name: Global Offensive
+// Creation Date: Jan 15th, 2016
+// Modified Date: Jan 19th, 2016
+// Description: Serverside version of the player class. Handles all
+//              serverside logic of a player
 using Microsoft.Xna.Framework;
 
 namespace CStrike2DServer

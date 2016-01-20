@@ -1,5 +1,6 @@
 ﻿// Author: Rob Stephens
 // File Name: Triangle.cs
+// Creation Date: Added to project Jan 16th, 2016
 // Description: Used in triangulation of a polygon
 // - Edits were made to this class, specifically converting
 // the FloatF type into Vector2

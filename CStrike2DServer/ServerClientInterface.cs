@@ -1,5 +1,12 @@
-﻿using System;
-using CStrike2D;
+﻿// Author: Mark Voong
+// File Name: ServerClientInterface.cs
+// Project Name: Global Offensive
+// Creation Date: Jan 15th, 2016
+// Modified Date: Jan 19th, 2016
+// Description: Global reference of common data between the client and server.
+//              Sharing this class between both projects ensures both ends follow a
+//              common protocol
+using System;
 using Microsoft.Xna.Framework;
 
 namespace CStrike2DServer

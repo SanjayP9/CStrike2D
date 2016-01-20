@@ -1,4 +1,11 @@
-﻿using System;
+﻿// Author: Mark Voong
+// File Name: ShaderRenderer.cs
+// Project Name: Global Offensive
+// Creation Date: Jan 11th, 2016
+// Modified Date: Jan 11th, 2016
+// Description: Houses all of the shaders present in this game. Allows for a scene to be
+//              post-processed and drawn to the screen via 2 methods for easy use
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

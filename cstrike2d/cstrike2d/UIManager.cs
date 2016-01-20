@@ -1,4 +1,11 @@
-﻿using System;
+﻿// Author: Mark Voong
+// File Name: UIManager.cs
+// Project Name: Global Offensive
+// Creation Date: Dec 25th, 2016
+// Modified Date: Jan 3rd, 2016
+// Description: Handles multiple gui components and sorts them however
+//              the programmer wishes. Also updates and draws all components on screen
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework.Graphics;

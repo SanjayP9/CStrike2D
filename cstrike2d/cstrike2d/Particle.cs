@@ -1,8 +1,8 @@
 ﻿// Author: Sanjay Paraboo
 // File Name: ParticleModel.cs
-// Project Name: Global Offensive ISU
+// Project Name: Global Offensive
 // Creation Date: Dec 20th, 2015
-// Modified Date: Jan 18th, 2016
+// Modified Date: Jan 20th, 2016
 // Description: Used to implement particle effects. This class stores all logic for
 //              the particle effects
 using Microsoft.Xna.Framework;

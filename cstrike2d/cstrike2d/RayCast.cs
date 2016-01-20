@@ -1,9 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿// Author: Sanjay Paraboo
+// File Name: RayCast.cs
+// Project Name: Global Offensive
+// Creation Date: Dec 16th, 2015
+// Modified Date: Jan 19th, 2016
+// Description: Casts a ray and checks if the path collides with any solid (Rectangle)
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CStrike2D
 {

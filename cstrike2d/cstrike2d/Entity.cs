@@ -2,7 +2,7 @@
 // File Name: Entity.cs
 // Project: Global Offensive
 // Date Created: Dec 6th 2015
-// Date Modified: Dec 23rd 2015
+// Date Modified: Jan 6th, 2016
 // Description: An object that is able to interact with the world
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

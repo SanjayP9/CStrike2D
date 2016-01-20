@@ -1,14 +1,10 @@
 ﻿// Author: Mark Voong
 // File Name: GameEngine.cs
-// Project Name: CStrike2D
-// Creation Date: Jan 4th, 2015
-// Modified Date: Jan 3rd, 2016
+// Project Name: Global Offensive
+// Creation Date: Jan 4th, 2016
+// Modified Date: Jan 20th, 2016
 // Description: Handles all logic and drawing of the in-game components
-
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using CStrike2DServer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -504,62 +500,8 @@ namespace CStrike2D
             }
         }
 
-        /*
-      
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="position"></param>
-        /// <param name="playerID"></param>
-        /// <param name="rotation"></param>
-        /// <param name="team"></param>
-        public void AddPlayer(string name, Vector2 position, short playerID, float rotation, byte team, short entityID, short curWeapon)
-        {
-            Player ply = new Player(name, position, playerID, team, assets);
-            ply.SetRot(rotation);
-            ply.SetWeapon(entityID, curWeapon);
-            Players.Add(ply);
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="entity"></param>
-        public void AddEntity(Entity entity)
-        {
-            Entities.Add(entity);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="playerID"></param>
-        /// <param name="direction"></param>
-        public void MovePlayer(short playerID, byte direction)
-        {
-            Player player = Players.Find(ply => ply.PlayerID == playerID);
-
-            if (player != null)
-            {
-                player.Move(direction);
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="playerID"></param>
-        /// <returns></returns>
-        public bool Exists(long playerID)
-        {
-            return Players.Exists(ply => ply.PlayerID == playerID);
-        }
-        
-        
-        */
-
-        /// <summary>
-        /// 
+        /// Draws the game world
         /// </summary>
         /// <param name="sb"></param>
         public void DrawWorld(SpriteBatch sb)
@@ -583,7 +525,11 @@ namespace CStrike2D
                 }
             }
         }
-
+        
+        /// <summary>
+        /// Draws the user interface
+        /// </summary>
+        /// <param name="sb"></param>
         public void DrawUI(SpriteBatch sb)
         {
             if (showScoreBoard)
@@ -610,10 +556,6 @@ namespace CStrike2D
                             break;
                     }
                 }
-
-                sb.DrawString(assets.DefaultFont, Client.Health.ToString(), new Vector2(20, 700), Color.Yellow);
-                sb.DrawString(assets.DefaultFont, Client.Armor.ToString(), new Vector2(60, 700), Color.Yellow);
-
             }
         }
     }

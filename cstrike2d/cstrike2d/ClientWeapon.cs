@@ -1,11 +1,9 @@
-﻿//
-//
-//
-//
-//
-//
-//
-
+﻿// Author: Mark Voong
+// File Name: ClientWeapon.cs
+// Project Name: Global Offensive
+// Creation Date: Jan 16th, 2016
+// Modified Date: Jan 20th, 2016
+// Description: Handles logic for weapons.
 using System;
 using CStrike2DServer;
 using Microsoft.Xna.Framework;
@@ -15,7 +13,6 @@ namespace CStrike2D
 {
     public class ClientWeapon
     {
-
         public ClientPlayer Owner { get; private set; }
         public ParticleEmitter GunEmitter { get; private set; }
         public bool Fired { get; private set; }

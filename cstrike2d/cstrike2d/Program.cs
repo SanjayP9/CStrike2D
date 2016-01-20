@@ -1,5 +1,5 @@
-
 using System;
+
 namespace CStrike2D
 {
 #if WINDOWS || XBOX

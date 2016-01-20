@@ -1,12 +1,11 @@
 ﻿// Author: Shawn Verma
 // File Name: SoundContainer.cs
-// Project Name: CStrike2D
+// Project Name: Global Offensive
 // Creation Date: Dec 31st, 2015
 // Modified Date: Dec 31st, 2015
 // Description: Manages sound effects methods, and stores the sound effect with an identifier
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using System;
 
 namespace CStrike2D
 {

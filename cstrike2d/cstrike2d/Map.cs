@@ -1,4 +1,10 @@
-﻿using System;
+﻿// Author: Shawn Verma, Mark Voong, Sanjay Paraboo
+// File Name: LevelEditor.cs
+// Project Name: Global Offensive
+// Creation Date: Nov 23rd, 2015
+// Modified Date: Jan 19th, 2016
+// Description: Stores the map data including tile types and what texture to draw for the client
+using System;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

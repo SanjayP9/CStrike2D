@@ -2,7 +2,7 @@
 // File Name: CStrikeModel.cs
 // Project Name: Global Offensive
 // Creation Date: Dec 21st, 2015
-// Modified Date: Jan 15th, 2016
+// Modified Date: Jan 20th, 2016
 // Description: Handles all logic processing of the game
 using System;
 using System.Diagnostics;

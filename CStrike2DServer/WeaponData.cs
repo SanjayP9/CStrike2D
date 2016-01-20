@@ -1,4 +1,12 @@
-﻿using System;
+﻿// Author: Mark Voong
+// File Name: WeaponData.cs
+// Project Name: Global Offensive
+// Creation Date: Jan 15th, 2016
+// Modified Date: Jan 18th, 2016
+// Description: Stores all data about a weapon, including fire rate,
+//              damage, and its byte equivalent for network communication. This is
+//              also shared between both server and client
+using System;
 
 namespace CStrike2DServer
 {
@@ -38,7 +46,7 @@ namespace CStrike2DServer
                 case Weapon.Knife:
                     return 1.0f;
                 case Weapon.Ak47:
-                    return 0.06f;
+                    return 0.08f;
                 case Weapon.Glock:
                     return 0.5f;
                 case Weapon.Awp:
@@ -46,7 +54,7 @@ namespace CStrike2DServer
                 case Weapon.Usp:
                     return 0.4f;
                 case Weapon.M4A1:
-                    return 0.06f;
+                    return 0.08f;
                 case Weapon.None:
                     return 1.0f;
                 default:

@@ -1,17 +1,13 @@
 ﻿// Author: Sanjay Paraboo
 // File Name: ParticleModel.cs
-// Project Name: Globabl Offensive ISU
+// Project Name: Globabl Offensive
 // Creation Date: Dec 20th, 2015
 // Modified Date: Jan 18th, 2016
-// Description: Used to hold a list of particle sand set them to emit at a certain emit location.
-//              It also runs all the Upd
+// Description: Used to hold a list of particles and set them to emit at a certain emit location.
+//              It also runs all the Update
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CStrike2D
 {

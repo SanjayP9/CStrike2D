@@ -1,18 +1,12 @@
 ﻿// Author: Shawn Verma
 // File Name: Collision.cs
-// Project Name: CStrike2D
+// Project Name: Global Offensive
 // Creation Date: Dec 31st, 2015
-// Modified Date: Jan 10th, 2016
+// Modified Date: Jan 20th, 2016
 // Description: Handles all collision detections including: circle to circle, line to circle, circle to rectangle, 
 //              and line to non-aa rectangle.
-using CStrike2DServer;
 using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CStrike2D
 {

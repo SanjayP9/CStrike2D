@@ -1,12 +1,10 @@
 ﻿// Author: Mark Voong
 // File Name: Assets.cs
-// Project Name: CStrike2D
+// Project Name: Global Offensive
 // Creation Date: Dec 23rd, 2015
-// Modified Date: Jan 3rd, 2016
+// Modified Date: Jan 20th, 2016
 // Description: Stores all assets required in the game and is globally accessible
-
 using System;
-using System.IO;
 using CStrike2DServer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;

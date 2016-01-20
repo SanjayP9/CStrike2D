@@ -1,9 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿// Author: Sanjay Paraboo
+// File Name: RayEmitter.cs
+// Project Name: Global Offensive
+// Creation Date: Jan 14th, 2015
+// Modified Date: Jan 19th, 2016
+// Description: Handles casting multiple rays which are used in drawing a visiblity polygon
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CStrike2D
 {

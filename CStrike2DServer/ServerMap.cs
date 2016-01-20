@@ -1,4 +1,12 @@
-﻿using System;
+﻿// Author: Mark Voong
+// File Name: ServerMap.cs
+// Project Name: Global Offensive
+// Creation Date: Jan 19th, 2016
+// Modified Date: Jan 19th, 2016
+// Description: Serverside version of the Map.cs class on the client.
+//              Handles logic in a similar way but used by the server for
+//              logic processing
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
