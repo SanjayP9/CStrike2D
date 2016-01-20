@@ -112,7 +112,7 @@ namespace CStrike2D
             // Draw particles
             sb.Draw(assets.GetWeaponTexture(Weapon), Position, null, Color.White, Rotation, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 
-            gunSmokeParticle.Draw(sb, assets.SmokeParticle);
+            gunSmokeParticle.Draw(sb, assets.ParticleTexture);
             shellParticle.Draw(sb, assets.ShellTexture);
         }
     }
