@@ -26,7 +26,7 @@ namespace CStrike2D
         byte selectedTile;
 
         // Stores the constants of the tile size and the width/height of the tile set
-        const byte TILE_SIZE = 32;
+        public const byte TILE_SIZE = 32;
         const byte TILE_SET_WIDTH = 8;
         const byte TILES_SET_HEIGHT = 10;
         const float CAMERA_MOVE_SPEED = 7;
@@ -56,6 +56,8 @@ namespace CStrike2D
 
         // Stores the map area
         Rectangle mapArea = new Rectangle(-225, -250, 2400, 1600);
+
+        Rectangle destRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
 
         /// <summary>
         /// Represents states of the level editor
@@ -126,7 +128,9 @@ namespace CStrike2D
                             else if (tiles[(int)mapTilePos.X, (int)mapTilePos.Y] == null)
                             {
                                 tempSave();
-                                tiles[(int)mapTilePos.X, (int)mapTilePos.Y] = new Tile(selectedTile, Tile.NO_PROPERTY);
+
+                                tiles[(int) mapTilePos.X, (int) mapTilePos.Y] = new Tile(selectedTile, Tile.NO_PROPERTY,
+                                    (int) mapTilePos.X, (int) mapTilePos.Y, destRect);
                             }
                         }
                         // If the right mouse button is held
@@ -265,7 +269,7 @@ namespace CStrike2D
                             {
                                 for (int row = 0; row < numRows; row++)
                                 {
-                                    tiles[col, row] = new Tile(selectedTile, Tile.NO_PROPERTY);
+                                    tiles[col, row] = new Tile(selectedTile, Tile.NO_PROPERTY, col, row, mapArea);
                                 }
                             }
                         }
@@ -378,19 +382,21 @@ namespace CStrike2D
                     Vector2 screenDimensions = input.ScreenToWorld(driver.Model.Dimensions, driver.Model.Camera, driver.Model.Center);
                     Vector2 screenStart = input.ScreenToWorld(new Vector2(0, 0), driver.Model.Camera, driver.Model.Center);
 
-                    Rectangle destRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
+
                     Rectangle srcRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
 
+                    
+                     
                     // Draws all tiles placed on the map and colors the tile according to the property
                     for (int col = 0; col < numCols; col++)
                     {
                         for (int row = 0; row < numRows; row++)
                         {
-                            if (tiles[col, row] != null /*&&
+                            if (tiles[col, row] != null &&
                                 col * TILE_SIZE < screenDimensions.X - mapArea.X &&
                                 col * (TILE_SIZE * 2) > screenStart.X - mapArea.X &&
                                 row * TILE_SIZE < screenDimensions.Y - mapArea.Y &&
-                                row * (TILE_SIZE * 2) > screenStart.Y - mapArea.Y*/)
+                                row * (TILE_SIZE * 2) > screenStart.Y - mapArea.Y)
                             {
                                 // If show edit view is true change the color of the tile according to the property
                                 if (showEditView)
@@ -442,6 +448,18 @@ namespace CStrike2D
                             }
                         }
                     }
+                    
+
+                    /*
+                    foreach (Tile tile in tiles)
+                    {
+                        if (tile != null)
+                        {
+                            tile.Draw(sb, driver.Assets.TileSet, showEditView);
+                        }
+                    }
+                    */
+
                     // If show edit view is true
                     if (showEditView)
                     {
@@ -540,7 +558,10 @@ namespace CStrike2D
                     if (rowData[cols] != "")
                     {
                         // Initialize each property of the tile
-                        tiles[cols, rows] = new Tile((byte)Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 1)), (byte)Convert.ToInt32(rowData[cols].Substring(rowData[cols].Length - 1, 1)));
+                        tiles[cols, rows] =
+                            new Tile((byte) Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 1)),
+                                (byte) Convert.ToInt32(rowData[cols].Substring(rowData[cols].Length - 1, 1)), 
+                                cols, rows, mapArea);
                     }
                 }
             }

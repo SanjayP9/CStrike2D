@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CStrike2D;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
-namespace CStrike2D
+namespace CStrike2DServer
 {
-    public class Map
+    class ServerMap
     {
-        
         public Tile[,] TileMap { get; private set; }
         public int MaxTiles { get; private set; }
         public int MaxRow { get; private set; }
@@ -15,20 +18,14 @@ namespace CStrike2D
 
         private Rectangle mapArea;
 
-        private const int TILE_SIZE = 32;
+        public const int TILE_SIZE = 32;
 
-        private Assets assets;
-
-        public bool Loaded { get; private set; }
-
-        public void Load(string mapName, Assets assets)
+        public bool Load(string mapName)
         {
-            this.assets = assets;
-
             if (!File.Exists(mapName))
             {
-                Loaded = false;
-                return;
+                Console.WriteLine("Missing map: " + mapName + ". Server cannot start.");
+                return false;
             }
 
             // Creates a stream reader instance of the text file
@@ -70,48 +67,8 @@ namespace CStrike2D
 
             // Close the file
             inFile.Close();
-            Loaded = true;
-        }
-
-        public void Draw(SpriteBatch sb)
-        {
-            Rectangle destRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
-            Rectangle srcRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
-
-            // Draws all tiles placed and the properties highlighted overthem
-            for (int col = 0; col < MaxCol; col++)
-            {
-                for (int row = 0; row < MaxRow; row++)
-                {
-                    if (TileMap[col, row] != null)
-                    {
-                        srcRect.X = (TileMap[col, row].TileType % 8 * TILE_SIZE);
-                        srcRect.Y = (TileMap[col, row].TileType / 8 * TILE_SIZE);
-                        destRect.X = col * TILE_SIZE + mapArea.X;
-                        destRect.Y = row * TILE_SIZE + mapArea.Y;
-
-                        sb.Draw(assets.TileSet, destRect, srcRect, Color.White);
-                    }
-                }
-            }
-        }
-    }
-
-    static class TileFunctions
-    {
-        public static int ToTile(int col, int row, int maxCol)
-        {
-            return (row * maxCol) + col;
-        }
-
-        public static int ToTile(float col, float row, int maxCol)
-        {
-            return (int)((row * maxCol) + col);
-        }
-
-        public static int[] FromTile(int tileNumber, int maxCol)
-        {
-            return new[] { tileNumber % maxCol, tileNumber / maxCol };
+            Console.WriteLine("Map: " + mapName + " successfully loaded");
+            return true;
         }
     }
 }

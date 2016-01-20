@@ -57,8 +57,9 @@ namespace CStrike2DServer
         private static int numCols;
         private static int numRows;
         private static Rectangle mapArea;
-        private static Tile[,] tiles;
         private static DemoRecorder recorder;
+
+        public static ServerMap MapData { get; private set; }
 
         enum RoundState
         {
@@ -102,6 +103,7 @@ namespace CStrike2DServer
 
             Vector2 defSpawnPosition = new Vector2(350, 350);
             recorder = new DemoRecorder();
+            MapData = new ServerMap();
 
             Stopwatch updateTimer = new Stopwatch();
             Stopwatch netUpdateTimer = new Stopwatch();
@@ -121,6 +123,14 @@ namespace CStrike2DServer
             }
 
             ReadConfig();
+
+            Console.WriteLine("Loading map de_cache...");
+
+            if (!LoadMap("de_cache.txt"))
+            {
+                Console.ReadLine();
+                return;
+            }
 
             Console.WriteLine("Booting up server...");
 
@@ -214,64 +224,9 @@ namespace CStrike2DServer
             */
         }
 
-        static void LoadMap(string mapName)
+        static bool LoadMap(string mapName)
         {
-            /*
-            if (!File.Exists(mapName))
-            {
-                Console.WriteLine("Missing map: "+ mapName);
-                return;
-            }
-
-            StreamReader inFile = File.OpenText(mapName);
-
-            // Stores the data for a single line as a time
-
-            // Checks the first and second line of the text to set the number of columns and the number of rows
-            numCols = Convert.ToInt32(inFile.ReadLine());
-            numRows = Convert.ToInt32(inFile.ReadLine());
-
-            // Changes the placement area according to the number of columns and rows
-            mapArea = new Rectangle(-200, -250, 32 * numCols, 32 * numRows);
-
-            // Initialize the number of tiles to be according the the number of columns and rows
-            tiles = new Tile[numCols, numRows];
-
-            // Goes through every line in the text past the first two
-            for (int rows = 0; rows < numRows; rows++)
-            {
-                // Sets the row data to be split by commas to siginify a new column
-                string[] rowData = inFile.ReadLine().Split(',');
-
-                // Goes through every column in the row
-                for (int cols = 0; cols < rowData.Length; cols++)
-                {
-                    // If the data in the column is not blank
-                    if (rowData[cols] != "")
-                    {
-                        // According to each character in the text check to see for the 0/1
-                        // for each property and set the property to be true or false accordingly
-                        bool isPlantSpot = rowData[cols][rowData[cols].Length - 6] == '1';
-
-                        bool isSaveSpot = rowData[cols][rowData[cols].Length - 5] == '1';
-
-                        bool isSolid = rowData[cols][rowData[cols].Length - 4] == '1';
-
-                        bool isCTSpawnPoint = rowData[cols][rowData[cols].Length - 3] == '1';
-
-                        bool isTSpawnPoint = rowData[cols][rowData[cols].Length - 2] == '1';
-
-                        bool isSiteDefencePoint = rowData[cols][rowData[cols].Length - 1] == '1';
-
-                        // Initialize each property of the tile
-                        tiles[cols, rows] = new Tile(Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 6)), isPlantSpot, isSaveSpot, isSolid, isCTSpawnPoint, isTSpawnPoint, isSiteDefencePoint);
-                    }
-                }
-            }
-
-            // Close the file
-            inFile.Close();
-            */
+            return MapData.Load(mapName);
         }
 
         #region Old Code
@@ -823,53 +778,69 @@ namespace CStrike2DServer
 
         static bool CheckPlayerCollision(ServerPlayer player, byte direction)
         {
-            if (player.CurrentTeam != ServerClientInterface.Team.Spectator && enableCollision)
+            if (player.CurrentTeam != ServerClientInterface.Team.Spectator)
             {
-                float vectorX = 0f;
-                float vectorY = 0f;
-                switch (direction)
+                if (enableCollision)
                 {
-                    case ServerClientInterface.MOVE_UP:
-                        vectorY = -ServerClientInterface.MOVEMENT_SPEED;
-                        break;
-                    case ServerClientInterface.MOVE_DOWN:
-                        vectorY = ServerClientInterface.MOVEMENT_SPEED;
-                        break;
-                    case ServerClientInterface.MOVE_LEFT:
-                        vectorX = -ServerClientInterface.MOVEMENT_SPEED;
-                        break;
-                    case ServerClientInterface.MOVE_RIGHT:
-                        vectorX = ServerClientInterface.MOVEMENT_SPEED;
-                        break;
-                    case ServerClientInterface.MOVE_UPRIGHT:
-                        vectorX = ServerClientInterface.MOVEMENT_SPEED;
-                        vectorY = -ServerClientInterface.MOVEMENT_SPEED;
-                        break;
-                    case ServerClientInterface.MOVE_DOWNRIGHT:
-                        vectorX = ServerClientInterface.MOVEMENT_SPEED;
-                        vectorY = ServerClientInterface.MOVEMENT_SPEED;
-                        break;
-                    case ServerClientInterface.MOVE_DOWNLEFT:
-                        vectorX = -ServerClientInterface.MOVEMENT_SPEED;
-                        vectorY = ServerClientInterface.MOVEMENT_SPEED;
-                        break;
-                    case ServerClientInterface.MOVE_UPLEFT:
-                        vectorX = -ServerClientInterface.MOVEMENT_SPEED;
-                        vectorY = -ServerClientInterface.MOVEMENT_SPEED;
-                        break;
-                }
-
-                foreach (ServerPlayer ply in players)
-                {
-                    if (ply.Identifier != player.Identifier)
+                    float vectorX = 0f;
+                    float vectorY = 0f;
+                    switch (direction)
                     {
-                        if (Collision.PlayerToPlayer(new Vector2(player.Position.X + vectorX,
-                            player.Position.Y + vectorY), ply.Position, 23f))
+                        case ServerClientInterface.MOVE_UP:
+                            vectorY = -ServerClientInterface.MOVEMENT_SPEED;
+                            break;
+                        case ServerClientInterface.MOVE_DOWN:
+                            vectorY = ServerClientInterface.MOVEMENT_SPEED;
+                            break;
+                        case ServerClientInterface.MOVE_LEFT:
+                            vectorX = -ServerClientInterface.MOVEMENT_SPEED;
+                            break;
+                        case ServerClientInterface.MOVE_RIGHT:
+                            vectorX = ServerClientInterface.MOVEMENT_SPEED;
+                            break;
+                        case ServerClientInterface.MOVE_UPRIGHT:
+                            vectorX = ServerClientInterface.MOVEMENT_SPEED;
+                            vectorY = -ServerClientInterface.MOVEMENT_SPEED;
+                            break;
+                        case ServerClientInterface.MOVE_DOWNRIGHT:
+                            vectorX = ServerClientInterface.MOVEMENT_SPEED;
+                            vectorY = ServerClientInterface.MOVEMENT_SPEED;
+                            break;
+                        case ServerClientInterface.MOVE_DOWNLEFT:
+                            vectorX = -ServerClientInterface.MOVEMENT_SPEED;
+                            vectorY = ServerClientInterface.MOVEMENT_SPEED;
+                            break;
+                        case ServerClientInterface.MOVE_UPLEFT:
+                            vectorX = -ServerClientInterface.MOVEMENT_SPEED;
+                            vectorY = -ServerClientInterface.MOVEMENT_SPEED;
+                            break;
+                    }
+
+                    foreach (ServerPlayer ply in players)
+                    {
+                        if (ply.Identifier != player.Identifier)
                         {
-                            return false;
+                            if (Collision.PlayerToPlayer(new Vector2(player.Position.X + vectorX,
+                                player.Position.Y + vectorY), ply.Position, 23f))
+                            {
+                                return false;
+                            }
                         }
                     }
                 }
+
+                // Player to wall collision
+                // Gets the tiles that need to be checked
+                Tile[] tiles = GetTiles(player.Position, direction);
+
+                foreach (Tile tile in tiles)
+                {
+                    if (Collision.CircleToRectangle(player.Position, tile.TileRect, 23f))
+                    {
+                        return false;
+                    }
+                }
+
                 return true;
             }
             return true;
@@ -988,6 +959,59 @@ namespace CStrike2DServer
              */
 
             #endregion
+        }
+
+        public static Tile[] GetTiles(Vector2 position, byte direction)
+        {
+            List<Tile> tiles = new List<Tile>();
+            Point location = new Point((int)position.X, (int)position.Y);
+
+            // Gets the points that need to be checked
+            switch (direction)
+            {
+                case ServerClientInterface.MOVE_UP:
+                    tiles.Add(MapData.TileMap[location.X, location.Y - 1]);     // UP
+                    tiles.Add(MapData.TileMap[location.X - 1, location.Y - 1]); // UP-LEFT
+                    tiles.Add(MapData.TileMap[location.X + 1, location.Y - 1]); // UP-RIGHT
+                    break;
+                case ServerClientInterface.MOVE_DOWN:
+                    tiles.Add(MapData.TileMap[location.X, location.Y + 1]);     // DOWN
+                    tiles.Add(MapData.TileMap[location.X - 1, location.Y + 1]); // DOWN-LEFT
+                    tiles.Add(MapData.TileMap[location.X + 1, location.Y + 1]); // DOWN-RIGHT
+                    break;
+                case ServerClientInterface.MOVE_LEFT:
+                    tiles.Add(MapData.TileMap[location.X - 1, location.Y]);     // LEFT
+                    tiles.Add(MapData.TileMap[location.X - 1, location.Y - 1]); // LEFT-UP
+                    tiles.Add(MapData.TileMap[location.X - 1, location.Y + 1]); // LEFT-DOWN
+                    break;
+                case ServerClientInterface.MOVE_RIGHT:
+                    tiles.Add(MapData.TileMap[location.X + 1, location.Y]);     // RIGHT
+                    tiles.Add(MapData.TileMap[location.X + 1, location.Y - 1]); // RIGHT-UP
+                    tiles.Add(MapData.TileMap[location.X + 1, location.Y + 1]); // RIGHT-DOWN
+                    break;
+                case ServerClientInterface.MOVE_UPLEFT:
+                    tiles.Add(MapData.TileMap[location.X, location.Y - 1]);     // UP
+                    tiles.Add(MapData.TileMap[location.X - 1, location.Y - 1]); // UP-LEFT
+                    tiles.Add(MapData.TileMap[location.X - 1, location.Y]);     // LEFT
+                    break;
+                case ServerClientInterface.MOVE_UPRIGHT:
+                    tiles.Add(MapData.TileMap[location.X, location.Y - 1]);     // UP
+                    tiles.Add(MapData.TileMap[location.X + 1, location.Y - 1]); // UP-RIGHT
+                    tiles.Add(MapData.TileMap[location.X + 1, location.Y]);     // RIGHT
+                    break;
+                case ServerClientInterface.MOVE_DOWNRIGHT:
+                    tiles.Add(MapData.TileMap[location.X, location.Y + 1]);     // DOWN
+                    tiles.Add(MapData.TileMap[location.X + 1, location.Y + 1]); // DOWN-RIGHT
+                    tiles.Add(MapData.TileMap[location.X + 1, location.Y]);     // RIGHT
+                    break;
+                case ServerClientInterface.MOVE_DOWNLEFT:
+                    tiles.Add(MapData.TileMap[location.X, location.Y + 1]);     // DOWN
+                    tiles.Add(MapData.TileMap[location.X - 1, location.Y + 1]); // DOWN-LEFT
+                    tiles.Add(MapData.TileMap[location.X - 1, location.Y]);     // LEFT
+                    break;
+            }
+
+            return tiles.ToArray();
         }
     }
 }

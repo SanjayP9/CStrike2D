@@ -54,9 +54,6 @@
     <Compile Include="..\cstrike2d\cstrike2d\NetInterface.cs">
       <Link>NetInterface.cs</Link>
     </Compile>
-    <Compile Include="..\cstrike2d\cstrike2d\Tile.cs">
-      <Link>Tile.cs</Link>
-    </Compile>
     <Compile Include="..\cstrike2d\cstrike2d\WeaponInfo.cs">
       <Link>WeaponInfo.cs</Link>
     </Compile>
@@ -68,8 +65,10 @@
     <Compile Include="ServerBomb.cs" />
     <Compile Include="ServerClientInterface.cs" />
     <Compile Include="ServerGrenade.cs" />
+    <Compile Include="ServerMap.cs" />
     <Compile Include="ServerPlayer.cs" />
     <Compile Include="ServerWeapon.cs" />
+    <Compile Include="Tile.cs" />
     <Compile Include="WeaponData.cs" />
   </ItemGroup>
   <ItemGroup>
