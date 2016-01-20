@@ -3,7 +3,8 @@
 // Project Name: Global Offensive
 // Creation Date: Dec 31st, 2015
 // Modified Date: Jan 17th, 2016
-// Description: Allows ability to edit and view maps using various features including: Undo, Place/Remove, 
+// Description: Allows ability to edit and view maps using various features including: undo, place/remove, pan, zoom, place nodes,
+//              save file, load file, set all tiles, delete all tiles etc.
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -136,7 +137,7 @@ namespace CStrike2D
                                 tempSave();
 
                                 tiles[(int) mapTilePos.X, (int) mapTilePos.Y] = new Tile(selectedTile, Tile.NO_PROPERTY,
-                                    (int) mapTilePos.X, (int) mapTilePos.Y, destRect);
+                                      (int) mapTilePos.X, (int) mapTilePos.Y, destRect);
                             }
                         }
                         // If the right mouse button is held
@@ -520,7 +521,7 @@ namespace CStrike2D
                     }
                     break;
 
-                    // Draw the 
+                    // 
                 case EditorStates.ShowHotkeys:
                     sb.DrawString(driver.Assets.DefaultFont, "MOUSE1 -> SELECT/PLACE TILE\n\nMOUSE2-> REMOVE TILE\n\nCTRL + S -> SAVE FILE\n\nCTRL + O -> OPEN FILE\n\nCTRL + A -> SET ALL TILES\n\nCTRL + DEL -> DELETE ALL TILES\n\nCTRL + Z -> Undo\n\nSCROLL WHEEL -> ZOOM\n\nWASD -> MOVE CAMERA\n\nTAB -> TOGGLE EDIT VIEW", new Vector2(250, 75), Color.White);
                     sb.DrawString(driver.Assets.DefaultFont, "1 -> COLLIDABLE\n\n2-> A SITE PLANT SPOT\n\n3 -> B SITE PLANT SPOT\n\n4 -> SAVE SPOT\n\n5 - > CT SPAWN POINT\n\n6 -> T SPAWN POINT\n\n7 -> A SITE DEFENCE POINT\n\n8 -> B SITE DEFENCE POINT\n\n\n\n0 -> RESET PROPERTY", new Vector2(825, 75), Color.White);
@@ -545,6 +546,7 @@ namespace CStrike2D
             mapArea.Width = TILE_SIZE * numCols;
             mapArea.Height = TILE_SIZE * numRows;
 
+            // Sets the max indexes of the number of columns and rows
             undoTiles = new Tile[numCols, numRows];
             tempSave();
             
@@ -594,7 +596,7 @@ namespace CStrike2D
                     // If the data is not blank for the tile being checked
                     if (tiles[cols, rows] != null)
                     {
-                        // Write the tile type
+                        // Write the tile type followed by the property
                         outFile.Write(Convert.ToString(tiles[cols, rows].TileType) + Convert.ToString(tiles[cols, rows].Property));
                     }
 
