@@ -57,7 +57,7 @@ namespace CStrike2D
         /// 
         /// </summary>
         /// <param name="team"></param>
-        public AI( ServerClientInterface.Team team)
+        public AI(ServerClientInterface.Team team)
         {
             this.currentTeam = team;
         }
@@ -136,22 +136,29 @@ namespace CStrike2D
             // Records the movement cost of the surrounding tiles
             int[] tileScores;
 
-            // While loop that only exits when 
+            // While loop that only exits when both the current x and y of the node are equal to the 
+            // x and y of the ending node
             while (curCol != endingPoint.X ||
                    curRow != endingPoint.Y)
             {
+                // Stores the g costs of each of surrounding tiles
                 tileScores = new int[8];
+
+                // Stores g cost and h cost
+                int g;
+                int h;
 
                 // 0 1 2
                 // 3 X 4
                 // 5 6 7
 
-                int g;
-                int h;
+                // Cycles through all surrounding tiles
                 for (int i = 0; i < tileScores.Length; i++)
                 {
                     switch (i)
                     {
+                        // If the surroundiung tile is diagonal to the current node
+                        // the g cost is 14 and 10 if straight
                         case 0:
                         case 2:
                         case 5:
@@ -163,10 +170,15 @@ namespace CStrike2D
                             break;
                     }
 
+                    // Runs the DirectionToPoint method in order to store the new point
                     Point checkPoint = DirectionToPoint(i);
+
+                    // Gets the direction and adds it to the current node position in order to 
+                    // get the right placement
                     checkPoint.X += curCol;
                     checkPoint.Y += curRow;
 
+                    //
                     if (!path.Exists(p => p == checkPoint))
                     {
                         if (checkPoint.X > 0 && checkPoint.Y > 0 &&
