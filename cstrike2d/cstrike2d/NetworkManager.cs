@@ -264,6 +264,7 @@ namespace CStrike2D
         {
             outMsg = client.CreateMessage();
             outMsg.Write(ServerClientInterface.REQUEST_RESPAWN);
+            client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
         public void SyncWorld()
