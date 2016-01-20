@@ -131,6 +131,10 @@ namespace CStrike2D
                 case ParticleTypes.Shell:
                     particleColor = Color.White;
 
+                    particleDirection = CalcDirectionVect(playerAngle);
+                    ParticleTransparency = 1.0f;
+                    particleVelocity = 1.5f;
+
                     particleScale = 0.1f;
                     break;
 
