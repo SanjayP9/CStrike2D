@@ -1,4 +1,11 @@
-﻿using System;
+﻿// Author: Sanjay Paraboo
+// File Name: ClientGrenade.cs
+// Project Name: Globabl offensive ISU
+// Creation Date: Dec 20th, 2015
+// Modified Date: Jan 18th, 2016
+// Description: Used to create an instance of a grenade in the player class
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,16 +17,22 @@ namespace CStrike2D
 {
     class ClientGrenade
     {
-
+        // Stores an instance of assests
         private Assets assets;
 
+        // Vectors ans floats below are used to store th ecurrent position of the grenade,
+        // its speed and the direction its moving at
         public Vector2 Position { get; private set; }
         public Vector2 Direction { get; private set; }
         private float velocity;
 
+        // Stores an instance of Particle emitter for the grenade particle effects
         private ParticleEmitter grenadeEmitter;
 
 
+        /// <summary>
+        /// Used to record what current state of the grenade is
+        /// </summary>
         public enum GrenadeStates
         {
             Empty,
@@ -28,10 +41,16 @@ namespace CStrike2D
             Exploding
         }
 
+        // Enums below store what the grenade type is (ex: flash, smoke or frag) and records
+        // the current state of the grenade
         public Particle.ParticleTypes NadeType { get; private set; }
         public GrenadeStates State { get; private set; }
 
 
+        /// <summary>
+        /// Creates an instance of the client grenade
+        /// </summary>
+        /// <param name="assets"></param>
         public ClientGrenade(Assets assets)
         {
             this.assets = assets;
@@ -58,7 +77,7 @@ namespace CStrike2D
         }
 
         /// <summary>
-        /// If the grenade collides with the world, 
+        /// If the grenade collides with the world, it bouces it off the solid object
         /// </summary>
         public void CollidedWithWorld()
         {
@@ -66,10 +85,15 @@ namespace CStrike2D
         }
 
 
+        /// <summary>
+        /// Runs the update logic of the grenade based on the current state
+        /// </summary>
+        /// <param name="gameTime"></param>
         public void Update(float gameTime)
         {
             switch (State)
             {
+                // When the grenade state is empty or in possesion no logic needs to be run
                 case GrenadeStates.Empty:
                     break;
 
@@ -77,7 +101,8 @@ namespace CStrike2D
                     break;
 
                 case GrenadeStates.Thrown:
-                    // Updates position of the nade
+
+                    // Updates position of the nade when thrown
                     Position += Direction * velocity;
 
                     // Decrements the velocity
@@ -86,6 +111,8 @@ namespace CStrike2D
                         velocity -= 0.05f;
                     }
 
+
+                    // When the velocity slows down to 0 it will explode
                     if (velocity <= 0.0f)
                     {
                         velocity = 0.0f;
@@ -95,7 +122,7 @@ namespace CStrike2D
 
 
                 case GrenadeStates.Exploding:
-                    // update emitter
+                    // When the grenade is exploding it will update the particle emitter
                     grenadeEmitter.Update(gameTime);
 
                     break;
@@ -111,16 +138,20 @@ namespace CStrike2D
             grenadeEmitter.Launch(Position, 0f);
         }
 
+
         /// <summary>
-        /// 
+        /// Method runs when the player picks up a grenade
         /// </summary>
-        /// <param name="nadeType"></param>
-        public void PickupNade(Particle.ParticleTypes nadeType)
+        /// <param name="grenadePickup"> Specifies which grenade is picked up </param>
+        public void PickupNade(Particle.ParticleTypes grenadePickup)
         {
-            this.NadeType = nadeType;
-            State = GrenadeStates.InPossession;
+            NadeType = grenadePickup;
         }
 
+        /// <summary>
+        /// Draws the grenade based upon the current grenade type
+        /// </summary>
+        /// <param name="sb"></param>
         public void Draw(SpriteBatch sb)
         {
             switch (NadeType)
@@ -129,9 +160,6 @@ namespace CStrike2D
                     grenadeEmitter.Draw(sb, assets.ParticleTexture);
                     break;
 
-                case Particle.ParticleTypes.Fire:
-                    grenadeEmitter.Draw(sb, assets.SmokeParticle);
-                    break;
 
                 case Particle.ParticleTypes.Smoke:
                     grenadeEmitter.Draw(sb, assets.SmokeParticle);

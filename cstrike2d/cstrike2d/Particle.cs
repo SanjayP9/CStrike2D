@@ -1,8 +1,8 @@
 ﻿// Author: Sanjay Paraboo
 // File Name: ParticleModel.cs
-// Project Name: Globabl Offensice ISU
+// Project Name: Globabl Offensive ISU
 // Creation Date: Dec 20th, 2015
-// Modified Date: Jan 18th, 2015
+// Modified Date: Jan 18th, 2016
 // Description: Used to implement particle effects. This class stores all logic for
 //              the particle effects
 using Microsoft.Xna.Framework;
@@ -52,7 +52,6 @@ namespace CStrike2D
         public enum ParticleTypes
         {
             Frag,
-            Fire,
             Smoke,
             GunSmoke,
             Debris,
@@ -61,22 +60,21 @@ namespace CStrike2D
         // Stores the current particle type
         public ParticleTypes Type { get; private set; }
 
+        
         /// <summary>
-        /// Creates an instance of ParticleModel and initializes the ParticleView
+        /// Used to create an instance of a particle and based on its particle type it will have certain attributes
         /// </summary>
-        /// <param name="emitVect"> 
-        /// Passes through the particle emit vector 
-        /// </param>
-        /// <param name="rand"> 
-        /// Passes through instance of a Random in order 
-        /// to create random integers
-        /// </param>
+        /// <param name="emitVect"> Passes through the emitter vector2 </param>
+        /// <param name="particleType"> Specifies what particle to create </param>
+        /// <param name="playerAngle"> Specifies what angle the player is at </param>
         public Particle(Vector2 emitVect,ParticleTypes particleType, float playerAngle)
         {
+            // Sets class level variables to ones retrieved in parameter
             this.ParticlePosition = emitVect;
             this.emitVect = emitVect;
             this.Type = particleType;
 
+            // Bassed upon the Particle type the particle will have a specific color, velocity, scale
             switch (Type)
             {
                 case ParticleTypes.Frag:
@@ -98,17 +96,6 @@ namespace CStrike2D
                     ParticleScale = 0.2f;
                     ParticleTransparency = 1.0f;
 
-
-                    break;
-
-                case ParticleTypes.Fire:
-                    particleColor = Color.Yellow;
-
-                    particleVelocity = 0.7f;
-
-                    ParticleTransparency = 1.0f;
-                    ParticleScale = 0.3f;
-                    particleDirection = CalcDirectionVect(CStrike2D.Rand.Next(0, 361));
 
                     break;
 
@@ -163,16 +150,18 @@ namespace CStrike2D
             // Adds the direction multiplied by the speed to the current particle position
             ParticlePosition += particleDirection * particleVelocity;
 
-            if ((ParticleTransparency <= 0.0f) && (Type == ParticleTypes.Smoke || Type == ParticleTypes.Fire))
+            if ((ParticleTransparency <= 0.0f) && (Type == ParticleTypes.Smoke))
             {
                 Respawn();
             }
 
 
+            // Based on the type of particle it will have different properties such as scale, its color transparency and etc
             switch (Type)
             {
                 case ParticleTypes.Frag:
 
+                    // Changes RGB colors based on its current values
                     if (particleColor.G > 165)
                     {
                         particleColor.G -= 17;
@@ -189,7 +178,7 @@ namespace CStrike2D
                         }
                     }
 
-
+                    // Decrements the transparency, velocity and scale
                     ParticleTransparency -= 0.02f;
                     particleVelocity -= 0.025f;
 
@@ -197,21 +186,21 @@ namespace CStrike2D
                     {
                         ParticleScale += 0.01f;
                     }
-
-                    break;
-                case ParticleTypes.Fire:
                     break;
 
                 case ParticleTypes.Smoke:
+                    // Decrements the alpha
                     ParticleTransparency -= 0.007f;
                     break;
 
                 case ParticleTypes.GunSmoke:
+                    // Increases scale and decrements alpha
                     ParticleScale += 0.005f;
                     ParticleTransparency -= 0.07f;
                     break;
 
                 case ParticleTypes.Debris:
+                    // If the velocity 
                     if (!(particleVelocity <= 0.0f))
                     {
                         particleVelocity -= 0.25f;
@@ -235,57 +224,47 @@ namespace CStrike2D
         /// </summary>
         public void Respawn()
         {
+            // When the particle respawns it resets the transparency, position and resets the particle lifetime
             ParticleTransparency = 1.0f;
             ParticlePosition = emitVect;
             ParticleLifeTime = 0.0f;
 
-            switch (Type)
-            {
-                case ParticleTypes.Frag:
-                    particleColor = new Color(250, 250, 0);
-                    break;
-                case ParticleTypes.Fire:
-                    break;
-                case ParticleTypes.Smoke:
 
-                    break;
-                case ParticleTypes.GunSmoke:
-                    break;
-                case ParticleTypes.Debris:
-                    break;
-                default:
-                    break;
+            // if the grenade is a frag it resets the color
+            if (Type == ParticleTypes.Frag)
+            {
+                particleColor = new Color(250, 250, 0);
             }
         }
 
+        /// <summary>
+        /// Returns the direction vector  given an angle
+        /// </summary>
+        /// <param name="angle"> Passes through an angle in radians </param>
+        /// <returns></returns>
         public Vector2 CalcDirectionVect(float angle)
         {
             return new Vector2((float)(Math.Cos(angle)), (float)(Math.Sin(angle)));
         }
 
 
-        public Color ReturnColor()
-        {
-            return particleColor;
-        }
-
-
         /// <summary>
-        /// 
+        /// Draws the particle instance onto the screen
         /// </summary>
-        /// <param name="sb"></param>
-        /// <param name="particleImg"></param>
+        /// <param name="sb"> Passes through spritebatch in order to use its draw commands </param>
+        /// <param name="particleImg"> passes through the particle texture that will be drawn </param>
         public void Draw(SpriteBatch sb, Texture2D particleImg)
         {
-            sb.Draw(particleImg,
-                    ParticlePosition,
-                    null,//Model.SourceRect,
-                    ReturnColor() * ParticleTransparency,
-                    0f,
-                    new Vector2(particleImg.Width * 0.5f, particleImg.Width * 0.5f),
-                    ParticleScale,
-                    SpriteEffects.None,
-                    0);
+            sb.Draw(particleImg,                            // Uses particle image as Texture2D
+                    ParticlePosition,                       // Sets it at the ParticlePosition Vector2
+                    null,                                   // No Source Rectangle used
+                    particleColor * ParticleTransparency,   // Uses the colour and transparency calculated in the update code 
+                    0f,                                     // No rotation used
+                    new Vector2(particleImg.Width * 0.5f,   // Centres the texture at the middle of the texture
+                                particleImg.Width * 0.5f),
+                    ParticleScale,                          // Scales it using float scale calulated in update logic
+                    SpriteEffects.None,                     // No SpriteEffects used
+                    0);                                     // Drawn on layer 0
         }
     }
 }

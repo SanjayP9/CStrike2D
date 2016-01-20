@@ -1,4 +1,14 @@
-﻿using Microsoft.Xna.Framework;
+﻿// Author: Sanjay Paraboo
+// File Name: AI.cs
+// Project Name: Global Offensive ISU
+// Creation Date: Dec 20th, 2015
+// Modified Date: Jan 18th, 2015
+// Description: This class has all of the update and draw logic for an AI player.
+//              An Ai has the same functinality as a player except they are controlled by the server and they
+//              Get to objectives by using the A star pathfinding algorithm
+
+using CStrike2DServer;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +19,9 @@ namespace CStrike2D
 {
     class AI
     {
+        /// <summary>
+        /// Used to specify the current state of the AI
+        /// </summary>
         public enum AIStates
         {
             Defuse,
@@ -20,13 +33,20 @@ namespace CStrike2D
             Idle
         }
 
+        // Stores an isntance of the AIStates enum and is used to specify the current state
         private AIStates currentState = AIStates.Idle;
 
-        private  NetInterface.Team currentTeam = NetInterface.Team.Spectator;
+        // Used to store the current team that teh bot is on
+        private ServerClientInterface.Team currentTeam = ServerClientInterface.Team.Spectator;
 
+        // Stores an instance of player in oredr to use player functionality
         private ClientPlayer player;
 
-        public AI( NetInterface.Team team)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="team"></param>
+        public AI( ServerClientInterface.Team team)
         {
             this.currentTeam = team;
         }

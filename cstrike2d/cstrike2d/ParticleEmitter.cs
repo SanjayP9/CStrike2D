@@ -1,4 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿// Author: Sanjay Paraboo
+// File Name: ParticleModel.cs
+// Project Name: Globabl Offensive ISU
+// Creation Date: Dec 20th, 2015
+// Modified Date: Jan 18th, 2016
+// Description: Used to hold a list of particle sand set them to emit at a certain emit location.
+//              It also runs all the Upd
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -55,10 +62,6 @@ namespace CStrike2D
                     systemLifeTime = 30.0f;
                     break;
 
-                case Particle.ParticleTypes.Fire:
-                    Particles = new List<Particle>(50);
-                    systemLifeTime = FIRE_GRENADE_LIFETIME;
-                    break;
 
                 case Particle.ParticleTypes.Smoke:
                     Particles = new List<Particle>(50);
@@ -97,13 +100,13 @@ namespace CStrike2D
                     Particles[i].Update(gameTime);
 
 
-                    if ((particleType == Particle.ParticleTypes.Smoke || particleType == Particle.ParticleTypes.Fire) &&
+                    if ((particleType == Particle.ParticleTypes.Smoke) &&
                         (Particles[i].ParticleTransparency <= 0.0f) && (systemLifeTime > systemUpTime))
                     {
                         Particles[i].Respawn();
                     }
                 }
-                else if ((Particles[i] == null) && (particleType == Particle.ParticleTypes.Smoke||particleType == Particle.ParticleTypes.Fire))
+                else if ((Particles[i] == null) && (particleType == Particle.ParticleTypes.Smoke))
                 {
                     Particles[i] = new Particle(emitVect, particleType,0f);
                 }
@@ -126,7 +129,6 @@ namespace CStrike2D
             switch (particleType)
             {
                 case Particle.ParticleTypes.Frag:
-                case Particle.ParticleTypes.Fire:
                 case Particle.ParticleTypes.Smoke:
                     launchNumber = 1;
                     break;
