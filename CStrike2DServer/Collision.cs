@@ -124,8 +124,8 @@ namespace CStrike2D
 
             // Check to see if the circle intersects to corner of the rectangle by checking to see if the distance
             // from the centre of the circle to the corner is less than or equal to the radius
-            float cornerDistance_sq = (circleDistance.X - rect.Width / 2) * (circleDistance.X - rect.Width / 2) +
-                                      (circleDistance.Y - rect.Height / 2) * (circleDistance.Y - rect.Height / 2);
+            float cornerDistance_sq = (circleDistance.X - rect.Width * 0.5f) * (circleDistance.X - rect.Width * 0.5f) +
+                                      (circleDistance.Y - rect.Height * 0.5f) * (circleDistance.Y - rect.Height * 0.5f);
             return (cornerDistance_sq <= (radius * radius));
         }
     }

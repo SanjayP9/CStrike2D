@@ -77,7 +77,6 @@ namespace CStrike2D
             else
             {
                 driver.GraphicsDevice.SetRenderTarget(null);
-
                 DrawScreen(sb, sceneRender, 1280, 720, null);
             }
         }
@@ -99,7 +98,6 @@ namespace CStrike2D
 
             sb.End();
         }
-
 
         /// <summary>
         /// Computes sample weightings and texture coordinate offsets

@@ -569,7 +569,7 @@ namespace CStrike2D
 
                 if (Flashed)
                 {
-                    sb.Draw(assets.PixelTexture, new Rectangle(0, 0, 1280, 720), Color.White * ((flashTimer * 2) / 20f));
+                    sb.Draw(assets.PixelTexture, new Rectangle((int)Client.Position.X - 640, (int)Client.Position.Y - 360, 1280, 720), Color.White * ((flashTimer * 2) / 20f));
                 }
             }
         }

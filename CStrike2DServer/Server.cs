@@ -54,10 +54,9 @@ namespace CStrike2DServer
         private static string mapName = "de_cache";
 
         private static RoundState state = RoundState.Empty;
-        private static int numCols;
-        private static int numRows;
-        private static Rectangle mapArea;
         private static DemoRecorder recorder;
+
+        private static Random rand = new Random();
 
         public static ServerMap MapData { get; private set; }
 
@@ -504,7 +503,22 @@ namespace CStrike2DServer
                                 outMsg.Write(ServerClientInterface.TeamToByte(player.CurrentTeam));
                                 server.SendToAll(outMsg,NetDeliveryMethod.ReliableSequenced);
 
-                                RespawnPlayer(player, new Vector2(numCts));
+                                Vector2 spawnLocation = Vector2.Zero;
+                                int spawnPoint;
+                                switch (player.CurrentTeam)
+                                {
+                                    case ServerClientInterface.Team.CounterTerrorist:
+                                        spawnPoint = rand.Next(0, MapData.CTTile.Count);
+                                        spawnLocation = new Vector2(MapData.CTTile[spawnPoint].TileRect.X + 16,
+                                            MapData.CTTile[spawnPoint].TileRect.Y + 16);
+                                        break;
+                                    case ServerClientInterface.Team.Terrorist:
+                                        spawnPoint = rand.Next(0, MapData.TTile.Count);
+                                        spawnLocation = new Vector2(MapData.TTile[spawnPoint].TileRect.X + 16,
+                                            MapData.TTile[spawnPoint].TileRect.Y + 16);
+                                        break;
+                                }
+                                RespawnPlayer(player, spawnLocation);
                                 break;
                             case ServerClientInterface.MOVE_UP:
                             case ServerClientInterface.MOVE_DOWN:
@@ -558,7 +572,7 @@ namespace CStrike2DServer
         }
 
         /// <summary>
-        /// Sends data of all connected players to a newly connected client
+        /// Sends data of all connected players
         /// </summary>
         /// <param name="client"></param>
         public static void SyncCurrentPlayers(NetConnection client)
@@ -566,20 +580,17 @@ namespace CStrike2DServer
             foreach (ServerPlayer ply in players)
             {
                 // Send data about every player except their own player to the client
-                if (ply.ConnectionIdentifier != client.RemoteUniqueIdentifier)
-                {
-                    outMsg = server.CreateMessage();
-                    outMsg.Write(ServerClientInterface.SYNC_CHUNK);
-                    outMsg.Write(ply.Identifier);
-                    outMsg.Write(ply.UserName);
-                    outMsg.Write(ServerClientInterface.TeamToByte(ply.CurrentTeam));
-                    outMsg.Write(ply.Position.X);
-                    outMsg.Write(ply.Position.Y);
-                    outMsg.Write(ply.Rotation);
-                    outMsg.Write(WeaponData.WeaponToByte(ply.CurrentWeapon.Weapon));
-                    outMsg.Write(ServerClientInterface.StateToByte(ply.State));
-                    server.SendMessage(outMsg, client, NetDeliveryMethod.ReliableSequenced);
-                }
+                outMsg = server.CreateMessage();
+                outMsg.Write(ServerClientInterface.SYNC_CHUNK);
+                outMsg.Write(ply.Identifier);
+                outMsg.Write(ply.UserName);
+                outMsg.Write(ServerClientInterface.TeamToByte(ply.CurrentTeam));
+                outMsg.Write(ply.Position.X);
+                outMsg.Write(ply.Position.Y);
+                outMsg.Write(ply.Rotation);
+                outMsg.Write(WeaponData.WeaponToByte(ply.CurrentWeapon.Weapon));
+                outMsg.Write(ServerClientInterface.StateToByte(ply.State));
+                server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
             }
             outMsg = server.CreateMessage();
             outMsg.Write(ServerClientInterface.SYNC_COMPLETE);
@@ -835,9 +846,12 @@ namespace CStrike2DServer
 
                 foreach (Tile tile in tiles)
                 {
-                    if (Collision.CircleToRectangle(player.Position, tile.TileRect, 23f))
+                    if (tile != null && tile.Property == Tile.SOLID)
                     {
-                        return false;
+                        if (Collision.CircleToRectangle(player.Position, tile.TileRect, 14f))
+                        {
+                            return false;
+                        }
                     }
                 }
 
@@ -964,30 +978,30 @@ namespace CStrike2DServer
         public static Tile[] GetTiles(Vector2 position, byte direction)
         {
             List<Tile> tiles = new List<Tile>();
-            Point location = new Point((int)position.X, (int)position.Y);
+            Point location = new Point((int)(position.X) / ServerMap.TILE_SIZE, (int)(position.Y) / ServerMap.TILE_SIZE);
 
             // Gets the points that need to be checked
             switch (direction)
             {
                 case ServerClientInterface.MOVE_UP:
                     tiles.Add(MapData.TileMap[location.X, location.Y - 1]);     // UP
-                    tiles.Add(MapData.TileMap[location.X - 1, location.Y - 1]); // UP-LEFT
-                    tiles.Add(MapData.TileMap[location.X + 1, location.Y - 1]); // UP-RIGHT
+                    //tiles.Add(MapData.TileMap[location.X - 1, location.Y - 1]); // UP-LEFT
+                    //tiles.Add(MapData.TileMap[location.X + 1, location.Y - 1]); // UP-RIGHT
                     break;
                 case ServerClientInterface.MOVE_DOWN:
                     tiles.Add(MapData.TileMap[location.X, location.Y + 1]);     // DOWN
-                    tiles.Add(MapData.TileMap[location.X - 1, location.Y + 1]); // DOWN-LEFT
-                    tiles.Add(MapData.TileMap[location.X + 1, location.Y + 1]); // DOWN-RIGHT
+                    //tiles.Add(MapData.TileMap[location.X - 1, location.Y + 1]); // DOWN-LEFT
+                    //tiles.Add(MapData.TileMap[location.X + 1, location.Y + 1]); // DOWN-RIGHT
                     break;
                 case ServerClientInterface.MOVE_LEFT:
                     tiles.Add(MapData.TileMap[location.X - 1, location.Y]);     // LEFT
-                    tiles.Add(MapData.TileMap[location.X - 1, location.Y - 1]); // LEFT-UP
-                    tiles.Add(MapData.TileMap[location.X - 1, location.Y + 1]); // LEFT-DOWN
+                    //tiles.Add(MapData.TileMap[location.X - 1, location.Y - 1]); // LEFT-UP
+                    //tiles.Add(MapData.TileMap[location.X - 1, location.Y + 1]); // LEFT-DOWN
                     break;
                 case ServerClientInterface.MOVE_RIGHT:
                     tiles.Add(MapData.TileMap[location.X + 1, location.Y]);     // RIGHT
-                    tiles.Add(MapData.TileMap[location.X + 1, location.Y - 1]); // RIGHT-UP
-                    tiles.Add(MapData.TileMap[location.X + 1, location.Y + 1]); // RIGHT-DOWN
+                    //tiles.Add(MapData.TileMap[location.X + 1, location.Y - 1]); // RIGHT-UP
+                    //tiles.Add(MapData.TileMap[location.X + 1, location.Y + 1]); // RIGHT-DOWN
                     break;
                 case ServerClientInterface.MOVE_UPLEFT:
                     tiles.Add(MapData.TileMap[location.X, location.Y - 1]);     // UP

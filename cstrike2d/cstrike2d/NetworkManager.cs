@@ -121,8 +121,10 @@ namespace CStrike2D
                                     short id;
                                     switch (code)
                                     {
-                                        case ServerClientInterface.SYNC_NEW_PLAYER:
-                                            engine.SyncNewPlayer(msg.ReadString(), msg.ReadInt16());
+                                        case ServerClientInterface.SYNC_CHUNK:
+                                            engine.SyncPlayer(msg.ReadInt16(), msg.ReadString(),
+                                             msg.ReadByte(), msg.ReadFloat(), msg.ReadFloat(),
+                                             msg.ReadFloat(), msg.ReadByte(), msg.ReadByte());
                                             break;
                                         case ServerClientInterface.MOVE_UP:
                                         case ServerClientInterface.MOVE_DOWN:
