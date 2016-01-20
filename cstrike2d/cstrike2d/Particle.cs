@@ -115,7 +115,7 @@ namespace CStrike2D
                 case ParticleTypes.GunSmoke:
                     particleColor = new Color(120, 120, 120);
 
-                    particleDirection = CalcDirectionVect((float)(-Math.PI * 0.5f));
+                    particleDirection = CalcDirectionVect(playerAngle);
 
                     particleVelocity = 1.0f;
                     ParticleTransparency = 1.0f;

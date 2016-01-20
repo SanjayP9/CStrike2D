@@ -158,6 +158,7 @@ namespace CStrike2D
         {
             ClientPlayer shooter = Players.Find(ply => ply.Identifier == identifier);
             PlaySound(shooter);
+            shooter.Fire();
         }
 
         /// <summary>

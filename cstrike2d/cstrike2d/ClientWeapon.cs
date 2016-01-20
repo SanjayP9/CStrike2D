@@ -33,6 +33,7 @@ namespace CStrike2D
 
         // Used to store an instance of a ParticleEmitter
         private ParticleEmitter gunSmokeParticle;
+        private ParticleEmitter shellParticle;
 
         public bool FireWeapon()
         {
@@ -41,12 +42,15 @@ namespace CStrike2D
                                 
                 Texture2D gunTexture = assets.GetWeaponTexture(Weapon);
 
+              
                 Vector2 direction = new Vector2(
                     (float)Math.Cos(Rotation) * gunTexture.Width, 
                     (float)Math.Sin(Rotation) * gunTexture.Width);
                 //Vector2 barrelVect = new Vector2(Position.X + (gunTexture.Width ), Position.Y + (gunTexture.Height * 0.5f));
 
                 gunSmokeParticle.Launch(Position + direction, Rotation);
+
+                shellParticle.Launch(new Vector2(direction.X/2f, direction.Y), Rotation - 1.57f);
 
                 Fired = true;
                 FireRate = WeaponData.FireRate(Weapon);
@@ -86,6 +90,7 @@ namespace CStrike2D
             }
 
             gunSmokeParticle.Update(gameTime);
+            shellParticle.Update(gameTime);
         }
 
         /// <summary>
@@ -107,6 +112,7 @@ namespace CStrike2D
             sb.Draw(assets.GetWeaponTexture(Weapon), Position, null, Color.White, Rotation, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 
             gunSmokeParticle.Draw(sb, assets.SmokeParticle);
+            shellParticle.Draw(sb, assets.ShellTexture);
         }
     }
 }
