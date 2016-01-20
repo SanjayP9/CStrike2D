@@ -166,7 +166,7 @@ namespace CStrike2D
             float m2 = ((topRight.Y - bottomLeft.Y) / (topRight.X - bottomLeft.X));
             float b2 = centre.Y - m2 * centre.X;
             float poiX2 = (b2 - bPlayer) / (mPlayer - m2);
-            float poiY2 = m2 * poiX1 + b2;
+            float poiY2 = m2 * poiX2 + b2;
 
             // If a P.O.I is within the rectangle return true
             if(Vector2.Distance(centre, new Vector2(poiX1,poiY1)) <= distance || 
