@@ -179,14 +179,6 @@ namespace CStrike2D
                                         
                     model.Shader.Draw(sb);
                     sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
-
-                    if (model.GameEngine.Client != null)
-                    {
-                        sb.DrawString(assets.DefaultFont,
-                            "Camera Pos: " + model.GameEngine.Client.Position.X/assets.MapData.MaxCol + "," +
-                            model.GameEngine.Client.Position.Y/assets.MapData.MaxRow,
-                            new Vector2(model.Dimensions.X - 200, 30), Color.White);
-                    }
                     break;
             }
 
