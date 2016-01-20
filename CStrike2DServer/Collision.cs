@@ -70,13 +70,13 @@ namespace CStrike2D
             }
             else if (enemyPlayer.Y < shootingPlayer.Y)
             {
-                if (enemyPlayer.X >= shootingPlayer.X)
-                {
-                    quadrantOfEnemy = 3;
-                }
-                if (enemyPlayer.X < shootingPlayer.X)
+                if (enemyPlayer.X > shootingPlayer.X)
                 {
                     quadrantOfEnemy = 4;
+                }
+                if (enemyPlayer.X <= shootingPlayer.X)
+                {
+                    quadrantOfEnemy = 3;
                 }
             }
             int angleQuad = 0;
