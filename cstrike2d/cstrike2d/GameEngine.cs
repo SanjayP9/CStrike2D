@@ -483,6 +483,15 @@ namespace CStrike2D
                         {
                             driver.Model.Camera.Position.X += 5f;
                         }
+
+                        if (input.Tapped(Keys.P))
+                        {
+                            if (Client.CurrentTeam != ServerClientInterface.Team.Spectator &&
+                                Client.State == ServerClientInterface.PlayerState.Dead)
+                            {
+                                network.RequestRespawn();
+                            }
+                        }
                     }
 
                     foreach (ClientPlayer ply in Players)
@@ -509,15 +518,6 @@ namespace CStrike2D
                     else if (input.Tapped(Keys.D) | input.Held(Keys.D))
                     {
                         driver.Model.Camera.Position.X += 5f;
-                    }
-
-                    if (input.Tapped(Keys.P))
-                    {
-                        if (Client.CurrentTeam != ServerClientInterface.Team.Spectator &&
-                            Client.State == ServerClientInterface.PlayerState.Dead)
-                        {
-                            network.RequestRespawn();
-                        }
                     }
 
                     if (driver.Model.InterfaceManager.Clicked(input, "teamSelectMenu", "ctButton"))

@@ -628,9 +628,18 @@ namespace CStrike2DServer
                     if (Collision.BulletToPlayer(shooter.Position, player.Position,
                         shooter.Rotation, 24f, new Rectangle(
                             (int)player.Position.X -16, (int)player.Position.Y +16,
-                            32, 32), player.Rotation))
+                            32, 32), player.Rotation) && player.State == ServerClientInterface.PlayerState.Alive)
                     {
                         player.Damage(15, 0);
+
+                        if (player.Health <= 0)
+                        {
+                            player.SetHealth(0);
+                            player.SetArmor(0);
+                            player.SetState(ServerClientInterface.PlayerState.Dead);
+                            Console.WriteLine(shooter.UserName + " killed " + player.UserName +
+                                " with " + shooter.CurrentWeapon.Weapon);
+                        }
 
                         outMsg = server.CreateMessage();
                         outMsg.Write(ServerClientInterface.DAMAGE);
