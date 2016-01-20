@@ -134,6 +134,7 @@ namespace CStrike2D
         /// </summary>
         public void Explode()
         {
+            // Creates an instance of a ParticleEmitter
             grenadeEmitter = new ParticleEmitter(NadeType);
             grenadeEmitter.Launch(Position, 0f);
         }
@@ -151,16 +152,16 @@ namespace CStrike2D
         /// <summary>
         /// Draws the grenade based upon the current grenade type
         /// </summary>
-        /// <param name="sb"></param>
+        /// <param name="sb"> Passes through SpriteBatch instance in order to use Draw method </param>
         public void Draw(SpriteBatch sb)
         {
+            // 
             switch (NadeType)
             {
                 case Particle.ParticleTypes.Frag:
                     grenadeEmitter.Draw(sb, assets.ParticleTexture);
                     break;
-
-
+                    
                 case Particle.ParticleTypes.Smoke:
                     grenadeEmitter.Draw(sb, assets.SmokeParticle);
                     break;

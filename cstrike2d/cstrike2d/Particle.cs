@@ -19,6 +19,7 @@ namespace CStrike2D
         // Constants used to store to control the update frequency
         private const float SMOKE_UPDATE_FREQ = 50.0f;
 
+        //  Used to specify update intercals of certain particles
         private float updateTime = 0.0f;
         private float updateFreq = 0.0f;
 
@@ -30,15 +31,15 @@ namespace CStrike2D
         // Controls transparency of particle texture
         public float ParticleTransparency { get; private set; }
         //Scales the particles texture size 
-        private float ParticleScale;
+        private float particleScale;
         //Controls particle texture color overlay
         private Color particleColor;
         // Used to change the rotation of the texture when drawing
-        public float Rotation { get; private set; }
+        public float rotation;
 
 
         // Records how long the particle has been acitve for
-        private float ParticleLifeTime;
+        private float particleLifeTime;
 
         // Stores the direction vector of the particle
         private Vector2 particleDirection;
@@ -93,7 +94,7 @@ namespace CStrike2D
                         particleVelocity = 3.0f;
                     }
 
-                    ParticleScale = 0.2f;
+                    particleScale = 0.2f;
                     ParticleTransparency = 1.0f;
 
 
@@ -108,18 +109,20 @@ namespace CStrike2D
 
                     particleVelocity = 1.0f;
                     ParticleTransparency = 1.0f;
-                    ParticleScale = 1.5f;
+                    particleScale = 1.5f;
 
                     break;
 
                 case ParticleTypes.GunSmoke:
                     particleColor = new Color(120, 120, 120);
 
-                    particleDirection = CalcDirectionVect((float)(-Math.PI * 0.5f));
+                    particleDirection = CalcDirectionVect(playerAngle);
 
                     particleVelocity = 1.0f;
                     ParticleTransparency = 1.0f;
-                    ParticleScale = 0.01f;
+                    particleScale = 0.01f;
+
+                    rotation = playerAngle;
                     break;
 
                 case ParticleTypes.Debris:
@@ -128,6 +131,12 @@ namespace CStrike2D
 
                 case ParticleTypes.Shell:
                     particleColor = Color.White;
+
+                    particleDirection = CalcDirectionVect(playerAngle);
+                    ParticleTransparency = 1.0f;
+                    particleVelocity = 2.0f;
+
+                    particleScale = 0.01f;
                     break;
 
                 default:
@@ -142,10 +151,9 @@ namespace CStrike2D
         /// <param name="gameTime"> Passes through gameTime in order to record elasped time </param>
         public void Update(float gameTime)
         {
-            // Adds elapsed game time to 
-            ParticleLifeTime += gameTime;
+            // Adds elapsed game time to update time and gametime
+            particleLifeTime += gameTime;
             updateTime += gameTime;
-            updateTime = 0.0f;
 
             // Adds the direction multiplied by the speed to the current particle position
             ParticlePosition += particleDirection * particleVelocity;
@@ -182,9 +190,9 @@ namespace CStrike2D
                     ParticleTransparency -= 0.02f;
                     particleVelocity -= 0.025f;
 
-                    if (ParticleScale < 0.4f)
+                    if (particleScale < 0.4f)
                     {
-                        ParticleScale += 0.01f;
+                        particleScale += 0.01f;
                     }
                     break;
 
@@ -195,7 +203,7 @@ namespace CStrike2D
 
                 case ParticleTypes.GunSmoke:
                     // Increases scale and decrements alpha
-                    ParticleScale += 0.005f;
+                    particleScale += 0.005f;
                     ParticleTransparency -= 0.07f;
                     break;
 
@@ -210,10 +218,27 @@ namespace CStrike2D
                         particleVelocity = 0.0f;
                     }
 
-                    if (ParticleLifeTime >= 3000f)
+                    if (particleLifeTime >= 3000f)
                     {
                         ParticleTransparency -= 0.05f;
                     }
+                    break;
+
+                case ParticleTypes.Shell:
+                    if (!(particleVelocity <= 0.0f))
+                    {
+                        particleVelocity -= 0.25f;
+                    }
+                    else
+                    {
+                        particleVelocity = 0.0f;
+                    }
+                    if (particleLifeTime >= 1500f)
+                    {
+                        ParticleTransparency -= 0.05f;
+                    }
+
+                    rotation += 0.3f;
                     break;
             }
 
@@ -226,8 +251,8 @@ namespace CStrike2D
         {
             // When the particle respawns it resets the transparency, position and resets the particle lifetime
             ParticleTransparency = 1.0f;
-            ParticlePosition = emitVect;
-            ParticleLifeTime = 0.0f;
+            ParticlePosition = emitVect; 
+            particleLifeTime = 0.0f;
 
 
             // if the grenade is a frag it resets the color
@@ -259,10 +284,10 @@ namespace CStrike2D
                     ParticlePosition,                       // Sets it at the ParticlePosition Vector2
                     null,                                   // No Source Rectangle used
                     particleColor * ParticleTransparency,   // Uses the colour and transparency calculated in the update code 
-                    0f,                                     // No rotation used
+                    rotation,                               // Uses roation from update logic
                     new Vector2(particleImg.Width * 0.5f,   // Centres the texture at the middle of the texture
                                 particleImg.Width * 0.5f),
-                    ParticleScale,                          // Scales it using float scale calulated in update logic
+                    particleScale,                          // Scales it using float scale calulated in update logic
                     SpriteEffects.None,                     // No SpriteEffects used
                     0);                                     // Drawn on layer 0
         }

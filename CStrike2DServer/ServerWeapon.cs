@@ -21,13 +21,21 @@ namespace CStrike2DServer
         public float ReloadTime { get; private set; }
         public float FireRate { get; private set; }
 
-
         public WeaponData.Weapon Weapon { get; private set; }
 
         public ServerWeapon(WeaponData.Weapon weapon, ServerPlayer owner)
         {
             Owner = owner;
             Weapon = weapon;
+            Fired = false;
+        }
+
+        public void FireWeapon()
+        {
+            if (!Fired)
+            {
+                Fired = true;
+            }
         }
 
         public void Update()
@@ -35,6 +43,18 @@ namespace CStrike2DServer
             if (Owner != null)
             {
                 Position = Owner.Position;
+
+                if (Fired)
+                {
+                    if (FireRate >= 0f)
+                    {
+                        FireRate -= 0.1666f;
+                    }
+                    else
+                    {
+                        Fired = false;
+                    }
+                }
             }
         }
 

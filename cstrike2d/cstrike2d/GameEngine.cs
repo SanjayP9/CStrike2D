@@ -158,6 +158,7 @@ namespace CStrike2D
         {
             ClientPlayer shooter = Players.Find(ply => ply.Identifier == identifier);
             PlaySound(shooter);
+            shooter.Fire();
         }
 
         /// <summary>
@@ -360,8 +361,8 @@ namespace CStrike2D
                         {
                             if (flashTimer >= 0f)
                             {
-                                flashTimer -= 0.2f;
-                                driver.Model.Shader.ChangeBlurAmount(flashTimer * 2f);
+                                flashTimer -= 0.15f;
+                                driver.Model.Shader.ChangeBlurAmount(flashTimer * 3f);
                             }
                         }
 
@@ -411,9 +412,13 @@ namespace CStrike2D
                                 break;
                         }
 
-                        if (input.LeftClickImmediate() && !showMenu)
+                        if ((input.LeftClickImmediate() || input.LeftHold()) && !showMenu)
                         {
-                            network.FireWeapon();
+                            if (!Client.CurrentWeapon.Fired)
+                            {
+                                Client.CurrentWeapon.FireWeapon();
+                                network.FireWeapon();
+                            }
                         }
 
                         if (Players.Count > 0)
@@ -572,7 +577,9 @@ namespace CStrike2D
 
                 if (Flashed)
                 {
-                    sb.Draw(assets.PixelTexture, new Rectangle((int)Client.Position.X - 640, (int)Client.Position.Y - 360, 1280, 720), Color.White * ((flashTimer * 2) / 20f));
+                    sb.Draw(assets.PixelTexture,
+                        new Rectangle((int) Client.Position.X - 640, (int) Client.Position.Y - 360, 1280, 720),
+                        Color.White*((flashTimer*2)/20f));
                 }
             }
         }
@@ -603,6 +610,10 @@ namespace CStrike2D
                             break;
                     }
                 }
+
+                sb.DrawString(assets.DefaultFont, Client.Health.ToString(), new Vector2(20, 700), Color.Yellow);
+                sb.DrawString(assets.DefaultFont, Client.Armor.ToString(), new Vector2(60, 700), Color.Yellow);
+
             }
         }
     }

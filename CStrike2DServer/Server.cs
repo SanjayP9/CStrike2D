@@ -43,7 +43,7 @@ namespace CStrike2DServer
         
         private static double updateTimer;
         public const double UPDATE_RATE = 7d;
-        public const double NET_UPDATE_RATE = 15d;
+        public const double NET_UPDATE_RATE = 16.66d;
         public const double SYNC_RATE = 20d;
 
         private const float FREEZE_TIME = 5f;

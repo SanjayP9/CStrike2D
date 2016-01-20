@@ -1,4 +1,13 @@
-﻿using CStrike2DServer;
+﻿//
+//
+//
+//
+//
+//
+//
+
+using System;
+using CStrike2DServer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -14,16 +23,39 @@ namespace CStrike2D
         public Vector2 Position { get; private set; }
         public float Rotation { get; private set; }
 
+        // Enum that specifies the clients currentWepon
         public WeaponData.Weapon Weapon { get; private set; }
 
+        // Stores an instance of assests in order to use textures
         private Assets assets;
 
-        public void FireWeapon()
+        public float FireRate { get; private set; }
+
+        // Used to store an instance of a ParticleEmitter
+        private ParticleEmitter gunSmokeParticle;
+        private ParticleEmitter shellParticle;
+
+        public bool FireWeapon()
         {
             if (!Fired)
             {
+                                
+                Texture2D gunTexture = assets.GetWeaponTexture(Weapon);
+
+              
+                Vector2 direction = new Vector2(
+                    (float)Math.Cos(Rotation) * gunTexture.Width, 
+                    (float)Math.Sin(Rotation) * gunTexture.Width) + Position;
+                //Vector2 barrelVect = new Vector2(Position.X + (gunTexture.Width ), Position.Y + (gunTexture.Height * 0.5f));
+
+                gunSmokeParticle.Launch(direction, Rotation);
+
+                shellParticle.Launch(new Vector2(direction.X/2f, direction.Y), Rotation - 1.57f);
+
                 Fired = true;
+                FireRate = WeaponData.FireRate(Weapon);
             }
+            return Fired;
         }
 
         public ClientWeapon(WeaponData.Weapon weapon, ClientPlayer owner, Assets assets)
@@ -31,6 +63,9 @@ namespace CStrike2D
             Owner = owner;
             Weapon = weapon;
             this.assets = assets;
+
+            gunSmokeParticle = new ParticleEmitter(Particle.ParticleTypes.GunSmoke);
+            shellParticle = new ParticleEmitter(Particle.ParticleTypes.Shell);
         }
 
         public void Update(float gameTime)
@@ -41,7 +76,22 @@ namespace CStrike2D
             {
                 Position = Owner.Position;
                 Rotation = Owner.Rotation;
+
+                if (Fired)
+                {
+                    if (FireRate >= 0f)
+                    {
+                        FireRate -= gameTime;
+                    }
+                    else
+                    {
+                        Fired = false;
+                    }
+                }
             }
+
+            gunSmokeParticle.Update(gameTime);
+            shellParticle.Update(gameTime);
         }
 
         /// <summary>
@@ -61,6 +111,9 @@ namespace CStrike2D
         {
             // Draw particles
             sb.Draw(assets.GetWeaponTexture(Weapon), Position, null, Color.White, Rotation, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+
+            gunSmokeParticle.Draw(sb, assets.ParticleTexture);
+            shellParticle.Draw(sb, assets.ShellTexture);
         }
     }
 }
