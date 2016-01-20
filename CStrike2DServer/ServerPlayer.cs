@@ -18,8 +18,8 @@ namespace CStrike2DServer
 
         public ServerClientInterface.PlayerState State { get; private set; }
         public ServerClientInterface.Team CurrentTeam { get; private set; }
-        public float Health { get; private set; }
-        public float Armor { get; private set; }
+        public int Health { get; private set; }
+        public int Armor { get; private set; }
 
         public Vector2 Position
         {
@@ -207,7 +207,7 @@ namespace CStrike2DServer
             ResetWeapons();
         }
 
-        public void Damage(float health, float armor)
+        public void Damage(int health, int armor)
         {
             Health -= health;
             Armor -= armor;

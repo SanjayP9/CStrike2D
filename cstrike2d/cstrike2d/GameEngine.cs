@@ -202,7 +202,6 @@ namespace CStrike2D
             // Play sound if the player's health isn't the same (they were damaged)
             if (player.Health != health)
             {
-                
             }
 
             // If they died. Set their state to dead and play a sound

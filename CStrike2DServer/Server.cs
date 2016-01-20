@@ -619,7 +619,7 @@ namespace CStrike2DServer
                             (int)player.Position.X -16, (int)player.Position.Y +16,
                             32, 32), player.Rotation))
                     {
-                        player.Damage(-15, 0);
+                        player.Damage(15, 0);
 
                         outMsg = server.CreateMessage();
                         outMsg.Write(ServerClientInterface.DAMAGE);
