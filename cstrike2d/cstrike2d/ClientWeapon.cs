@@ -5,6 +5,8 @@
 //
 //
 //
+
+using System;
 using CStrike2DServer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -32,18 +34,24 @@ namespace CStrike2D
         // Used to store an instance of a ParticleEmitter
         private ParticleEmitter gunSmokeParticle;
 
-        public void FireWeapon()
+        public bool FireWeapon()
         {
-            Texture2D gunTexture = assets.GetWeaponTexture(Weapon);
-            Vector2 barrelVect = new Vector2(Position.X + (gunTexture.Height), Position.Y + (gunTexture.Width * 0.5f));
-
-            gunSmokeParticle.Launch(barrelVect, Owner.Rotation);
-
             if (!Fired)
             {
+                                
+                Texture2D gunTexture = assets.GetWeaponTexture(Weapon);
+
+                Vector2 direction = new Vector2(
+                    (float)Math.Cos(Rotation) * gunTexture.Width, 
+                    (float)Math.Sin(Rotation) * gunTexture.Width);
+                //Vector2 barrelVect = new Vector2(Position.X + (gunTexture.Width ), Position.Y + (gunTexture.Height * 0.5f));
+
+                gunSmokeParticle.Launch(Position + direction, Rotation);
+
                 Fired = true;
                 FireRate = WeaponData.FireRate(Weapon);
             }
+            return Fired;
         }
 
         public ClientWeapon(WeaponData.Weapon weapon, ClientPlayer owner, Assets assets)

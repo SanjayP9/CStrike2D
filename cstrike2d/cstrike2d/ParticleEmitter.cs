@@ -99,11 +99,15 @@ namespace CStrike2D
                 {
                     Particles[i].Update(gameTime);
 
-
                     if ((particleType == Particle.ParticleTypes.Smoke) &&
                         (Particles[i].ParticleTransparency <= 0.0f) && (systemLifeTime > systemUpTime))
                     {
                         Particles[i].Respawn();
+                    }
+
+                    if (Particles[i].ParticleTransparency <= 0.0f)
+                    {
+                        Particles.RemoveAt(i);
                     }
                 }
                 else if ((Particles[i] == null) && (particleType == Particle.ParticleTypes.Smoke))

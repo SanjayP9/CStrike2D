@@ -411,9 +411,13 @@ namespace CStrike2D
                                 break;
                         }
 
-                        if (input.LeftClickImmediate() && !showMenu)
+                        if ((input.LeftClickImmediate() || input.LeftHold()) && !showMenu)
                         {
-                            if (Client.fired)
+                            if (!Client.CurrentWeapon.Fired)
+                            {
+                                Client.CurrentWeapon.FireWeapon();
+                                network.FireWeapon();
+                            }
                         }
 
                         if (Players.Count > 0)
