@@ -1,4 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿// Author: Shawn Verma
+// File Name: SoundContainer.cs
+// Project Name: CStrike2D
+// Creation Date: Dec 31st, 2015
+// Modified Date: Dec 31st, 2015
+// Description: Manages sound effects methods, and stores the sound effect with an identifier
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using System;
 
@@ -10,12 +16,17 @@ namespace CStrike2D
         private AudioListener listener = new AudioListener();
         private AudioEmitter emitter = new AudioEmitter();
 
-        // Variables used to store the sound effect, instance, state, and identifier
+        // Variables used to store the sound effect, instance, state, and identifier for the sound
         private SoundEffect soundEffect;
         private SoundEffectInstance soundEffectInstance;
         public SoundState State { get { return soundEffectInstance.State; } }
         public string Identifier { get; private set; }
         
+        /// <summary>
+        /// Sets the identifier an the sound effect
+        /// </summary>
+        /// <param name="identifier">the name of the sound effect</param>
+        /// <param name="soundEffect">the sound effect</param>
         public SoundContainer(string identifier, SoundEffect soundEffect)
         {
             Identifier = identifier;

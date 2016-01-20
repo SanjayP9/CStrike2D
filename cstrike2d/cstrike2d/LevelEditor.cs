@@ -1,4 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿// Author: Shawn Verma
+// File Name: LevelEditor.cs
+// Project Name: Global Offensive
+// Creation Date: Dec 31st, 2015
+// Modified Date: Jan 17th, 2016
+// Description: Allows ability to edit and view maps using various features including: Undo, Place/Remove, 
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
