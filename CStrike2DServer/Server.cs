@@ -136,9 +136,8 @@ namespace CStrike2DServer
             config = new NetPeerConfiguration("cstrike") {Port = port, EnableUPnP = true};
             server = new NetServer(config);
             server.Start();
-            Console.WriteLine("Server is live.");
             Thread.Sleep(1000);
-
+            Console.WriteLine("Server is live.");
             recorder.StartRecording(mapName);
             updateTimer.Start();
             netUpdateTimer.Start();
@@ -473,11 +472,10 @@ namespace CStrike2DServer
                                 server.SendMessage(outMsg, msg.SenderConnection, NetDeliveryMethod.ReliableSequenced);
 
                                 // Sync the new player with everyone else on the server
-                                SyncNewPlayer(player);
+                                //SyncNewPlayer(player);
 
                                 // Send data about everyone else to the new player
-                                SyncCurrentPlayers(msg.SenderConnection);
-
+                                SyncCurrentPlayers();
                                 Console.WriteLine("\"" + username + "\" has joined the server");
                                 break;
                             case ServerClientInterface.CHANGE_TEAM:
@@ -575,7 +573,7 @@ namespace CStrike2DServer
         /// Sends data of all connected players
         /// </summary>
         /// <param name="client"></param>
-        public static void SyncCurrentPlayers(NetConnection client)
+        public static void SyncCurrentPlayers()
         {
             foreach (ServerPlayer ply in players)
             {

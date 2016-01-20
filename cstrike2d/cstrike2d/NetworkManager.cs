@@ -12,7 +12,6 @@ namespace CStrike2D
     {
         private string address;
         private string clientVersion = "0.0.1a";
-        private int port = 27014;
         public string ClientName { get; private set; }
         private NetPeerConfiguration config;
         private NetClient client;
