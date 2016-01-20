@@ -119,6 +119,7 @@ namespace CStrike2D
             {
                 return LineRectangle(rect, enemyRot, mPlayer, bPlayer);
             }
+            return false;
         }
 
         /// <summary>
