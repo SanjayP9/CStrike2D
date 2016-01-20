@@ -45,10 +45,10 @@ namespace CStrike2D
               
                 Vector2 direction = new Vector2(
                     (float)Math.Cos(Rotation) * gunTexture.Width, 
-                    (float)Math.Sin(Rotation) * gunTexture.Width);
+                    (float)Math.Sin(Rotation) * gunTexture.Width) + Position;
                 //Vector2 barrelVect = new Vector2(Position.X + (gunTexture.Width ), Position.Y + (gunTexture.Height * 0.5f));
 
-                gunSmokeParticle.Launch(Position + direction, Rotation);
+                gunSmokeParticle.Launch(direction, Rotation);
 
                 shellParticle.Launch(new Vector2(direction.X/2f, direction.Y), Rotation - 1.57f);
 
