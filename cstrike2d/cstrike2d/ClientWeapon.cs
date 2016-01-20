@@ -65,6 +65,7 @@ namespace CStrike2D
             this.assets = assets;
 
             gunSmokeParticle = new ParticleEmitter(Particle.ParticleTypes.GunSmoke);
+            shellParticle = new ParticleEmitter(Particle.ParticleTypes.Shell);
         }
 
         public void Update(float gameTime)
