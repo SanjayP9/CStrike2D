@@ -85,11 +85,11 @@ namespace CStrike2D
             float poiY = mPlayer * poiX + bPlayer;
 
             // Returns if the poi is less than or equal to the radius
-            if(Vector2.Distance(new Vector2(poiX, poiY), enemyPlayer) <= playerRadius)
-            {
-                NonAACollision(enemyPart, enemyRoatation, mPlayer, bPlayer);
-            }
-            return false;
+            return (Vector2.Distance(new Vector2(poiX, poiY), enemyPlayer) <= playerRadius);
+            //{
+                //NonAACollision(enemyPart, enemyRoatation, mPlayer, bPlayer);
+            //}
+            //return false;
         }
 
         /// <summary>
