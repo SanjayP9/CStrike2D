@@ -1,8 +1,13 @@
-﻿using System;
+﻿// Author: Mark Voong
+// File Name: Server.cs
+// Project Name: Global Offensive
+// Creation Date: Jan 3rd, 2016
+// Modified Date: Jan 21st, 2016
+// Description: Handles all logic and drawing of the in-game components
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using CStrike2D;
 using Lidgren.Network;
@@ -12,51 +17,59 @@ namespace CStrike2DServer
 {
     class Server
     {
-        private static NetServer server;
-        private static NetPeerConfiguration config;
-        private static NetIncomingMessage msg;
+        private static string serverVersion = "0.7.0a";                                     // Server Version
+        private static string serverName = "Global Offensive Server - " + serverVersion;    // The name of the server
 
-        private static List<ServerPlayer> players = new List<ServerPlayer>();
-        private static List<ServerGrenade> grenades = new List<ServerGrenade>();
+        private static NetServer server;                // Lidgren server API
+        private static NetPeerConfiguration config;     // Network configuration properties
+        private static NetIncomingMessage msg;          // Container for reading messages sent by clients
+        private static NetOutgoingMessage outMsg;       // Container for writing messages that are to be sent to clients
 
-        private static short playerIdentifier;
-        private static string serverVersion = "0.6.0a";            // Server Version
-        private static int maxPlayers = 32;
-        private static int port = 27015;
-        private static string buffer = "";
-        private static string serverName = "Global Offensive Server - " + serverVersion;
+        private static List<ServerPlayer> players = new List<ServerPlayer>();       // Stores all clients in the server
+        private static List<ServerGrenade> grenades = new List<ServerGrenade>();    // Stores all grenades active in the server
+
+        private static short playerIdentifier;              // Used to give clients a different identifier from eachother
+        private static int maxPlayers = 32;                 // Maximum number of players allowed to connect
+        private static int port = 27015;                    // Port the server recieves traffic on
+        private static string buffer = "";                  // Used for processing user commands entered in the server
         private static bool forceConfigRewrite = true;
-        private static NetOutgoingMessage outMsg;
-        private static int maxCTs = 16;
-        private static int maxTs = 16;
-        private static int numTs = 0;
-        private static int numCts = 0;
-        private static float roundTimer = 0;
-        private static float numPlayers = 0;
-        private static bool enableCollision = true;
-        private static short entityCounter;
+        private static int maxCTs = 16;                     // Maximum number of Counter-Terrorist players
+        private static int maxTs = 16;                      // Maximum number of Terrorist players
+        private static int numTs;                           // Number of currently connected terrorists
+        private static int numCts;                          // Number of currently connected counter terrorists
+        private static float numPlayers;                    // Counts number of currently connected players
+        private static bool enableCollision = true;         // Should players be allowed to collide with eachoter
+        private static bool friendlyFire = false;           // Whether shooting teammates should cause damage
+        private static short entityCounter;                 // Entity counter used to assign unique identifiers to grenades
         
-        public const double UPDATE_RATE = 7d;
-        public const double NET_UPDATE_RATE = 16.66d;
+        public const double UPDATE_RATE = 7d;               // Update rate of the server
+        public const double NET_UPDATE_RATE = 16.66d;       // Rate at which the server processes the network
         public const double SYNC_RATE = 20d;
 
         private const float AFTER_ROUND_TIME = 5f;          // Time between switching the round state
         private const float FREEZE_TIME = 10f;              // Time at the start of a round to allow users to buy
         private static Stopwatch timer = new Stopwatch();   // Used to time the after round timer and freeze time
 
-        private static int tsAlive;                 // Number of Terrorists alive
-        private static int ctsAlive;                // Number of Counter-Terrorists alive
-        private static string mapName = "de_cache"; // Current map
+        private static int tsAlive;                         // Number of Terrorists alive
+        private static int ctsAlive;                        // Number of Counter-Terrorists alive
+        private static string mapName = "de_cache";         // Current map
 
         private static RoundState state = RoundState.Empty; // Default the current round state to an empty server
         private static DemoRecorder recorder;               // Used to record the game state
 
         private static Random rand = new Random();          // Random number generator
 
+        /// <summary>
+        /// Stores data about the map including tile types such as
+        /// spawn points and AI nodes
+        /// </summary>
         public static ServerMap MapData { get; private set; }
 
-        private static RayCast raycaster = new RayCast();
+        private static RayCast raycaster = new RayCast();   // Used for bullet to player collision detection
 
+        /// <summary>
+        /// Different round states the server is in
+        /// </summary>
         enum RoundState
         {
             Empty,
@@ -65,42 +78,27 @@ namespace CStrike2DServer
             AfterRound
         }
 
+        /// <summary>
+        /// Returns the list of players for data saving
+        /// </summary>
+        /// <returns></returns>
         public static List<ServerPlayer> RetrievePlayers()
         {
             return players;
         }
 
+        /// <summary>
+        /// Entry point of the server
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
-            /* Ballpark estimates for bandwidth usage
-             * - Each command requires 1 byte for the identifier.
-             * - Each player sends input requests of the following:
-             * - Direction (2 Bytes)
-             * - Rotation (3 Bytes)
-             * - Player Updates at 60Hz
-             * - 5 bytes * 60 times a second = 0.3kb/s Upload
-             * - The server must send this to every player on the server on demand
-             * - Direction (3 Bytes)
-             * - Rotation (5 Bytes)
-             * - Server Updates at 64Hz up to 128Hz
-             * - At 64Hz
-             * - 8 bytes * 64 times a second * 32 players = 16kb/s Upload
-             * - At 128Hz
-             * - 8 bytes * 128 times a second * 32 players = 32kb/s Upload
-             * - The server syncs everyone's postion and rotation every 60 ticks or ~930ms
-             * - Direction (4 Bytes)
-             * - Rotation (5 Bytes)
-             * - PlayerID (2 Bytes)
-             * - At 64 Hz
-             * - 11 bytes * 64 times a second * 32 players = 22kb/s Upload
-             * - At 128 Hz
-             * - 11 bytes * 128 times a second * 32 players = 44kb/s Upload
-             */
 
-            Vector2 defSpawnPosition = new Vector2(350, 350);
+            // Start recorder and map
             recorder = new DemoRecorder();
             MapData = new ServerMap();
 
+            // Start up all timers
             Stopwatch updateTimer = new Stopwatch();
             Stopwatch netUpdateTimer = new Stopwatch();
             Stopwatch syncTimer = new Stopwatch();
@@ -118,10 +116,12 @@ namespace CStrike2DServer
                 WriteFile();
             }
 
+            // Read config file
             ReadConfig();
 
             Console.WriteLine("Loading map de_cache...");
 
+            // If the map failed to load, do not allow the server to run
             if (!LoadMap("de_cache.txt"))
             {
                 Console.ReadLine();
@@ -130,20 +130,24 @@ namespace CStrike2DServer
 
             Console.WriteLine("Booting up server...");
 
+            // Start server API
             config = new NetPeerConfiguration("cstrike") {Port = port, EnableUPnP = true};
             server = new NetServer(config);
             server.Start();
             Thread.Sleep(1000);
             Console.WriteLine("Server is live.");
+
+            // Start recording
             recorder.StartRecording(mapName);
+
+            // Start timers
             updateTimer.Start();
             netUpdateTimer.Start();
+
+            // Server loop until the user presses escape
             while (server.Status == NetPeerStatus.Running)
             {
-                //Console.Clear();   
-                //Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop);
-                //Console.WriteLine("Players " + numPlayers + "/" + maxPlayers);
-
+                // If the user presses escape, the server gracefully shuts down
                 if (Console.KeyAvailable)
                 {
                     ConsoleKeyInfo key = Console.ReadKey();
@@ -151,10 +155,12 @@ namespace CStrike2DServer
                     if (key.Key == ConsoleKey.Escape)
                     {
                         recorder.EndRecording();
+                        server.Shutdown("bye");
                         return;
                     }
                 }
 
+                // Simulate world logic
                 if (updateTimer.Elapsed.TotalMilliseconds > UPDATE_RATE)
                 {
                     Simulate();
@@ -162,12 +168,14 @@ namespace CStrike2DServer
                     updateTimer.Restart();
                 }
 
+                // Process network activity
                 if (netUpdateTimer.Elapsed.TotalMilliseconds > NET_UPDATE_RATE)
                 {
                     UpdateNetwork();
                     netUpdateTimer.Restart();
                 }
 
+                // Synchronizes everyone at specific intervals
                 if (syncTimer.Elapsed.TotalMilliseconds > SYNC_RATE)
                 {
                     SyncWorld();
@@ -186,172 +194,9 @@ namespace CStrike2DServer
             return MapData.Load(mapName);
         }
 
-        #region Old Code
-        /*
-        public static void SyncServer()
-        {
-            NetOutgoingMessage syncMsg;
-
-            foreach (Player ply in players)
-            {
-                syncMsg = server.CreateMessage();
-                syncMsg.Write(NetInterface.SYNC_MOVEMENT);
-                syncMsg.Write(ply.PlayerID);
-                syncMsg.Write(ply.GetPosition().X);
-                syncMsg.Write(ply.GetPosition().Y);
-                server.SendToAll(syncMsg, NetDeliveryMethod.UnreliableSequenced);
-            }
-        }
-
-        public static void Update()
-        {
-            while ((msg = server.ReadMessage()) != null)
-            {
-                outMsg = server.CreateMessage();
-                Player player;
-                switch (msg.MessageType)
-                {
-                    case NetIncomingMessageType.StatusChanged:
-                        switch ((NetConnectionStatus) msg.ReadByte())
-                        {
-                            case NetConnectionStatus.Connected:
-                                outMsg.Write(NetInterface.HANDSHAKE);
-                                playerIdentifier++;
-                                outMsg.Write(playerIdentifier);
-                                Console.WriteLine("Client given identifier: " + playerIdentifier);
-                                msg.SenderConnection.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
-                                break;
-                            case NetConnectionStatus.Disconnected:
-                                player = players.Find(ply => ply.Client.RemoteUniqueIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
-
-                                outMsg.Write(NetInterface.PLAYER_DC);
-                                outMsg.Write(player.PlayerID);
-                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
-                                Console.WriteLine("\"" + player.PlayerName + "\" has left the server");
-                                players.Remove(player);
-                                break;
-                        }
-                        break;
-                    case NetIncomingMessageType.Data:
-                        byte identifier = msg.ReadByte();
-                        player = players.Find(ply => ply.Client.RemoteUniqueIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
-                        switch (identifier)
-                        {
-                            case NetInterface.HANDSHAKE:
-                                player = new Player(msg.ReadString(), msg.SenderConnection, playerIdentifier);
-                                player.SetPosition(new Vector2(players.Count * 50, players.Count * 50));
-                                player.SetCurrentWeapon(NetInterface.SWITCH_KNIFE, entityCounter);
-                                players.Add(player);
-                                entityCounter++;
-                                Console.WriteLine("Player: \"" + player.PlayerName + "\" Connected. Identifier: " + playerIdentifier);
-                               
-                                // Send data about the new player to all connected players
-                                foreach (Player plyr in players)
-                                {
-                                    outMsg = server.CreateMessage();
-                                    outMsg.Write(NetInterface.SYNC_NEW_PLAYER);
-                                    outMsg.Write(plyr.PlayerName);
-                                    outMsg.Write(plyr.PlayerID);
-                                    outMsg.Write(plyr.GetPosition().X);
-                                    outMsg.Write(plyr.GetPosition().Y);
-                                    outMsg.Write(plyr.Rotation);
-                                    outMsg.Write(NetInterface.GetTeamByte(plyr.Team));
-                                    outMsg.Write(entityCounter);
-                                    outMsg.Write(plyr.CurrentWeapon);
-                                    server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
-                                    Console.WriteLine("Sent data about \"" + player.PlayerName + "\"" +
-                                                      " to player \"" + plyr.PlayerName + "\"");
-                                }
-                                Console.WriteLine("Sync Complete.");
-                                break;
-                            case NetInterface.MOVE_UP:
-                            case NetInterface.MOVE_DOWN:
-                            case NetInterface.MOVE_LEFT:
-                            case NetInterface.MOVE_RIGHT:
-                            case NetInterface.MOVE_UPRIGHT:
-                            case NetInterface.MOVE_DOWNRIGHT:
-                            case NetInterface.MOVE_DOWNLEFT:
-                            case NetInterface.MOVE_UPLEFT:
-                                if (CheckPlayerCollision(player, identifier))
-                                {
-                                    Move(identifier, player);
-                                }
-                                break;
-                            case NetInterface.FIRE:
-                                foreach (Player ply in players)
-                                {
-                                    if (player.PlayerID != ply.PlayerID)
-                                    {
-                                        if (Collision.BulletToPerson(player.GetPosition(), ply.GetPosition(),
-                                                player.Rotation, 128f))
-                                        {
-                                            Console.WriteLine("Collision");
-                                        }
-                                    }
-                                }
-                                outMsg.Write(NetInterface.PLAY_SOUND);
-                                outMsg.Write(player.PlayerID);
-                                outMsg.Write(NetInterface.AK47_SHOT);
-                                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                                break;
-                            case NetInterface.ROTATE:
-                                outMsg.Write(NetInterface.ROTATE);
-                                player = players.Find(ply => ply.Client.RemoteUniqueIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
-                                player.SetRotation(msg.ReadFloat());
-                                outMsg.Write(player.PlayerID);
-                                outMsg.Write(player.Rotation);
-                                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                                break;
-                            case NetInterface.PLY_CHANGE_TEAM:
-                                player = players.Find(ply => ply.Client.RemoteUniqueIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
-                                player.ChangeTeam(NetInterface.GetTeam(msg.ReadByte()));
-                                outMsg.Write(NetInterface.PLY_CHANGE_TEAM);
-                                outMsg.Write(player.PlayerID);
-                                outMsg.Write(NetInterface.GetTeamByte(player.Team));
-                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
-                                break;
-                            case NetInterface.SPAWN_WEAPON:
-                                short weapon = msg.ReadInt16();
-                                player = players.Find(ply => ply.Client.RemoteUniqueIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
-                                if (WeaponInfo.GetWeaponType(WeaponInfo.GetWeapon(weapon)) ==
-                                    WeaponInfo.WeaponType.Primary)
-                                {
-                                    player.SetPrimaryWeapon(weapon, entityCounter);
-                                    player.SetCurrentWeapon(weapon, player.PrimaryWepEntID);
-
-                                }
-                                else
-                                {
-                                    player.SetSecondaryWeapon(weapon, entityCounter);
-                                    player.SetCurrentWeapon(weapon, player.PrimaryWepEntID);
-                                }
-                                outMsg.Write(NetInterface.SPAWN_WEAPON);
-                                outMsg.Write(player.PlayerID);
-                                outMsg.Write(entityCounter);
-                                outMsg.Write(weapon);
-                                server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
-                                entityCounter++;
-                                break;
-                            case NetInterface.SWITCH_WEAPON:
-                                player = players.Find(ply => ply.Client.RemoteUniqueIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
-                                player.SetCurrentWeapon(msg.ReadInt16(), msg.ReadInt16());
-                                outMsg.Write(NetInterface.SWITCH_WEAPON);
-                                outMsg.Write(player.PlayerID);
-                                outMsg.Write(player.CurrentWeapon);
-                                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                                break;
-                        }
-                        break;
-                }
-            }
-            server.Recycle(msg);
-        }
-        */
-
-        #endregion
-
-        #region New Code
-
+        /// <summary>
+        /// Simulates world logic
+        /// </summary>
         public static void Simulate()
         {
             // TODO: Runs all server based logic
@@ -367,7 +212,7 @@ namespace CStrike2DServer
                         {
                             // start the timer
                             timer.Start();
-                            Console.WriteLine("GAME STARTING");
+                            Console.WriteLine("A game has begun");
                         }
 
                         // Give users a few seconds to join teams
@@ -380,8 +225,21 @@ namespace CStrike2DServer
                     }
                     break;
                 case RoundState.Buytime:
+                    if (!timer.IsRunning)
+                    {
+                        timer.Start();
+                        Console.WriteLine("Buytime...");
+
+                    }
+
+                    // If buytime is over, start the round
+                    if (timer.Elapsed.TotalSeconds >= FREEZE_TIME)
+                    {
+                        state = RoundState.Play;
+                    }
                     break;
                 case RoundState.Play:
+                    
                     break;
                 case RoundState.AfterRound:
                     break;
@@ -389,7 +247,7 @@ namespace CStrike2DServer
         }
 
         /// <summary>
-        /// 
+        /// Updates and processes requests by users
         /// </summary>
         public static void UpdateNetwork()
         {
@@ -405,8 +263,15 @@ namespace CStrike2DServer
                         switch ((NetConnectionStatus) msg.ReadByte())
                         {
                             case NetConnectionStatus.Connected:
-                                // If someone has successfully connected to the server, initialize
-                                // handshake with the client. Give them a unique identifier
+                                // If someone has successfully connected to the server, check
+                                // if there are too many connected clients and prevent entry from
+                                // the client if the number of users exceed the max number of players
+                                if (numPlayers > maxPlayers)
+                                {
+                                    msg.SenderConnection.Deny("Server Is Full");
+                                }
+                                
+                                // initialize handshake with the client. Give them a unique identifier
                                 // which allows the server to differ between multiple clients
                                 outMsg.Write(ServerClientInterface.HANDSHAKE);
 
@@ -414,14 +279,17 @@ namespace CStrike2DServer
                                 server.SendMessage(outMsg, msg.SenderConnection, NetDeliveryMethod.ReliableSequenced);
                                 break;
                             case NetConnectionStatus.Disconnected:
+                                // Get the player that just disconnected
                                 player =
                                     players.Find(
                                         ply => ply.ConnectionIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
+
+                                // Tell everyone that the user disconnected
                                 outMsg.Write(ServerClientInterface.PLAYER_DISCONNECTED);
                                 outMsg.Write(player.Identifier);
                                 server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
-                                Console.WriteLine("\"" + player.UserName + "\" has left the server");
 
+                                // Subtract number of players of the associated team
                                 switch (player.CurrentTeam)
                                 {
                                     case ServerClientInterface.Team.CounterTerrorist:
@@ -431,43 +299,49 @@ namespace CStrike2DServer
                                         numTs--;
                                         break;
                                 }
+                                // Subtract one less player on the server
                                 numPlayers--;
+
+                                Console.WriteLine("\"" + player.UserName + "\" has left the server");
                                 
+                                // Remove the player from the server
                                 players.Remove(player);
                                 break;
                         }
                         break;
                     case NetIncomingMessageType.Data:
+                        // Get identifier byte used to determine message type
                         code = msg.ReadByte();
                         switch (code)
                         {
+                                // A user requested to retrieve information of all players on server
                             case ServerClientInterface.REQUEST_SYNC:
                                 string username = msg.ReadString();
-
+                                // Set up a new player in the server
                                 player = new ServerPlayer(username, playerIdentifier, msg.SenderConnection.RemoteUniqueIdentifier);
                                 players.Add(player);
                                 playerIdentifier++;
                                 numPlayers++;
 
+                                // Let the client know their information was recieved and processed
                                 outMsg.Write(ServerClientInterface.HANDSHAKE_COMPLETE);
                                 outMsg.Write(player.Identifier);
                                 server.SendMessage(outMsg, msg.SenderConnection, NetDeliveryMethod.ReliableSequenced);
 
-                                // Sync the new player with everyone else on the server
-                                //SyncNewPlayer(player);
-
-                                // Send data about everyone else to the new player
+                                // Resend data about players to everyone in order to stay in sync
                                 SyncCurrentPlayers();
                                 Console.WriteLine("\"" + username + "\" has joined the server");
                                 break;
                             case ServerClientInterface.CHANGE_TEAM:
+                                // Find the player with the matching unique identifier
                                 player = players.Find(
                                     ply => ply.ConnectionIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
                                     
+                                // Change their team
                                 player.SetTeam(msg.ReadByte());
 
-                                Console.WriteLine("\"" + player.UserName + "\" joined the " + player.CurrentTeam);
-
+                                // Increase the number of players currently on the
+                                // associated team
                                 switch (player.CurrentTeam)
                                 {
                                     case ServerClientInterface.Team.CounterTerrorist:
@@ -478,12 +352,16 @@ namespace CStrike2DServer
                                         break;
                                 }
 
+                                // Tell everyone else that the player had switched teams and
+                                // what team they switched to
                                 outMsg.Write(ServerClientInterface.CHANGE_TEAM);
                                 outMsg.Write(player.Identifier);
                                 outMsg.Write(ServerClientInterface.TeamToByte(player.CurrentTeam));
                                 server.SendToAll(outMsg,NetDeliveryMethod.ReliableSequenced);
 
+                                Console.WriteLine("\"" + player.UserName + "\" joined the " + player.CurrentTeam);
                                 break;
+                                // Movement Processing for 8 directions
                             case ServerClientInterface.MOVE_UP:
                             case ServerClientInterface.MOVE_DOWN:
                             case ServerClientInterface.MOVE_LEFT:
@@ -494,26 +372,32 @@ namespace CStrike2DServer
                             case ServerClientInterface.MOVE_DOWNLEFT:
                                 Move(code, msg.SenderConnection.RemoteUniqueIdentifier);
                                 break;
+                                // Rotation processing
                             case ServerClientInterface.ROTATE_PLAYER:
                                 Rotate(msg.ReadFloat(), msg.SenderConnection.RemoteUniqueIdentifier);
                                 break;
+                                // Weapon buying processing
                             case ServerClientInterface.BUY_WEAPON:
                                 byte wep = msg.ReadByte();
                                 SpawnWeapon(msg.SenderConnection.RemoteUniqueIdentifier, wep);
                                 break;
+                                // Weapon firing processing
                             case ServerClientInterface.FIRE_WEAPON:
                                 FireWeapon(msg.SenderConnection.RemoteUniqueIdentifier);
                                 break;
+                                // Flashbang exploding processing
                             case ServerClientInterface.EXPLODE_FLASHBANG:
                                 outMsg.Write(ServerClientInterface.EXPLODE_FLASHBANG);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                                 break;
+                                // User requested respawn
                             case ServerClientInterface.REQUEST_RESPAWN:
                                 // Client requested respawn
                                 player =
                                     players.Find(
                                         ply => ply.ConnectionIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
 
+                                // If they are dead, respawn the player
                                 if (player.State == ServerClientInterface.PlayerState.Dead)
                                 {
                                     RespawnPlayer(player);
@@ -566,113 +450,31 @@ namespace CStrike2DServer
                 outMsg.Write(ServerClientInterface.StateToByte(ply.State));
                 server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
             }
+
+            // Let everyone know the sync is complete
             outMsg = server.CreateMessage();
             outMsg.Write(ServerClientInterface.SYNC_COMPLETE);
             server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
         }
 
+        /// <summary>
+        /// Processes firing request from a user
+        /// </summary>
+        /// <param name="identifier"></param>
         static void FireWeapon(long identifier)
         {
-            ServerPlayer player = players.Find(ply => ply.ConnectionIdentifier == identifier);
-            
-            outMsg.Write(ServerClientInterface.FIRE_WEAPON);
-            outMsg.Write(player.Identifier);
-            server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-            BulletToPlayer(player);
-        }
-
-        static bool BulletToPlayer(ServerPlayer shooter)
-        {
-            // Get the distance between the player and the shooter
-            foreach (ServerPlayer player in players)
+            if (state == RoundState.Play)
             {
-                // The shooter can't shoot themself, obviously.
-                if (player != shooter)
-                {
-                    // Get distance between the player and the enemy
-                    Vector2 delta = player.Position - shooter.Position;
+                ServerPlayer player = players.Find(ply => ply.ConnectionIdentifier == identifier);
 
-                    float angle = shooter.Rotation < 0 ? (float) (shooter.Rotation + (2*Math.PI)) : shooter.Rotation;
+                // Tell everyone that the user fired their weapon
+                outMsg.Write(ServerClientInterface.FIRE_WEAPON);
+                outMsg.Write(player.Identifier);
+                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
 
-
-                    float shooterToPlayerAngle = (float)Math.Atan2(delta.Y, delta.X);
-
-
-                    shooterToPlayerAngle = shooterToPlayerAngle < 0
-                        ? (float) (shooterToPlayerAngle + (2*Math.PI))
-                        : shooterToPlayerAngle;
-
-                    // If the angle of the shooter is within 0.2 radians of the
-                    // angle between the shooter and the player.
-                        Vector2 direction = new Vector2((float) Math.Cos(angle), (float) Math.Sin(angle));
-
-
-                        // Get distance between the player and any possible obstacles in between the
-                        // player and the enemy
-                        RayCastResult result = raycaster.RayCastMethod(shooter.Position, direction, 1280,
-                            MapData.TileMap, MapData.MapArea, angle);
-
-
-                        Vector2 raycastDistance = result.CollisionPos - shooter.Position;
-
-                        // If the raycast had collided with an object in between two players
-                        // the distance of the raycast would be shorter, therefore, the player
-                        // has no direct line of sight with the other player
-                    if (raycastDistance.Length() > delta.Length())
-                    {
-                        // If the shot passes through the player 
-                        if (Collision.NonAACollision(shooter.Position, player.Position,
-                            shooter.Rotation, 24f, new Rectangle(
-                                (int) player.Position.X - 16, (int) player.Position.Y + 16,
-                                32, 32), player.Rotation) && player.State == ServerClientInterface.PlayerState.Alive)
-                        {
-
-                            // Deal the correct amount of damage depending on the
-                            // weapon
-                            switch (shooter.CurrentWeapon.Weapon)
-                            {
-                                case WeaponData.Weapon.Knife:
-                                    break;
-                                case WeaponData.Weapon.Ak47:
-                                    player.Damage(20, 0);
-                                    break;
-                                case WeaponData.Weapon.Glock:
-                                    break;
-                                case WeaponData.Weapon.Awp:
-                                    break;
-                                case WeaponData.Weapon.Usp:
-                                    break;
-                                case WeaponData.Weapon.M4A1:
-                                    player.Damage(20, 0);
-                                    break;
-                            }
-
-                            Console.WriteLine("\"" + shooter.UserName + "\" shot \"" + player.UserName + " with " +
-                                              shooter.CurrentWeapon.Weapon);
-
-                            // If the player's health is less than zero, they died let everyone know.
-                            if (player.Health <= 0)
-                            {
-                                player.SetHealth(0);
-                                player.SetArmor(0);
-                                player.SetState(ServerClientInterface.PlayerState.Dead);
-                                Console.WriteLine(shooter.UserName + " killed " + player.UserName +
-                                                  " with " + shooter.CurrentWeapon.Weapon);
-                            }
-
-                            // Send data to all players
-                            outMsg = server.CreateMessage();
-                            outMsg.Write(ServerClientInterface.DAMAGE);
-                            outMsg.Write(player.Identifier);
-                            outMsg.Write(player.Health);
-                            outMsg.Write(player.Armor);
-                            server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                        }
-
-                    }
-                }
+                // Do collision detection for bulet
+                BulletToPlayer(player);
             }
-            return true;
         }
 
         /// <summary>
@@ -684,6 +486,8 @@ namespace CStrike2DServer
         {
             ServerPlayer player = players.Find(ply => ply.ConnectionIdentifier == identifier);
 
+            // If the player is allowed to move there, let everyone know
+            // the player requested to move in that direction
             if (CheckPlayerCollision(player, direction))
             {
                 player.Move(direction);
@@ -700,6 +504,7 @@ namespace CStrike2DServer
         /// <param name="identifier"></param>
         static void Rotate(float rotation, long identifier)
         {
+            // Sends data about the player's current rotation to everyone
             ServerPlayer player = players.Find(ply => ply.ConnectionIdentifier == identifier);
             player.Rotate(rotation);
 
@@ -709,10 +514,12 @@ namespace CStrike2DServer
             server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
+        /// <summary>
+        /// Synchronizes everyone on the server with the correct rotation and position
+        /// </summary>
         static void SyncWorld()
         {
-            // TODO: Sends a snapshot of the world to all players to ensure
-            // TODO: everyone is viewing the same thing
+            // Send data such as position and rotation to everyone
             foreach (ServerPlayer player in players)
             {
                 outMsg = server.CreateMessage();
@@ -725,6 +532,9 @@ namespace CStrike2DServer
             }
         }
 
+        /// <summary>
+        /// Commences the round
+        /// </summary>
         static void StartRound()
         {
             // TODO: Spawns all players, sets up all timers, etc
@@ -744,34 +554,40 @@ namespace CStrike2DServer
             state = RoundState.Buytime;
         }
 
+        /// <summary>
+        /// Ends the round
+        /// </summary>
         static void EndRound()
         {
             // TODO: Processes kills, calculates money, etc
             // If the server was empty before this method was called
             // Set up everyones start money
-            if (state == RoundState.Empty)
-            {
-                foreach (ServerPlayer player in players)
-                {
-                    player.SetCash(800);
-                    SpawnPlayer(player.Identifier, 
-                        new Vector2(0 + (100*player.Identifier), 0 + (100*player.Identifier)));
-                }
-            }
+            
+
         }
 
+        /// <summary>
+        /// Gives a weapon to a player
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <param name="weapon"></param>
         static void SpawnWeapon(long identifier, byte weapon)
         {
-            // TODO: Gives a weapon to a player
-            ServerPlayer player = players.Find(ply => ply.ConnectionIdentifier == identifier);
-            player.SetWeapon(WeaponData.ByteToWeapon(weapon));
-            
-            outMsg = server.CreateMessage();
-            outMsg.Write(ServerClientInterface.BUY_WEAPON);
-            outMsg.Write(player.Identifier);
-            outMsg.Write(weapon);
-            server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
-            Console.WriteLine("\"" + player.UserName + "\" purchased weapon " + WeaponData.ByteToWeapon(weapon));
+            // If the current state is buytime
+            if (state == RoundState.Buytime)
+            {
+                // Find the associated player and give them the specified weapon
+                ServerPlayer player = players.Find(ply => ply.ConnectionIdentifier == identifier);
+                player.SetWeapon(WeaponData.ByteToWeapon(weapon));
+
+                // Let everyone else know what weapon they purchased
+                outMsg = server.CreateMessage();
+                outMsg.Write(ServerClientInterface.BUY_WEAPON);
+                outMsg.Write(player.Identifier);
+                outMsg.Write(weapon);
+                server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
+                Console.WriteLine("\"" + player.UserName + "\" purchased weapon " + WeaponData.ByteToWeapon(weapon));
+            }
         }
 
         static void SpawnPlayer(long playerIdentifier, Vector2 location)
@@ -795,24 +611,82 @@ namespace CStrike2DServer
             outMsg.Write(player.Identifier);
         }
 
+        /// <summary>
+        /// Respwans a player at their spawn point
+        /// </summary>
+        /// <param name="player"></param>
         static void RespawnPlayer(ServerPlayer player)
         {
+            // Default location
             Vector2 location = Vector2.Zero;
+
+            // Randomly determine a spawn point depending on their team and
+            // respawns them there
             int spawnPoint;
             switch (player.CurrentTeam)
             {
                 case ServerClientInterface.Team.CounterTerrorist:
-                    spawnPoint = rand.Next(0, MapData.CTTile.Count);
-                    location = new Vector2(MapData.CTTile[spawnPoint].TileRect.X + 16,
-                        MapData.CTTile[spawnPoint].TileRect.Y + 16);
+                    while (true)
+                    {
+                        // Get a random index in the CT spawn points
+                        spawnPoint = rand.Next(0, MapData.CTTile.Count);
+
+                        bool empty = true;
+                        // Check if nobody is currently on that spawn point
+                        foreach (ServerPlayer ply in players)
+                        {
+                            if (ply.Identifier != player.Identifier)
+                            {
+                                if (MapData.CTTile[spawnPoint].TileRect.Contains((int) player.Position.X,
+                                    (int) player.Position.Y))
+                                {
+                                    empty = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (empty)
+                        {
+                            location = new Vector2(MapData.CTTile[spawnPoint].TileRect.X + 16,
+                                MapData.CTTile[spawnPoint].TileRect.Y + 16);
+                            break;
+                        }
+                    }
                     break;
                 case ServerClientInterface.Team.Terrorist:
-                    spawnPoint = rand.Next(0, MapData.TTile.Count);
-                    location = new Vector2(MapData.TTile[spawnPoint].TileRect.X + 16,
-                        MapData.TTile[spawnPoint].TileRect.Y + 16);
+                    while (true)
+                    {
+                        // Get a random index in the T spawn points
+                        spawnPoint = rand.Next(0, MapData.TTile.Count);
+
+                        bool empty = true;
+                        // Check if nobody is currently on that spawn point
+                        foreach (ServerPlayer ply in players)
+                        {
+                            if (ply.Identifier != player.Identifier)
+                            {
+                                if (MapData.CTTile[spawnPoint].TileRect.Contains((int) player.Position.X,
+                                    (int) player.Position.Y))
+                                {
+                                    empty = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        // If the spawn point is empty, allow the player to spawn there
+                        if (empty)
+                        {
+                            location = new Vector2(MapData.TTile[spawnPoint].TileRect.X + 16,
+                                MapData.TTile[spawnPoint].TileRect.Y + 16);
+                            break;
+                        }
+                    }
                     break;
             }
 
+            // Tell everyone the player respawned and their position
             outMsg = server.CreateMessage();
             player.Respawn(location);
             outMsg.Write(ServerClientInterface.RESPAWN_PLAYER);
@@ -822,6 +696,12 @@ namespace CStrike2DServer
             server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
         }
 
+        /// <summary>
+        /// Plants the bomb and sets up the round for retake
+        /// </summary>
+        /// <param name="playerIdentifier"></param>
+        /// <param name="location"></param>
+        /// <param name="aSite"></param>
         static void PlantBomb(long playerIdentifier, Vector2 location, bool aSite)
         {
             // TODO: Spawns a bomb at a site
@@ -829,8 +709,6 @@ namespace CStrike2DServer
             
             Console.WriteLine("Player planted the bomb at " + (aSite? "A Site" : "B Site"));
         }
-
-        #endregion
 
         /// <summary>
         /// Reads the configuration 
@@ -880,6 +758,8 @@ namespace CStrike2DServer
             Console.WriteLine("Configuration written to disk.");
         }
 
+        #region Collision Detection
+
         /// <summary>
         /// Checks the collision for a player and their direction
         /// </summary>
@@ -888,11 +768,13 @@ namespace CStrike2DServer
         /// <returns></returns>
         static bool CheckPlayerCollision(ServerPlayer player, byte direction)
         {
+            // If the player isn't currently a spectator
             if (player.CurrentTeam != ServerClientInterface.Team.Spectator)
             {
+                // If collision between player is enabled
                 if (enableCollision)
                 {
-                    // Get the direection
+                    // Get the direection and adjust the movement speed
                     float vectorX = 0f;
                     float vectorY = 0f;
                     switch (direction)
@@ -927,7 +809,7 @@ namespace CStrike2DServer
                             break;
                     }
 
-                    // Cirlce to Circle collision with the player wishing to move
+                    // Circle to Circle collision with the player wishing to move
                     // and every other player on the map. Returning false
                     // prevents the movement byte being sent to the player
                     foreach (ServerPlayer ply in players)
@@ -965,126 +847,131 @@ namespace CStrike2DServer
                 return true;
             }
             return true;
-
-            #region Old Code
-
-            /*
-            switch (direction)
-            {
-                case NetInterface.MOVE_UP:
-                    foreach (Player ply in players)
-                    {
-                        if (ply.PlayerID != player.PlayerID)
-                        {
-                            if (Collision.BulletToPlayer(new Vector2(player.GetPosition().X,
-                                player.GetPosition().Y - 5f), ply.GetPosition(), 23f))
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                    break;
-                case NetInterface.MOVE_DOWN:
-                    foreach (Player ply in players)
-                    {
-                        if (ply.PlayerID != player.PlayerID)
-                        {
-                            if (Collision.BulletToPlayer(new Vector2(player.GetPosition().X,
-                                player.GetPosition().Y + 5f), ply.GetPosition(), 23f))
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                    break;
-                case NetInterface.MOVE_LEFT:
-                    foreach (Player ply in players)
-                    {
-                        if (ply.PlayerID != player.PlayerID)
-                        {
-                            if (Collision.BulletToPlayer(new Vector2(player.GetPosition().X - 5f,
-                                player.GetPosition().Y), ply.GetPosition(), 23f))
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                    break;
-                case NetInterface.MOVE_RIGHT:
-                    foreach (Player ply in players)
-                    {
-                        if (ply.PlayerID != player.PlayerID)
-                        {
-                            if (Collision.BulletToPlayer(new Vector2(player.GetPosition().X + 5f,
-                                player.GetPosition().Y), ply.GetPosition(), 23f))
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                    break;
-                case NetInterface.MOVE_UPRIGHT:
-                    foreach (Player ply in players)
-                    {
-                        if (ply.PlayerID != player.PlayerID)
-                        {
-                            if (Collision.BulletToPlayer(new Vector2(player.GetPosition().X + 5f,
-                                player.GetPosition().Y), ply.GetPosition(), 23f))
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                    break;
-                case NetInterface.MOVE_DOWNRIGHT:
-                    foreach (Player ply in players)
-                    {
-                        if (ply.PlayerID != player.PlayerID)
-                        {
-                            if (Collision.BulletToPlayer(new Vector2(player.GetPosition().X + 5f,
-                                player.GetPosition().Y), ply.GetPosition(), 23f))
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                    break;
-                case NetInterface.MOVE_DOWNLEFT:
-                    foreach (Player ply in players)
-                    {
-                        if (ply.PlayerID != player.PlayerID)
-                        {
-                            if (Collision.BulletToPlayer(new Vector2(player.GetPosition().X + 5f,
-                                player.GetPosition().Y), ply.GetPosition(), 23f))
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                    break;
-                case NetInterface.MOVE_UPLEFT:
-                    foreach (Player ply in players)
-                    {
-                        if (ply.PlayerID != player.PlayerID)
-                        {
-                            if (Collision.BulletToPlayer(new Vector2(player.GetPosition().X - 5f,
-                                player.GetPosition().Y - 5f), ply.GetPosition(), 23f))
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                    break;
-            }
-            return true;
-             */
-
-            #endregion
         }
 
+        /// <summary>
+        /// Does collision detection between the shooter and the player
+        /// </summary>
+        /// <param name="shooter"></param>
+        static void BulletToPlayer(ServerPlayer shooter)
+        {
+            // Get the distance between the player and the shooter
+            foreach (ServerPlayer player in players)
+            {
+                // The shooter can't shoot themself, obviously.
+                if (player != shooter)
+                {
+                    // If friendly fire is disabled and the player is
+                    // on the same team, don't do collision detection
+                    if (!friendlyFire && player.CurrentTeam == shooter.CurrentTeam)
+                    {
+                        continue;
+                    }
+
+                    // Get distance between the player and the enemy
+                    Vector2 delta = player.Position - shooter.Position;
+
+                    // Get -2Pi - 2Pi version of the shooter's angle
+                    float angle = shooter.Rotation < 0 ? (float)(shooter.Rotation + (2 * Math.PI)) : shooter.Rotation;
+
+                    // Get angle between shooter and player
+                    float shooterToPlayerAngle = (float)Math.Atan2(delta.Y, delta.X);
+
+
+                    // If the angle between the shooter and player is less than 0 radians
+                    // add 2 Pi to convert it from -Pi - Pi domain to -2Pi - 2Pi domain
+                    shooterToPlayerAngle = shooterToPlayerAngle < 0
+                        ? (float)(shooterToPlayerAngle + (2 * Math.PI))
+                        : shooterToPlayerAngle;
+
+                    // If the angle of the shooter is within 0.2 radians of the
+                    // angle between the shooter and the player, it means they are
+                    // not aiming in the opposite direction of the player which would
+                    // result in the collision detection returning true
+                    if (angle > shooterToPlayerAngle - 0.2f &&
+                        angle < shooterToPlayerAngle + 0.2f)
+                    {
+                        // Get the direction of the shooter
+                        Vector2 direction = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+
+                        // Get distance between the player and any possible obstacles in between the
+                        // player and the enemy
+                        RayCastResult result = raycaster.RayCastMethod(shooter.Position, direction, 1280,
+                            MapData.TileMap, MapData.MapArea, angle);
+
+                        // Get the delta between the collision point and the shooter
+                        Vector2 raycastDistance = result.CollisionPos - shooter.Position;
+
+                        // If the raycast had collided with an object in between two players
+                        // the distance of the raycast would be shorter, therefore, the player
+                        // has no direct line of sight with the other player
+                        if (raycastDistance.Length() > delta.Length())
+                        {
+                            // If the shot passes through the player and they are alive
+                            if (Collision.NonAACollision(shooter.Position,
+                                shooter.Rotation, new Rectangle(
+                                    (int)player.Position.X - 16, (int)player.Position.Y + 16,
+                                    32, 32), player.Rotation) && player.State == ServerClientInterface.PlayerState.Alive)
+                            {
+
+                                // Deal the correct amount of damage depending on the weapon
+                                switch (shooter.CurrentWeapon.Weapon)
+                                {
+                                    case WeaponData.Weapon.Knife:
+                                        break;
+                                    case WeaponData.Weapon.Ak47:
+                                        player.Damage(20, 0);
+                                        break;
+                                    case WeaponData.Weapon.Glock:
+                                        break;
+                                    case WeaponData.Weapon.Awp:
+                                        break;
+                                    case WeaponData.Weapon.Usp:
+                                        break;
+                                    case WeaponData.Weapon.M4A1:
+                                        player.Damage(20, 0);
+                                        break;
+                                }
+
+                                Console.WriteLine("\"" + shooter.UserName + "\" shot \"" + player.UserName + " with " +
+                                                  shooter.CurrentWeapon.Weapon);
+
+                                // If the player's health is less than zero, they died. Let everyone know.
+                                if (player.Health <= 0)
+                                {
+                                    player.SetHealth(0);
+                                    player.SetArmor(0);
+                                    player.SetState(ServerClientInterface.PlayerState.Dead);
+                                    Console.WriteLine(shooter.UserName + " killed " + player.UserName +
+                                                      " with " + shooter.CurrentWeapon.Weapon);
+                                }
+
+                                // Send data to all players
+                                outMsg = server.CreateMessage();
+                                outMsg.Write(ServerClientInterface.DAMAGE);
+                                outMsg.Write(player.Identifier);
+                                outMsg.Write(player.Health);
+                                outMsg.Write(player.Armor);
+                                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets a set of tiles relative to the player's position
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="direction"></param>
+        /// <returns></returns>
         public static CStrike2D.Tile[] GetTiles(Vector2 position, byte direction)
         {
             List<CStrike2D.Tile> tiles = new List<CStrike2D.Tile>();
+
+            // The point refers to the column, row of the player, which will be used to
+            // offset in order to determine adjacent tiles
             Point location = new Point((int)(position.X) / ServerMap.TILE_SIZE, (int)(position.Y) / ServerMap.TILE_SIZE);
 
             // Gets the points that need to be checked
@@ -1092,23 +979,15 @@ namespace CStrike2DServer
             {
                 case ServerClientInterface.MOVE_UP:
                     tiles.Add(MapData.TileMap[location.X, location.Y - 1]);     // UP
-                    //tiles.Add(MapData.TileMap[location.X - 1, location.Y - 1]); // UP-LEFT
-                    //tiles.Add(MapData.TileMap[location.X + 1, location.Y - 1]); // UP-RIGHT
                     break;
                 case ServerClientInterface.MOVE_DOWN:
                     tiles.Add(MapData.TileMap[location.X, location.Y + 1]);     // DOWN
-                    //tiles.Add(MapData.TileMap[location.X - 1, location.Y + 1]); // DOWN-LEFT
-                    //tiles.Add(MapData.TileMap[location.X + 1, location.Y + 1]); // DOWN-RIGHT
                     break;
                 case ServerClientInterface.MOVE_LEFT:
                     tiles.Add(MapData.TileMap[location.X - 1, location.Y]);     // LEFT
-                    //tiles.Add(MapData.TileMap[location.X - 1, location.Y - 1]); // LEFT-UP
-                    //tiles.Add(MapData.TileMap[location.X - 1, location.Y + 1]); // LEFT-DOWN
                     break;
                 case ServerClientInterface.MOVE_RIGHT:
                     tiles.Add(MapData.TileMap[location.X + 1, location.Y]);     // RIGHT
-                    //tiles.Add(MapData.TileMap[location.X + 1, location.Y - 1]); // RIGHT-UP
-                    //tiles.Add(MapData.TileMap[location.X + 1, location.Y + 1]); // RIGHT-DOWN
                     break;
                 case ServerClientInterface.MOVE_UPLEFT:
                     tiles.Add(MapData.TileMap[location.X, location.Y - 1]);     // UP
@@ -1132,7 +1011,10 @@ namespace CStrike2DServer
                     break;
             }
 
+            // Return the tiles as an array
             return tiles.ToArray();
         }
+
+        #endregion
     }
 }

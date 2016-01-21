@@ -2,7 +2,7 @@
 // Class Name: NetworkManager.cs
 // Project Name: CStrike2D
 // Creation Date: Dec 31st, 2015
-// Modified Date: Jan 10th, 2016
+// Modified Date: Jan 21st, 2016
 using CStrike2DServer;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
@@ -66,7 +66,7 @@ namespace CStrike2D
             config = new NetPeerConfiguration("cstrike");
             client = new NetClient(config);
             CurState = NetState.Disconnected;
-            ClientName = "DevHalo";
+            ClientName = "";
             this.engine = engine;
         }
 
@@ -75,10 +75,11 @@ namespace CStrike2D
         /// Initiates a connection to a server
         /// </summary>
         /// <param name="address"></param>
-        public void Connect(string address)
+        public void Connect(string address, string username)
         {
             if (CurState != NetState.Connected)
             {
+                ClientName = username;
                 client.Start();
                 client.Connect(address, 27015);
                 CurState = NetState.Handshake;

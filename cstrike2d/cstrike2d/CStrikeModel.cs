@@ -87,6 +87,8 @@ namespace CStrike2D
         private const float SPRAY_TIMER = 0.1f;
         private float shotTimer = 0.0f;
 
+        private string username = "";
+
         public enum State
         {
             Menu,
@@ -500,7 +502,7 @@ namespace CStrike2D
                             }
                             else if (Input.Tapped(Keys.Enter))
                             {
-                                NetworkManager.Connect(Address);
+                                NetworkManager.Connect(Address, username);
                                 GameEngine.Initialize(NetworkManager, AudioManager, Input, DriverInstance.Assets);
                                 GameEngine.CurState = GameEngine.GameEngineState.Loaded;
                             }
