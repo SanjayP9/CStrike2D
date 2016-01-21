@@ -4,6 +4,8 @@
 // Creation Date: Jan 15th, 2016
 // Modified Date: Jan 20th, 2016
 // Description: Handles logic for the player.
+
+using System;
 using CStrike2DServer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -62,6 +64,8 @@ namespace CStrike2D
         /// </summary>
         public RayCast Shot { get; private set; }
 
+        private ParticleEmitter debrisEmitter;
+
         // Gets the position of the player
         public override Vector2 Position
         {
@@ -113,6 +117,7 @@ namespace CStrike2D
             Knife = new ClientWeapon(WeaponData.Weapon.Knife, this, assets);
             CurrentWeapon = Knife;
             Shot = new RayCast();
+            debrisEmitter = new ParticleEmitter(Particle.ParticleTypes.Debris);
         }
 
         /// <summary>
@@ -160,6 +165,8 @@ namespace CStrike2D
                 {
                     Shot.Draw(sb, Assets.PixelTexture);
                 }
+
+                debrisEmitter.Draw(sb, Assets.DebrisParticle);
             }
         }
 
@@ -173,6 +180,8 @@ namespace CStrike2D
             {
                 CurrentWeapon.FireWeapon();
                 Shot.Update(position, 1280, Assets.MapData.TileMap, Assets.MapData.MapArea, rotation);
+                Vector2 direction = new Vector2((float)Math.Cos(rotation), (float)Math.Sin(rotation));
+                //debrisEmitter.Launch(Shot.CollisionPos, rotation);
             }
         }
 

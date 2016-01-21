@@ -55,7 +55,8 @@ namespace CStrike2D
             GraphicsDeviceManager graphics = new GraphicsDeviceManager(this)
             {
                 PreferredBackBufferHeight = 720,
-                PreferredBackBufferWidth = 1280
+                PreferredBackBufferWidth = 1280,
+                PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8
             };
 
             dimensions = new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
@@ -130,6 +131,9 @@ namespace CStrike2D
             GraphicsDevice.Clear(Color.Transparent);
 
             View.Draw(spriteBatch, Model);
+
+            //GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.Stencil, Color.Transparent, 0, 0);
+            //Model.Shader.DrawPolygon(spriteBatch);
 
             counter++;
             base.Draw(gameTime);

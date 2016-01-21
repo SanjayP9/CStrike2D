@@ -5,6 +5,7 @@
 // Modified Date: Jan 19th, 2016
 // Description: Stores the map data including tile types and what texture to draw for the client
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using Microsoft.Xna.Framework;
@@ -47,6 +48,8 @@ namespace CStrike2D
         /// </summary>
         public bool Loaded { get; private set; }
 
+        public Tile[] Solids { get; private set; } 
+
         /// <summary>
         /// Loads the map
         /// </summary>
@@ -55,6 +58,7 @@ namespace CStrike2D
         public void Load(string mapName, Assets assets)
         {
             this.assets = assets;
+            List<Tile> solids = new List<Tile>();
 
             // Check if the map exists before trying to load it
             if (!File.Exists(mapName))
@@ -104,9 +108,17 @@ namespace CStrike2D
                             new Tile((byte)Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 1)),
                                 (byte)Convert.ToInt32(rowData[cols].Substring(rowData[cols].Length - 1, 1)),
                                 cols, rows, MapArea);
+
+                        if (TileMap[cols, rows].Property == Tile.SOLID)
+                        {
+                            solids.Add(TileMap[cols,rows]);
+                        }
                     }
                 }
             }
+
+            // Save the list of solids to the public array
+            Solids = solids.ToArray();
 
             // Close the file
             inFile.Close();

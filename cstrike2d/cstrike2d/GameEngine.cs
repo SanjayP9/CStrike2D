@@ -19,6 +19,7 @@ namespace CStrike2D
         private InputManager input;         // Input class instance
         private AudioManager audioManager;  // Audio
         private Assets assets;              // Assets
+        private RayEmitter emitter;         // Used for visibility polygon drawing
 
         /// <summary>
         /// Contains all players connected on the server including the user
@@ -110,6 +111,7 @@ namespace CStrike2D
                 this.assets = assets;
                 Players = new List<ClientPlayer>();
                 CurState = GameEngineState.Loaded;
+                emitter = new RayEmitter();
             }
         }
 
@@ -422,6 +424,7 @@ namespace CStrike2D
                                                 network.BuyWeapon(WeaponData.Weapon.M4A1);
                                                 driver.Model.InterfaceManager.HideAll();
                                                 CurMenuState = MenuState.MainMenu;
+                                                showMenu = false;
                                             }
                                         }
                                         else
@@ -434,6 +437,7 @@ namespace CStrike2D
                                                 network.BuyWeapon(WeaponData.Weapon.Ak47);
                                                 driver.Model.InterfaceManager.HideAll();
                                                 CurMenuState = MenuState.MainMenu;
+                                                showMenu = false;
                                             }
                                         }
                                         break;
@@ -526,7 +530,7 @@ namespace CStrike2D
 
                             // If the user pressed/held the left mouse button and is currently
                             // not looking at the buy menu
-                            if ((input.LeftClickImmediate() || input.LeftHold()) && !showMenu)
+                            if ((input.LeftClickImmediate()) && !showMenu)
                             {
                                 // If the player has not already fired their weapon
                                 if (!Client.CurrentWeapon.Fired)
@@ -627,6 +631,13 @@ namespace CStrike2D
                     {
                         ply.Update(gameTime);
                     }
+
+                    // Broken
+                    if (Client != null)
+                    {
+                        //emitter.Cast(Client.Position, assets.MapData.TileMap, assets.MapData.Solids,
+                        //    assets.MapData.MapArea);
+                    }
                 }
                 else
                 {
@@ -676,22 +687,23 @@ namespace CStrike2D
         /// <param name="sb"></param>
         public void DrawWorld(SpriteBatch sb)
         {
+            // Draw black background
             sb.Draw(assets.PixelTexture, new Rectangle(
                 -500, -500, assets.MapData.MapArea.Width + 1000, assets.MapData.MapArea.Height + 1000), Color.Black);
             
+            // If the game is active
             if (CurState == GameEngineState.Active)
             {
+                // Draw the map
                 assets.MapData.Draw(sb);
 
+                // Draw every player
                 foreach (ClientPlayer ply in Players)
                 {
                     ply.Draw(sb);
-
-                    sb.Draw(assets.PixelTexture, new Rectangle(
-                                (int)ply.Position.X - 16, (int)ply.Position.Y,
-                                32, 32), Color.Red);
                 }
 
+                // Draw a white background if the player is flashed
                 if (Flashed)
                 {
                     sb.Draw(assets.PixelTexture,

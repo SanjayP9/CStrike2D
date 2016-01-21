@@ -482,18 +482,21 @@ namespace CStrike2DServer
         /// </summary>
         /// <param name="direction"></param>
         /// <param name="identifier"></param>
-        static void Move(byte direction, long identifier)
+        private static void Move(byte direction, long identifier)
         {
-            ServerPlayer player = players.Find(ply => ply.ConnectionIdentifier == identifier);
-
-            // If the player is allowed to move there, let everyone know
-            // the player requested to move in that direction
-            if (CheckPlayerCollision(player, direction))
+            if (state != RoundState.Buytime)
             {
-                player.Move(direction);
-                outMsg.Write(direction);
-                outMsg.Write(player.Identifier);
-                server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+                ServerPlayer player = players.Find(ply => ply.ConnectionIdentifier == identifier);
+
+                // If the player is allowed to move there, let everyone know
+                // the player requested to move in that direction
+                if (CheckPlayerCollision(player, direction))
+                {
+                    player.Move(direction);
+                    outMsg.Write(direction);
+                    outMsg.Write(player.Identifier);
+                    server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+                }
             }
         }
 
@@ -575,23 +578,19 @@ namespace CStrike2DServer
         /// </summary>
         /// <param name="identifier"></param>
         /// <param name="weapon"></param>
-        static void SpawnWeapon(long identifier, byte weapon)
+        private static void SpawnWeapon(long identifier, byte weapon)
         {
-            // If the current state is buytime
-            if (state == RoundState.Buytime)
-            {
-                // Find the associated player and give them the specified weapon
-                ServerPlayer player = players.Find(ply => ply.ConnectionIdentifier == identifier);
-                player.SetWeapon(WeaponData.ByteToWeapon(weapon));
+            // Find the associated player and give them the specified weapon
+            ServerPlayer player = players.Find(ply => ply.ConnectionIdentifier == identifier);
+            player.SetWeapon(WeaponData.ByteToWeapon(weapon));
 
-                // Let everyone else know what weapon they purchased
-                outMsg = server.CreateMessage();
-                outMsg.Write(ServerClientInterface.BUY_WEAPON);
-                outMsg.Write(player.Identifier);
-                outMsg.Write(weapon);
-                server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
-                Console.WriteLine("\"" + player.UserName + "\" purchased weapon " + WeaponData.ByteToWeapon(weapon));
-            }
+            // Let everyone else know what weapon they purchased
+            outMsg = server.CreateMessage();
+            outMsg.Write(ServerClientInterface.BUY_WEAPON);
+            outMsg.Write(player.Identifier);
+            outMsg.Write(weapon);
+            server.SendToAll(outMsg, NetDeliveryMethod.ReliableSequenced);
+            Console.WriteLine("\"" + player.UserName + "\" purchased weapon " + WeaponData.ByteToWeapon(weapon));
         }
 
         static void SpawnPlayer(long playerIdentifier, Vector2 location)
