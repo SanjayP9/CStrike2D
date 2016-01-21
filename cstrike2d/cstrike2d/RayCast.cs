@@ -202,21 +202,6 @@ namespace CStrike2D
         
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="point1"></param>
-        /// <param name="point2"></param>
-        /// <returns></returns>
-        //  public Vector2[] GetPointsOnRayDDA(Vector2 point1, Vector2 point2, Vector2 directionVect)
-        //   {
-        //        Vector2[] pointsOnRay;
-
-
-
-        //        return pointsOnRay;
-        //     }
-
-        /// <summary>
         /// Gets all of the points in the ray and stores it in a Vector2 array. Using Bersenhams Line Algorithm
         /// </summary>
         /// <param name="point1"> Starting Vector of ray </param>
@@ -227,13 +212,16 @@ namespace CStrike2D
             // True if the angle of the line is more than 45 degrees
             bool isLineSteep = (Math.Abs(point2.Y - point1.Y) >= Math.Abs(point2.X - point1.X));
 
-            // If the bool is true it swaps the x and y of the 
+            // If the bool is true it swaps the x and y of the vectors in order to compensate 
+            // for Bersanhams line algorithm since it doesnt function if the angle of the line is more than 45 degrees
             if (isLineSteep)
             {
                 point1 = SwapVectorCoordinates(point1);
                 point2 = SwapVectorCoordinates(point2);
             }
 
+            // If the line goes right to left it flips the line so that it travels from left to right
+            // This is also done to compensate for the algorithm since the algorithm doesnt work with lines from right to left
             if (point1.X > point2.X)
             {
                 Vector2 temp = point1;
@@ -241,11 +229,17 @@ namespace CStrike2D
                 point2 = temp;
             }
 
+            // Gets the difference vecotr between the destination and emit vector
             Vector2 differenceVect = new Vector2(point2.X - point1.X, Math.Abs(point2.Y - point1.Y));
+
+            // Error is used to find out how off the algorithms estimate is
             int error = 0;
+
+            // Used to incriment the y value in order to find the next point on the line
             float yChange;
             float currentY = point1.Y;
 
+            // depending on the end behaviors off the line it will find the yChange
             if (point1.Y > point2.Y)
             {
                 yChange = -1;
@@ -255,8 +249,11 @@ namespace CStrike2D
                 yChange = 1;
             }
 
+            // Calculates how many points will be on the line and makes the length of the array equal to that value
             Vector2[] pointsOnRay = new Vector2[((int)Math.Ceiling(Math.Abs(point2.X - point1.X))) + 1];
 
+
+            // For every x value on the line it calculates the next point on the ray and stores the vector in the pointsOnRay array 
             for (int currentX = 0; currentX <= (Math.Abs(point2.X - point1.X)); currentX++)
             {
                 if (isLineSteep == true)
@@ -268,8 +265,13 @@ namespace CStrike2D
                     pointsOnRay[currentX] = new Vector2(currentX + point1.X, currentY);
                 }
 
+
+                // Adds the difference of the y value between the actual line and the one that was calculated in
+                //  
                 error += (int)differenceVect.Y;
 
+                // Bersenhams line algorithm uses the error calculation below in order to check if based on the last point
+                // should it skip the next point or not in order to make the line more accurate
                 if ((error * 2) >= differenceVect.X)
                 {
                     currentY += yChange;
@@ -277,11 +279,12 @@ namespace CStrike2D
                 }
             }
 
+            // Returns the pointsOnRay array
             return pointsOnRay;
         }
 
         /// <summary>
-        /// 
+        /// Used to return the Ray Length
         /// </summary>
         /// <returns></returns>
         public float GetRayLength()
@@ -292,10 +295,9 @@ namespace CStrike2D
         /// <summary>
         /// Draws RayCast line
         /// </summary>
-        /// <param name="sb"></param>
-        /// <param name="pixelTexture"></param>
-        /// <param name="circleTexture"></param>
-        public void Draw(SpriteBatch sb, Texture2D pixelTexture, Texture2D circleTexture)
+        /// <param name="sb"> Passes through the SpriteBatch instance in order to use the Draw methods </param>
+        /// <param name="pixelTexture"> Passes through pixel texture in order to draw the line </param>
+        public void Draw(SpriteBatch sb, Texture2D pixelTexture)
         {
             // Draws the ray with a 1x1 texture with the given angle as the rotation
             sb.Draw(pixelTexture,
