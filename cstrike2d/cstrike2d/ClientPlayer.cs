@@ -111,8 +111,11 @@ namespace CStrike2D
 
         public void Fire()
         {
-            CurrentWeapon.FireWeapon();
-            Shot.Update(position, 1280, Assets.MapData, rotation);
+            if (!CurrentWeapon.Fired)
+            {
+                CurrentWeapon.FireWeapon();
+                Shot.Update(position, 1280, Assets.MapData.TileMap, Assets.MapData.MapArea, rotation);
+            }
         }
 
         public void SwitchWeapon()

@@ -30,6 +30,8 @@ namespace CStrike2D
         private Rectangle srcRect;
         private Color tileColor;
 
+        public const int TILE_SIZE = 32;
+
         public Rectangle Bounds { get; private set; }
         public byte Property { get; private set; }
 
@@ -52,14 +54,14 @@ namespace CStrike2D
         {
             TileType = tileType;
             Property = property;
-            destRect.X = col * LevelEditor.TILE_SIZE + mapArea.X;
-            destRect.Y = row * LevelEditor.TILE_SIZE + mapArea.Y;
-            destRect.Width = LevelEditor.TILE_SIZE;
-            destRect.Height = LevelEditor.TILE_SIZE;
-            srcRect.X = (TileType % 8 * LevelEditor.TILE_SIZE);
-            srcRect.Y = (TileType / 8 * LevelEditor.TILE_SIZE);
-            srcRect.Width = LevelEditor.TILE_SIZE;
-            srcRect.Height = LevelEditor.TILE_SIZE;
+            destRect.X = col * TILE_SIZE + mapArea.X;
+            destRect.Y = row * TILE_SIZE + mapArea.Y;
+            destRect.Width = TILE_SIZE;
+            destRect.Height = TILE_SIZE;
+            srcRect.X = (TileType % 8 * TILE_SIZE);
+            srcRect.Y = (TileType / 8 * TILE_SIZE);
+            srcRect.Width = TILE_SIZE;
+            srcRect.Height = TILE_SIZE;
         }
         public void SetProperty(byte property)
         {
@@ -69,8 +71,8 @@ namespace CStrike2D
         public void SetTileType(byte tileType)
         {
             TileType = tileType;
-            srcRect.X = (TileType % 8 * LevelEditor.TILE_SIZE);
-            srcRect.Y = (TileType / 8 * LevelEditor.TILE_SIZE);
+            srcRect.X = (TileType % 8 * TILE_SIZE);
+            srcRect.Y = (TileType / 8 * TILE_SIZE);
         }
 
         public void Draw(SpriteBatch sb, Texture2D tileSet, bool editorMode = false)

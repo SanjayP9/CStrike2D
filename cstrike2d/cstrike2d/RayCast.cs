@@ -51,11 +51,11 @@ namespace CStrike2D
         /// <param name="rayLineLength"> Passes through the max length of the ray </param>
         /// <param name="tiles"> Passes through the tiles on the map </param>
         /// <param name="angle"> Passes through the angle of the ray </param>
-        public void Update(Vector2 emitPos, float rayLineLength, Map map, float angle)
+        public void Update(Vector2 emitPos, float rayLineLength, Tile[,] map, Rectangle mapArea, float angle)
         {
             directionVect = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
             // Runs raycast method for and stores the returned result in RayCastLine
-            RayCastLine = RayCastMethod(emitPos, directionVect, rayLineLength, map, angle);
+            RayCastLine = RayCastMethod(emitPos, directionVect, rayLineLength, map, mapArea, angle);
 
             // Sets global Collision Pos to the one obtained from RayCastLine
             CollisionPos = RayCastLine.CollisionPos;
@@ -83,7 +83,7 @@ namespace CStrike2D
         /// <param name="rayLineLength"> Passes through the max ray length </param>
         /// <param name="angle"> Passes through the angle of the ray </param>
         /// <returns></returns>
-        public RayCastResult RayCastMethod(Vector2 emitPos, Vector2 directionVect, float rayLineLength, Map map, float angle)
+        public RayCastResult RayCastMethod(Vector2 emitPos, Vector2 directionVect, float rayLineLength, Tile[,] tileMap, Rectangle mapArea, float angle)
         {
             // Sets global variables values to values btained from local variables
             this.emitPos = emitPos;
@@ -98,7 +98,7 @@ namespace CStrike2D
             if (rayLineLength == 0f)
             {
                 castResult.CollisionPos = emitPos;
-                castResult.IsColliding = (IsVectorAccessible(emitPos, map));
+                castResult.IsColliding = (IsVectorAccessible(emitPos, tileMap, mapArea));
 
                 return castResult;
             }
@@ -127,7 +127,7 @@ namespace CStrike2D
                     Vector2 tempPoint = pointsOnRay[index];
 
                     // If the vector at the point above is not accessible then a collision point is found
-                    if (!(IsVectorAccessible(tempPoint, map)))
+                    if (!(IsVectorAccessible(tempPoint, tileMap, mapArea)))
                     {
                         castResult.CollisionPos = tempPoint;
                         castResult.IsColliding = true;
@@ -178,24 +178,24 @@ namespace CStrike2D
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        public bool IsVectorAccessible(Vector2 point, Map map)
+        public bool IsVectorAccessible(Vector2 point, Tile[,] tileMap, Rectangle mapArea)
         {
             // Gets current tile based on the coordinates of the point. Math.Floor was used to
             // get the tile number because tileX and tileY cannot be decimals.
-            int tileX = (int)Math.Floor(point.X / Map.TILE_SIZE);
-            int tileY = (int)Math.Floor(point.Y / Map.TILE_SIZE);
+            int tileX = (int)Math.Floor(point.X / Tile.TILE_SIZE);
+            int tileY = (int)Math.Floor(point.Y / Tile.TILE_SIZE);
 
             // If the tile is ever outside of the 2D tile array then the point will be assumed inaccessable and will be treated
             // like a solid tile
-            if ((tileX < 0) || (tileY < 0) || (tileX >= map.MapArea.Width) || (tileY >= map.MapArea.Height) ||
-                map.TileMap[tileX, tileY] == null)
+            if ((tileX < 0) || (tileY < 0) || (tileX >= mapArea.Width) || (tileY >= mapArea.Height) ||
+                tileMap[tileX, tileY] == null)
             {
                 return false;
             }
 
             // Using tileX and tileY checks if the tile stored in the 2D tile array at that location is collidable
             // If point is collidable it cannot be accessible
-            return map.TileMap[tileX, tileY].Property != Tile.SOLID;
+            return tileMap[tileX, tileY].Property != Tile.SOLID;
 
         }
 

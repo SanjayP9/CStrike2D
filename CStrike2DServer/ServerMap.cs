@@ -19,17 +19,17 @@ namespace CStrike2DServer
 {
     class ServerMap
     {
-        public Tile[,] TileMap { get; private set; }
+        public CStrike2D.Tile[,] TileMap { get; private set; }
 
         /// <summary>
         /// List of tiles that are Counter-Terrorist spawn points
         /// </summary>
-        public List<Tile> CTTile { get; private set; }
+        public List<CStrike2D.Tile> CTTile { get; private set; }
 
         /// <summary>
         /// List of tiles that are Terrorist spawn points
         /// </summary>
-        public List<Tile> TTile { get; private set; }
+        public List<CStrike2D.Tile> TTile { get; private set; }
 
         public int MaxTiles { get; private set; }
         public int MaxRow { get; private set; }
@@ -41,8 +41,8 @@ namespace CStrike2DServer
 
         public bool Load(string mapName)
         {
-            CTTile = new List<Tile>();
-            TTile = new List<Tile>();
+            CTTile = new List<CStrike2D.Tile>();
+            TTile = new List<CStrike2D.Tile>();
             if (!File.Exists(mapName))
             {
                 Console.WriteLine("Missing map: " + mapName + ". Server cannot start.");
@@ -63,9 +63,9 @@ namespace CStrike2DServer
             MapArea = new Rectangle(0, 0, TILE_SIZE*MaxCol, TILE_SIZE*MaxRow);
 
             // Initialize the number of tiles to be according the the number of columns and rows
-            TileMap = new Tile[MaxCol, MaxRow];
+            TileMap = new CStrike2D.Tile[MaxCol, MaxRow];
 
-            Tile newTile;
+            CStrike2D.Tile newTile;
             // Goes through every line in the text past the first two
             for (int rows = 0; rows < MaxRow; rows++)
             {
@@ -78,16 +78,16 @@ namespace CStrike2DServer
                     // If the data in the column is not blank
                     if (rowData[cols] != "")
                     {
-                        newTile = new Tile((byte) Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 1)),
+                        newTile = new CStrike2D.Tile((byte) Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 1)),
                             (byte) Convert.ToInt32(rowData[cols].Substring(rowData[cols].Length - 1, 1)),
                             cols, rows, MapArea);
 
                         switch (newTile.Property)
                         {
-                            case Tile.CT_SPAWN_POINT:
+                            case CStrike2D.Tile.CT_SPAWN_POINT:
                                 CTTile.Add(newTile);
                                 break;
-                            case Tile.T_SPAWN_POINT:
+                            case CStrike2D.Tile.T_SPAWN_POINT:
                                 TTile.Add(newTile);
                                 break;
                         }
