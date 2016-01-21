@@ -587,6 +587,13 @@ namespace CStrike2D
                 foreach (ClientPlayer ply in Players)
                 {
                     ply.Draw(sb);
+
+                    sb.Draw(assets.PixelTexture,
+                        new Rectangle(
+                                        (int) ply.Position.X,
+
+                                        (int) ply.Position.Y,
+                                        16, 16), null, Color.Red, ply.Rotation, new Vector2(0, 0), SpriteEffects.None, 0);
                 }
 
                 if (Flashed)
