@@ -34,6 +34,9 @@ namespace CStrike2D
 
         public GameEngineState CurState { get; set; }
 
+        private RayEmitter rayEmitter;
+        private RayCast shootCast;
+
         public enum GameEngineState
         {
             InActive,
@@ -81,6 +84,7 @@ namespace CStrike2D
                 this.assets = assets;
                 Players = new List<ClientPlayer>();
                 CurState = GameEngineState.Loaded;
+                shootCast = new RayCast();
             }
         }
 
@@ -446,6 +450,7 @@ namespace CStrike2D
                             {
                                 Client.CurrentWeapon.FireWeapon();
                                 network.FireWeapon();
+                                shootCast.Update(Client.Position, 1280, assets.MapData, input.MouseRotation(driver.Model.Camera));
                             }
                         }
 
@@ -563,6 +568,11 @@ namespace CStrike2D
                     sb.Draw(assets.PixelTexture,
                         new Rectangle((int) Client.Position.X - 640, (int) Client.Position.Y - 360, 1280, 720),
                         Color.White*((flashTimer*2)/20f));
+                }
+
+                if (Client.CurrentWeapon.Fired)
+                {
+                   shootCast.Draw(sb, assets.PixelTexture);
                 }
             }
         }

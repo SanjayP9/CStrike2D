@@ -40,7 +40,7 @@ namespace CStrike2D
         /// </summary>
         public RayCast()
         {
-           // RayCastLine = new RayCastResult();
+            RayCastLine = new RayCastResult();
         }
 
         /// <summary>
@@ -51,10 +51,13 @@ namespace CStrike2D
         /// <param name="rayLineLength"> Passes through the max length of the ray </param>
         /// <param name="tiles"> Passes through the tiles on the map </param>
         /// <param name="angle"> Passes through the angle of the ray </param>
-        public void Update(Vector2 emitPos, Vector2 directionVect, float rayLineLength, Tile[,] tiles, float angle)
+        public void Update(Vector2 emitPos, float rayLineLength, Map map, float angle)
         {
+            // Generates direction vector
+            directionVect = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+
             // Runs raycast method for and stores the returned result in RayCastLine
-            RayCastLine = RayCastMethod(emitPos, directionVect, rayLineLength, tiles, angle);
+            RayCastLine = RayCastMethod(emitPos, rayLineLength, map, angle);
             
             // Sets global Collision Pos to the one obtained from RayCastLine
             CollisionPos = RayCastLine.CollisionPos;
@@ -83,25 +86,24 @@ namespace CStrike2D
         /// <param name="tiles"> Passes through the map tiles </param>
         /// <param name="angle"> Passes through the angle of the ray </param>
         /// <returns></returns>
-        public RayCastResult RayCastMethod(Vector2 emitPos, Vector2 directionVect, float rayLineLength, Tile[,] tiles, float angle)
+        public RayCastResult RayCastMethod(Vector2 emitPos, float rayLineLength, Map map, float angle)
         {
             // Sets global variables values to values btained from local variables
             this.emitPos = emitPos;
-            this.directionVect = directionVect;
             this.rayLength = rayLineLength;
             this.angle = angle;
-
-            // Creates an instance of rayCastResult
-            RayCastResult castResult = new RayCastResult();
 
             // If the rayLineLength is 0 then t
             if (rayLineLength == 0f)
             {
-                castResult.CollisionPos = emitPos;
-                castResult.IsColliding = (IsVectorAccessible(emitPos, tiles));
+                RayCastLine.CollisionPos = emitPos;
+                RayCastLine.IsColliding = (IsVectorAccessible(emitPos, map));
 
-                return castResult;
+                return RayCastLine;
             }
+
+            // Calculate direction vector
+            directionVect = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
 
             // Normalizes direction vect so that its equivilant to one unit
             directionVect.Normalize();
@@ -127,10 +129,10 @@ namespace CStrike2D
                     Vector2 tempPoint = pointsOnRay[index];
 
                     // If the vector at the point above is not accessible then a collision point is found
-                    if (!(IsVectorAccessible(tempPoint, tiles)))
+                    if (!(IsVectorAccessible(tempPoint, map)))
                     {
-                        castResult.CollisionPos = tempPoint;
-                        castResult.IsColliding = true;
+                        RayCastLine.CollisionPos = tempPoint;
+                        RayCastLine.IsColliding = true;
                         break;
                     }
 
@@ -159,7 +161,7 @@ namespace CStrike2D
                 }
 
             }
-            return castResult;
+            return RayCastLine;
         }
 
 
@@ -180,42 +182,27 @@ namespace CStrike2D
         /// <param name="point"></param>
         /// <param name="tiles"></param>
         /// <returns></returns>
-        public bool IsVectorAccessible(Vector2 point, Tile[,] tiles)
+        public bool IsVectorAccessible(Vector2 point, Map map)
         {
             // Gets current tile based on the coordinates of the point. Math.Floor was used to
             // get the tile number because tileX and tileY cannot be decimals.
-            int tileX = (int)Math.Floor(point.X / TileManager.TILE_SIDE_LENGTH);
-            int tileY = (int)Math.Floor(point.Y / TileManager.TILE_SIDE_LENGTH);
+            int tileX = (int)Math.Floor(point.X / Map.TILE_SIZE);
+            int tileY = (int)Math.Floor(point.Y / Map.TILE_SIZE);
 
             // If the tile is ever outside of the 2D tile array then the point will be assumed inaccessable and will be treated
-            // like a solid tile
-            if ((tileX < 0) || (tileY < 0) || (tileX >= TileManager.TILE_X) || (tileY >= TileManager.TILE_Y))
+            // like a solid tile.
+            if (((tileX < 0) || (tileY < 0) || (tileX >= map.MapArea.Width) || (tileY >= map.MapArea.Height)) ||
+                map.TileMap[tileX, tileY] == null)
             {
                 return false;
             }
 
             // Using tileX and tileY checks if the tile stored in the 2D tile array at that location is collidable
             // If point is collidable it cannot be accessible
-            return tiles[tileX, tileY].Property != Tile.SOLID;
+            return map.TileMap[tileX, tileY].Property != Tile.SOLID;
 
         }
         
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="point1"></param>
-        /// <param name="point2"></param>
-        /// <returns></returns>
-        //  public Vector2[] GetPointsOnRayDDA(Vector2 point1, Vector2 point2, Vector2 directionVect)
-        //   {
-        //        Vector2[] pointsOnRay;
-
-
-
-        //        return pointsOnRay;
-        //     }
-
         /// <summary>
         /// Gets all of the points in the ray and stores it in a Vector2 array. Using Bersenhams Line Algorithm
         /// </summary>
@@ -295,7 +282,7 @@ namespace CStrike2D
         /// <param name="sb"></param>
         /// <param name="pixelTexture"></param>
         /// <param name="circleTexture"></param>
-        public void Draw(SpriteBatch sb, Texture2D pixelTexture, Texture2D circleTexture)
+        public void Draw(SpriteBatch sb, Texture2D pixelTexture)
         {
             // Draws the ray with a 1x1 texture with the given angle as the rotation
             sb.Draw(pixelTexture,

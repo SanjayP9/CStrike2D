@@ -19,9 +19,9 @@ namespace CStrike2D
         public int MaxRow { get; private set; }
         public int MaxCol { get; private set; }
 
-        private Rectangle mapArea;
+        public Rectangle MapArea { get; private set; }
 
-        private const int TILE_SIZE = 32;
+        public const int TILE_SIZE = 32;
 
         private Assets assets;
 
@@ -48,7 +48,7 @@ namespace CStrike2D
             MaxRow = Convert.ToInt32(inFile.ReadLine());
 
             // Changes the map area according to the number of columns and rows
-            mapArea = new Rectangle(0, 0, TILE_SIZE*MaxCol, TILE_SIZE*MaxRow);
+            MapArea = new Rectangle(0, 0, TILE_SIZE*MaxCol, TILE_SIZE*MaxRow);
 
             // Initialize the number of tiles to be according the the number of columns and rows
             TileMap = new Tile[MaxCol, MaxRow];
@@ -69,7 +69,7 @@ namespace CStrike2D
                         TileMap[cols, rows] =
                             new Tile((byte) Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 1)),
                                 (byte) Convert.ToInt32(rowData[cols].Substring(rowData[cols].Length - 1, 1)),
-                                cols, rows, mapArea);
+                                cols, rows, MapArea);
                     }
                 }
             }
@@ -93,8 +93,8 @@ namespace CStrike2D
                     {
                         srcRect.X = (TileMap[col, row].TileType % 8 * TILE_SIZE);
                         srcRect.Y = (TileMap[col, row].TileType / 8 * TILE_SIZE);
-                        destRect.X = col * TILE_SIZE + mapArea.X;
-                        destRect.Y = row * TILE_SIZE + mapArea.Y;
+                        destRect.X = col * TILE_SIZE + MapArea.X;
+                        destRect.Y = row * TILE_SIZE + MapArea.Y;
 
                         sb.Draw(assets.TileSet, destRect, srcRect, Color.White);
                     }
