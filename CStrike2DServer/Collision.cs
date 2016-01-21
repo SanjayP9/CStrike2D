@@ -27,13 +27,51 @@ namespace CStrike2D
         }
 
         /// <summary>
-        /// Checks if the bullet emitted from a player at a specified angle intersects an enemy player
+        /// Checks the intersection of a circle and a rectangle
         /// </summary>
-        /// <param name="shootingPlayer">the centre of the shooting player</param>
-        /// <param name="enemyPlayer">the centre of the enemy player</param>
-        /// <param name="shotAngle">the angle the bullet is shot at</param>
-        /// <param name="playerRadius">the radius of a player</param>
-        /// <returns>if the bullet shot intersects the enemy</returns>
+        /// <param name="player">the player centre</param>
+        /// <param name="rect">the rectangle checking collision with</param>
+        /// <param name="radius">the radius of a player</param>
+        /// <returns>if the player intersects the rectangle</returns>
+        public static bool PlayerToRectangle(Vector2 player, Rectangle rect, float radius)
+        {
+            // Sets the rectangle x and y coordinates to be the centre of the rectangle
+            rect.X += rect.Width / 2;
+            rect.Y += rect.Height / 2;
+
+            // Finds the distance between the centre of the circle and the centre of the rectangle
+            Vector2 circleDistance = new Vector2(Math.Abs(player.X - rect.X), Math.Abs(player.Y - rect.Y));
+
+            // If the circle is far enough away from the rectangle return false
+            if (circleDistance.X > (rect.Width * 0.5f + radius) || circleDistance.Y > (rect.Height * 0.5f + radius))
+            {
+                return false;
+            }
+
+            // If the circle is close enough for a garanteed intersection return true
+            if (circleDistance.X <= (rect.Width * 0.5f) || circleDistance.Y <= (rect.Height * 0.5f))
+            {
+                return true;
+            }
+
+            // Check to see if the circle intersects to corner of the rectangle by checking to see if the distance
+            // from the centre of the circle to the corner is less than or equal to the radius
+            float cornerDistanceSquared = (circleDistance.X - rect.Width * 0.5f) * (circleDistance.X - rect.Width * 0.5f) +
+                                      (circleDistance.Y - rect.Height * 0.5f) * (circleDistance.Y - rect.Height * 0.5f);
+            return (cornerDistanceSquared <= (radius * radius));
+        }
+
+        /// <summary>
+        /// Checks if the bullet emitted from a player at a specified angle intersects an enemy player(checks line to circle)
+        /// if that is true check non-axis aligned rectangle
+        /// </summary>
+        /// <param name="shootingPlayer"></param>
+        /// <param name="enemyPlayer"></param>
+        /// <param name="shotAngle"></param>
+        /// <param name="playerRadius"></param>
+        /// <param name="rect"></param>
+        /// <param name="enemyRot"></param>
+        /// <returns></returns>
         public static bool BulletToPlayer(Vector2 shootingPlayer, Vector2 enemyPlayer, float shotAngle, float playerRadius, Rectangle rect, float enemyRot)
         {
             /*
@@ -116,7 +154,7 @@ namespace CStrike2D
             // and the bullet line
             float poiX = (bEnemy - bPlayer) / (2 * mPlayer);
             float poiY = mPlayer * poiX + bPlayer;
-            
+
             // Returns if the poi is less than or equal to the radius
             //return Vector2.Distance(new Vector2(poiX, poiY), enemyPlayer) <= playerRadius;
             if (Vector2.Distance(new Vector2(poiX, poiY), enemyPlayer) <= playerRadius)
@@ -124,41 +162,6 @@ namespace CStrike2D
                 return LineRectangle(rect, enemyRot, mPlayer, bPlayer);
             }
             return false;
-        }
-
-        /// <summary>
-        /// Checks the intersection of a circle and a rectangle
-        /// </summary>
-        /// <param name="player">the player centre</param>
-        /// <param name="rect">the rectangle checking collision with</param>
-        /// <param name="radius">the radius of a player</param>
-        /// <returns>if the player intersects the rectangle</returns>
-        public static bool PlayerToRectangle(Vector2 player, Rectangle rect, float radius)
-        {
-            // Sets the rectangle x and y coordinates to be the centre of the rectangle
-            rect.X += rect.Width / 2;
-            rect.Y += rect.Height / 2;
-
-            // Finds the distance between the centre of the circle and the centre of the rectangle
-            Vector2 circleDistance = new Vector2(Math.Abs(player.X - rect.X), Math.Abs(player.Y - rect.Y));
-
-            // If the circle is far enough away from the rectangle return false
-            if (circleDistance.X > (rect.Width * 0.5f + radius) || circleDistance.Y > (rect.Height * 0.5f + radius))
-            {
-                return false;
-            }
-
-            // If the circle is close enough for a garanteed intersection return true
-            if (circleDistance.X <= (rect.Width * 0.5f) || circleDistance.Y <= (rect.Height * 0.5f))
-            {
-                return true;
-            }
-
-            // Check to see if the circle intersects to corner of the rectangle by checking to see if the distance
-            // from the centre of the circle to the corner is less than or equal to the radius
-            float cornerDistanceSquared = (circleDistance.X - rect.Width * 0.5f) * (circleDistance.X - rect.Width * 0.5f) +
-                                      (circleDistance.Y - rect.Height * 0.5f) * (circleDistance.Y - rect.Height * 0.5f);
-            return (cornerDistanceSquared <= (radius * radius));
         }
 
         /// <summary>
