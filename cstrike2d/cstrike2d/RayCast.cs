@@ -10,7 +10,7 @@ using System;
 
 namespace CStrike2D
 {
-    class RayCast
+    public class RayCast
     {
 
         // Used to store the point of interseciton after the raycast is complete
@@ -40,7 +40,7 @@ namespace CStrike2D
         /// </summary>
         public RayCast()
         {
-            // RayCastLine = new RayCastResult();
+             RayCastLine = new RayCastResult();
         }
 
         /// <summary>
@@ -248,11 +248,11 @@ namespace CStrike2D
             }
 
             // Calculates how many points will be on the line and makes the length of the array equal to that value
-            Vector2[] pointsOnRay = new Vector2[((int)Math.Ceiling(Math.Abs(point2.X - point1.X))) + 1];
+            Vector2[] pointsOnRay = new Vector2[((int)Math.Ceiling(Math.Abs(point2.X - point1.X)))];
 
 
             // For every x value on the line it calculates the next point on the ray and stores the vector in the pointsOnRay array 
-            for (int currentX = 0; currentX <= (Math.Abs(point2.X - point1.X)); currentX++)
+            for (int currentX = 0; currentX < (Math.Abs(point2.X - point1.X)); currentX++)
             {
                 if (isLineSteep == true)
                 {

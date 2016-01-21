@@ -34,6 +34,8 @@ namespace CStrike2D
 
         public override Rectangle Dimensions { get; protected set; }
 
+        public RayCast Shot { get; private set; }
+
         // Gets the position of the player
         public override Vector2 Position
         {
@@ -77,6 +79,7 @@ namespace CStrike2D
             SecondaryWeapon = new ClientWeapon(WeaponData.Weapon.None, this, assets);
             Knife = new ClientWeapon(WeaponData.Weapon.Knife, this, assets);
             CurrentWeapon = Knife;
+            Shot = new RayCast();
         }
 
         public override void Update(float gameTime)
@@ -98,12 +101,18 @@ namespace CStrike2D
                     CurrentTeam == ServerClientInterface.Team.CounterTerrorist ? Color.Blue : Color.Red);
 
                 CurrentWeapon.Draw(sb);
+
+                if (CurrentWeapon.Fired)
+                {
+                    Shot.Draw(sb, Assets.PixelTexture);
+                }
             }
         }
 
         public void Fire()
         {
             CurrentWeapon.FireWeapon();
+            Shot.Update(position, 1280, Assets.MapData, rotation);
         }
 
         public void SwitchWeapon()
