@@ -10,7 +10,7 @@ using System;
 
 namespace CStrike2D
 {
-    class RayCast
+    public class RayCast
     {
 
         // Used to store the point of interseciton after the raycast is complete
@@ -40,7 +40,7 @@ namespace CStrike2D
         /// </summary>
         public RayCast()
         {
-            // RayCastLine = new RayCastResult();
+             RayCastLine = new RayCastResult();
         }
 
         /// <summary>
