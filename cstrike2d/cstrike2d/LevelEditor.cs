@@ -58,7 +58,7 @@ namespace CStrike2D
         Rectangle tileSetOffset = new Rectangle(50, 50, 256, 320);
 
         // Stores the map area
-        Rectangle mapArea = new Rectangle(-225, -250, 2400, 1600);
+        Rectangle mapArea = new Rectangle(0, 0, 2400, 1600);
 
         Rectangle destRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
 
@@ -68,23 +68,26 @@ namespace CStrike2D
         public enum EditorStates
         {
             Edit,
-            ShowHotkeys
+            ShowHotkeys,
+            Exit
         };
 
         // Stores the current enum state
-        private EditorStates currentState = EditorStates.Edit;
+        public EditorStates CurrentState { get; private set; }
 
         public LevelEditor(CStrikeModel model)
         {
             driver = model.DriverInstance;
             input = model.Input;
             audio = model.AudioManager;
+            CurrentState = EditorStates.Edit;
+            driver.Model.Camera.Position = new Vector2(225, 250);
         }
         
         public void Update(float gameTime)
         {
             // Updates logic according to the state
-            switch (currentState)
+            switch (CurrentState)
             {
                 case EditorStates.Edit:
 
@@ -125,12 +128,12 @@ namespace CStrike2D
                             if (tiles[(int)mapTilePos.X, (int)mapTilePos.Y] != null &&
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].TileType != selectedTile)
                             {
-                                tempSave();
+                                TempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetTileType(selectedTile);
                             }
                             else if (tiles[(int)mapTilePos.X, (int)mapTilePos.Y] == null)
                             {
-                                tempSave();
+                                TempSave();
 
                                 tiles[(int) mapTilePos.X, (int) mapTilePos.Y] = new Tile(selectedTile, Tile.NO_PROPERTY,
                                       (int) mapTilePos.X, (int) mapTilePos.Y, destRect);
@@ -139,7 +142,7 @@ namespace CStrike2D
                         // If the right mouse button is held
                         else if (input.RightHold() && tiles[(int)mapTilePos.X, (int)mapTilePos.Y] != null)
                         {
-                            tempSave();
+                            TempSave();
                             // Set the tile that the mouse is on to be empty
                             tiles[(int)mapTilePos.X, (int)mapTilePos.Y] = null;
                         }
@@ -149,47 +152,47 @@ namespace CStrike2D
                         {
                             if (input.Tapped(Keys.D0))
                             {
-                                tempSave();
+                                TempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.NO_PROPERTY);
                             }
                             else if (input.Tapped(Keys.D1))
                             {
-                                tempSave();
+                                TempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.SOLID);
                             }
                             else if (input.Tapped(Keys.D2))
                             {
-                                tempSave();
+                                TempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.A_PLANT_SPOT);
                             }
                             else if (input.Tapped(Keys.D3))
                             {
-                                tempSave();
+                                TempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.B_PLANT_SPOT);
                             }
                             else if (input.Tapped(Keys.D4))
                             {
-                                tempSave();
+                                TempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.SAVE_SPOT);
                             }
                             else if (input.Tapped(Keys.D5))
                             {
-                                tempSave();
+                                TempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.CT_SPAWN_POINT);
                             }
                             else if (input.Tapped(Keys.D6))
                             {
-                                tempSave();
+                                TempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.T_SPAWN_POINT);
                             }
                             else if (input.Tapped(Keys.D7))
                             {
-                                tempSave();
+                                TempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.A_SITE_DEFENCE_POINT);
                             }
                             else if (input.Tapped(Keys.D8))
                             {
-                                tempSave();
+                                TempSave();
                                 tiles[(int)mapTilePos.X, (int)mapTilePos.Y].SetProperty(Tile.B_SITE_DEFENCE_POINT);
                             }
 
@@ -267,7 +270,7 @@ namespace CStrike2D
                         // If the A key is pressed set all the tiles to be the selected tile
                         else if (input.Tapped(Keys.A))
                         {
-                            tempSave();
+                            TempSave();
                             for (int col = 0; col < numCols; col++)
                             {
                                 for (int row = 0; row < numRows; row++)
@@ -279,7 +282,7 @@ namespace CStrike2D
                         // If the delete key is pressed it removes all tiles placed
                         else if (input.Tapped(Keys.Delete))
                         {
-                            tempSave();
+                            TempSave();
                             tiles = new Tile[numCols, numRows];
                         }
                         // If the undo key is pressed it undoes the last action
@@ -326,18 +329,23 @@ namespace CStrike2D
                         showEditView = !showEditView;
                     }
 
-                    // If the escape key is pressed change the state to the hot key state
+                    // If the F2 key is pressed change the state to the hot key state
+                    if (input.Tapped(Keys.F12))
+                    {
+                        CurrentState = EditorStates.ShowHotkeys;
+                    }
+
                     if (input.Tapped(Keys.Escape))
                     {
-                        currentState = EditorStates.ShowHotkeys;
+                        CurrentState = EditorStates.Exit;
                     }
                     break;
 
                 case EditorStates.ShowHotkeys:
-                    // If the escape key is pressed change the state to the edit state
-                    if (input.Tapped(Keys.Escape))
+                    // If the F2 key is pressed change the state to the edit state
+                    if (input.Tapped(Keys.F12))
                     {
-                        currentState = EditorStates.Edit;
+                        CurrentState = EditorStates.Edit;
                     }
                     break;
             }
@@ -346,7 +354,7 @@ namespace CStrike2D
         /// <summary>
         /// Temporary saves the map
         /// </summary>
-        public void tempSave()
+        public void TempSave()
         {
             for (int row = 0; row < undoTiles.GetLength(1); row++)
             {
@@ -377,7 +385,7 @@ namespace CStrike2D
         /// <param name="sb">Passes through spritebatch instance in order to use draw method</param>
         public void DrawWorld(SpriteBatch sb)
         {
-            switch (currentState)
+            switch (CurrentState)
             {
                 case EditorStates.Edit:
                     // Draws the background of the map
@@ -388,8 +396,7 @@ namespace CStrike2D
 
                     Rectangle srcRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
 
-                    
-                     
+                   /* 
                     // Draws all tiles placed on the map and colors the tile according to the property
                     for (int col = 0; col < numCols; col++)
                     {
@@ -451,9 +458,9 @@ namespace CStrike2D
                             }
                         }
                     }
-                    
+                    */
 
-                    /*
+                    
                     foreach (Tile tile in tiles)
                     {
                         if (tile != null)
@@ -461,7 +468,7 @@ namespace CStrike2D
                             tile.Draw(sb, driver.Assets.TileSet, showEditView);
                         }
                     }
-                    */
+                   
 
                     // If show edit view is true
                     if (showEditView)
@@ -489,7 +496,7 @@ namespace CStrike2D
         /// <param name="sb">Passes through spritebatch instance in order to use draw method</param>
         public void DrawUI(SpriteBatch sb)
         {
-            switch (currentState)
+            switch (CurrentState)
             {
                 case EditorStates.Edit:
 
@@ -497,7 +504,7 @@ namespace CStrike2D
                     sb.DrawString(driver.Assets.DefaultFont, "Map Tile Index: " + Math.Floor(mapTilePos.X) + "|" + Math.Floor(mapTilePos.Y), new Vector2(200, 0), Color.White);
                     sb.DrawString(driver.Assets.DefaultFont, "Selected Tile #: " + selectedTile, new Vector2(25, 0), Color.White);
                     sb.DrawString(driver.Assets.DefaultFont, "Property: " + property, new Vector2(385, 0), Color.White);
-                    sb.DrawString(driver.Assets.DefaultFont, "Press 'ESCAPE' to view controls", new Vector2(25, 675), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Press 'F12' to view controls", new Vector2(25, 675), Color.White);
 
                     // If show edit view is true draw the tile set and grid lines for it
                     if (showEditView)
@@ -521,7 +528,7 @@ namespace CStrike2D
                 case EditorStates.ShowHotkeys:
                     sb.DrawString(driver.Assets.DefaultFont, "MOUSE1 -> SELECT/PLACE TILE\n\nMOUSE2-> REMOVE TILE\n\nCTRL + S -> SAVE FILE\n\nCTRL + O -> OPEN FILE\n\nCTRL + A -> SET ALL TILES\n\nCTRL + DEL -> DELETE ALL TILES\n\nCTRL + Z -> Undo\n\nSCROLL WHEEL -> ZOOM\n\nWASD -> MOVE CAMERA\n\nTAB -> TOGGLE EDIT VIEW", new Vector2(250, 75), Color.White);
                     sb.DrawString(driver.Assets.DefaultFont, "1 -> COLLIDABLE\n\n2-> A SITE PLANT SPOT\n\n3 -> B SITE PLANT SPOT\n\n4 -> SAVE SPOT\n\n5 - > CT SPAWN POINT\n\n6 -> T SPAWN POINT\n\n7 -> A SITE DEFENCE POINT\n\n8 -> B SITE DEFENCE POINT\n\n\n\n0 -> RESET PROPERTY", new Vector2(825, 75), Color.White);
-                    sb.DrawString(driver.Assets.DefaultFont, "Press 'ESCAPE' to return to editor", new Vector2(515, 675), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Press 'F12' to return to editor", new Vector2(515, 675), Color.White);
                     //sb.Draw(driver.Assets.PixelTexture, new Rectangle(700, 75, 50, 50), Color.White);
                     break;
             }
@@ -544,7 +551,7 @@ namespace CStrike2D
 
             // Sets the max indexes of the number of columns and rows
             undoTiles = new Tile[numCols, numRows];
-            tempSave();
+            TempSave();
             
             // Initialize the number of tiles to be according the the number of columns and rows
             tiles = new Tile[numCols, numRows];
@@ -609,7 +616,7 @@ namespace CStrike2D
         }
         private void AddColumn()
         {
-            tempSave();
+            TempSave();
             numCols++;
             tiles = new Tile[numCols, numRows];
             mapArea.Width = TILE_SIZE * numCols;

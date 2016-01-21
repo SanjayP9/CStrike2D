@@ -56,51 +56,51 @@ namespace CStrike2D
                 return false;
             }
             */
-            int quadrantOfEnemy = 0;
-            if (enemyPlayer.Y >= shootingPlayer.Y)
-            {
-                if (enemyPlayer.X >= shootingPlayer.X)
-                {
-                    quadrantOfEnemy = 1;
-                }
-                if (enemyPlayer.X < shootingPlayer.X)
-                {
-                    quadrantOfEnemy = 2;
-                }
-            }
-            else if (enemyPlayer.Y < shootingPlayer.Y)
-            {
-                if (enemyPlayer.X > shootingPlayer.X)
-                {
-                    quadrantOfEnemy = 4;
-                }
-                if (enemyPlayer.X <= shootingPlayer.X)
-                {
-                    quadrantOfEnemy = 3;
-                }
-            }
-            int angleQuad = 0;
-            if (shotAngle > 0 || shotAngle <= Math.PI * 0.5f)
-            {
-                angleQuad = 1;
-            }
-            else if (shotAngle > Math.PI * 0.5f || shotAngle <= Math.PI)
-            {
-                angleQuad = 2;
-            }
-            else if (shotAngle < Math.PI * -0.5f || shotAngle >= Math.PI * -1f)
-            {
-                angleQuad = 3;
-            }
-            else if (shotAngle <= 0 || shotAngle > Math.PI * -0.5f)
-            {
-                angleQuad = 4;
-            }
+            //int quadrantOfEnemy = 0;
+            //if (enemyPlayer.Y >= shootingPlayer.Y)
+            //{
+            //    if (enemyPlayer.X >= shootingPlayer.X)
+            //    {
+            //        quadrantOfEnemy = 1;
+            //    }
+            //    if (enemyPlayer.X < shootingPlayer.X)
+            //    {
+            //        quadrantOfEnemy = 2;
+            //    }
+            //}
+            //else if (enemyPlayer.Y < shootingPlayer.Y)
+            //{
+            //    if (enemyPlayer.X > shootingPlayer.X)
+            //    {
+            //        quadrantOfEnemy = 4;
+            //    }
+            //    if (enemyPlayer.X <= shootingPlayer.X)
+            //    {
+            //        quadrantOfEnemy = 3;
+            //    }
+            //}
+            //int angleQuad = 0;
+            //if (shotAngle > 0 || shotAngle <= Math.PI * 0.5f)
+            //{
+            //    angleQuad = 1;
+            //}
+            //else if (shotAngle > Math.PI * 0.5f || shotAngle <= Math.PI)
+            //{
+            //    angleQuad = 2;
+            //}
+            //else if (shotAngle < Math.PI * -0.5f || shotAngle >= Math.PI * -1f)
+            //{
+            //    angleQuad = 3;
+            //}
+            //else if (shotAngle <= 0 || shotAngle > Math.PI * -0.5f)
+            //{
+            //    angleQuad = 4;
+            //}
 
-            if (angleQuad != quadrantOfEnemy)
-            {
-                return false;
-            }
+            //if (angleQuad != quadrantOfEnemy)
+            //{
+            //    return false;
+            //}
             // Find the linear equation of the shot bullet
             float mPlayer = (float)Math.Tan(shotAngle);
             float bPlayer = shootingPlayer.Y - mPlayer * shootingPlayer.X;

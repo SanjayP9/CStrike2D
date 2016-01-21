@@ -121,8 +121,6 @@ namespace CStrike2D
             NetworkManager = new NetworkManager(GameEngine);
 
             Shader = new ShaderRenderer(driver);
-
-            Editor = new LevelEditor(this);
         }
 
         /// <summary>
@@ -429,6 +427,7 @@ namespace CStrike2D
                         InterfaceManager.HideAll();
                         AudioManager.PlaySound("buttonclick", AudioManager.UiVolume);
                         CurState = State.LevelEditor;
+                        Editor = new LevelEditor(this);
                     }
 
                     if (InterfaceManager.Clicked(Input, "playMenu", "connectButton"))
@@ -526,7 +525,15 @@ namespace CStrike2D
                     }
                     break;
                 case State.LevelEditor:
-                    Editor.Update(gameTime);
+                    if (Editor.CurrentState != LevelEditor.EditorStates.Exit)
+                    {
+                        Editor.Update(gameTime);
+                    }
+                    else
+                    {
+                        CurState = State.Menu;
+                        InterfaceManager.ShowPage("defaultMenu");
+                    }
                     break;
                 case State.InGame:
                     GameEngine.Update(gameTime);

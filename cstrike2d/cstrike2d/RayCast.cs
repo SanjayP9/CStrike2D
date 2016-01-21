@@ -40,7 +40,7 @@ namespace CStrike2D
         /// </summary>
         public RayCast()
         {
-           // RayCastLine = new RayCastResult();
+            RayCastLine = new RayCastResult();
         }
 
         /// <summary>
@@ -51,10 +51,13 @@ namespace CStrike2D
         /// <param name="rayLineLength"> Passes through the max length of the ray </param>
         /// <param name="tiles"> Passes through the tiles on the map </param>
         /// <param name="angle"> Passes through the angle of the ray </param>
-        public void Update(Vector2 emitPos, Vector2 directionVect, float rayLineLength, Tile[,] tiles, float angle)
+        public void Update(Vector2 emitPos, float rayLineLength, Map map, float angle)
         {
+            // Generates direction vector
+            directionVect = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+
             // Runs raycast method for and stores the returned result in RayCastLine
-            RayCastLine = RayCastMethod(emitPos, directionVect, rayLineLength, tiles, angle);
+            RayCastLine = RayCastMethod(emitPos, rayLineLength, map, angle);
             
             // Sets global Collision Pos to the one obtained from RayCastLine
             CollisionPos = RayCastLine.CollisionPos;
@@ -83,25 +86,24 @@ namespace CStrike2D
         /// <param name="tiles"> Passes through the map tiles </param>
         /// <param name="angle"> Passes through the angle of the ray </param>
         /// <returns></returns>
-        public RayCastResult RayCastMethod(Vector2 emitPos, Vector2 directionVect, float rayLineLength, Tile[,] tiles, float angle)
+        public RayCastResult RayCastMethod(Vector2 emitPos, float rayLineLength, Map map, float angle)
         {
             // Sets global variables values to values btained from local variables
             this.emitPos = emitPos;
-            this.directionVect = directionVect;
             this.rayLength = rayLineLength;
             this.angle = angle;
-
-            // Creates an instance of rayCastResult
-            RayCastResult castResult = new RayCastResult();
 
             // If the rayLineLength is 0 then t
             if (rayLineLength == 0f)
             {
-                castResult.CollisionPos = emitPos;
-                castResult.IsColliding = (IsVectorAccessible(emitPos, tiles));
+                RayCastLine.CollisionPos = emitPos;
+                RayCastLine.IsColliding = (IsVectorAccessible(emitPos, map));
 
-                return castResult;
+                return RayCastLine;
             }
+
+            // Calculate direction vector
+            directionVect = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
 
             // Normalizes direction vect so that its equivilant to one unit
             directionVect.Normalize();
@@ -127,10 +129,10 @@ namespace CStrike2D
                     Vector2 tempPoint = pointsOnRay[index];
 
                     // If the vector at the point above is not accessible then a collision point is found
-                    if (!(IsVectorAccessible(tempPoint, tiles)))
+                    if (!(IsVectorAccessible(tempPoint, map)))
                     {
-                        castResult.CollisionPos = tempPoint;
-                        castResult.IsColliding = true;
+                        RayCastLine.CollisionPos = tempPoint;
+                        RayCastLine.IsColliding = true;
                         break;
                     }
 
@@ -159,7 +161,7 @@ namespace CStrike2D
                 }
 
             }
-            return castResult;
+            return RayCastLine;
         }
 
 
@@ -177,30 +179,30 @@ namespace CStrike2D
         /// <summary>
         /// Given a Vector2 point and the tiles that are on the map it will return whether or not the Vector2 is inside or on a wall
         /// </summary>
-        /// <param name="point"></param>
-        /// <param name="tiles"></param>
+        /// <param name="point"> Passes through point to check </param>
+        /// <param name="tiles"> Passes though tile set for map </param>
         /// <returns></returns>
-        public bool IsVectorAccessible(Vector2 point, Tile[,] tiles)
+        public bool IsVectorAccessible(Vector2 point, Map map)
         {
             // Gets current tile based on the coordinates of the point. Math.Floor was used to
             // get the tile number because tileX and tileY cannot be decimals.
-            int tileX = (int)Math.Floor(point.X / TileManager.TILE_SIDE_LENGTH);
-            int tileY = (int)Math.Floor(point.Y / TileManager.TILE_SIDE_LENGTH);
+            int tileX = (int)Math.Floor(point.X / Map.TILE_SIZE);
+            int tileY = (int)Math.Floor(point.Y / Map.TILE_SIZE);
 
             // If the tile is ever outside of the 2D tile array then the point will be assumed inaccessable and will be treated
-            // like a solid tile
-            if ((tileX < 0) || (tileY < 0) || (tileX >= TileManager.TILE_X) || (tileY >= TileManager.TILE_Y))
+            // like a solid tile.
+            if (((tileX < 0) || (tileY < 0) || (tileX >= map.MapArea.Width) || (tileY >= map.MapArea.Height)) ||
+                map.TileMap[tileX, tileY] == null)
             {
                 return false;
             }
 
             // Using tileX and tileY checks if the tile stored in the 2D tile array at that location is collidable
             // If point is collidable it cannot be accessible
-            return tiles[tileX, tileY].Property != Tile.SOLID;
+            return map.TileMap[tileX, tileY].Property != Tile.SOLID;
 
         }
         
-
         /// <summary>
         /// Gets all of the points in the ray and stores it in a Vector2 array. Using Bersenhams Line Algorithm
         /// </summary>
@@ -212,16 +214,13 @@ namespace CStrike2D
             // True if the angle of the line is more than 45 degrees
             bool isLineSteep = (Math.Abs(point2.Y - point1.Y) >= Math.Abs(point2.X - point1.X));
 
-            // If the bool is true it swaps the x and y of the vectors in order to compensate 
-            // for Bersanhams line algorithm since it doesnt function if the angle of the line is more than 45 degrees
+            // If the bool is true it swaps the x and y of the 
             if (isLineSteep)
             {
                 point1 = SwapVectorCoordinates(point1);
                 point2 = SwapVectorCoordinates(point2);
             }
 
-            // If the line goes right to left it flips the line so that it travels from left to right
-            // This is also done to compensate for the algorithm since the algorithm doesnt work with lines from right to left
             if (point1.X > point2.X)
             {
                 Vector2 temp = point1;
@@ -229,17 +228,11 @@ namespace CStrike2D
                 point2 = temp;
             }
 
-            // Gets the difference vecotr between the destination and emit vector
             Vector2 differenceVect = new Vector2(point2.X - point1.X, Math.Abs(point2.Y - point1.Y));
-
-            // Error is used to find out how off the algorithms estimate is
             int error = 0;
-
-            // Used to incriment the y value in order to find the next point on the line
             float yChange;
             float currentY = point1.Y;
 
-            // depending on the end behaviors off the line it will find the yChange
             if (point1.Y > point2.Y)
             {
                 yChange = -1;
@@ -249,11 +242,8 @@ namespace CStrike2D
                 yChange = 1;
             }
 
-            // Calculates how many points will be on the line and makes the length of the array equal to that value
             Vector2[] pointsOnRay = new Vector2[((int)Math.Ceiling(Math.Abs(point2.X - point1.X))) + 1];
 
-
-            // For every x value on the line it calculates the next point on the ray and stores the vector in the pointsOnRay array 
             for (int currentX = 0; currentX <= (Math.Abs(point2.X - point1.X)); currentX++)
             {
                 if (isLineSteep == true)
@@ -265,13 +255,8 @@ namespace CStrike2D
                     pointsOnRay[currentX] = new Vector2(currentX + point1.X, currentY);
                 }
 
-
-                // Adds the difference of the y value between the actual line and the one that was calculated in
-                //  
                 error += (int)differenceVect.Y;
 
-                // Bersenhams line algorithm uses the error calculation below in order to check if based on the last point
-                // should it skip the next point or not in order to make the line more accurate
                 if ((error * 2) >= differenceVect.X)
                 {
                     currentY += yChange;
@@ -279,12 +264,11 @@ namespace CStrike2D
                 }
             }
 
-            // Returns the pointsOnRay array
             return pointsOnRay;
         }
 
         /// <summary>
-        /// Used to return the Ray Length
+        /// 
         /// </summary>
         /// <returns></returns>
         public float GetRayLength()
@@ -295,8 +279,9 @@ namespace CStrike2D
         /// <summary>
         /// Draws RayCast line
         /// </summary>
-        /// <param name="sb"> Passes through the SpriteBatch instance in order to use the Draw methods </param>
-        /// <param name="pixelTexture"> Passes through pixel texture in order to draw the line </param>
+        /// <param name="sb"></param>
+        /// <param name="pixelTexture"></param>
+        /// <param name="circleTexture"></param>
         public void Draw(SpriteBatch sb, Texture2D pixelTexture)
         {
             // Draws the ray with a 1x1 texture with the given angle as the rotation

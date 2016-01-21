@@ -89,6 +89,8 @@ namespace CStrike2DServer
 
         public const byte DAMAGE = 47;
 
+        public const byte REQUEST_RESPAWN = 48;
+
         public enum Team
         {
             CounterTerrorist,

@@ -35,6 +35,7 @@ namespace CStrike2D
 
         public void Cast(Vector2 emitPos, Tile[,] tiles, Tile[] solidTiles)
         {
+            /*
             // Rip code
             for (int i = 0; i < solidTiles.Length; i++)
             {
@@ -60,6 +61,7 @@ namespace CStrike2D
                 rays[i + 10 + (i * 12)].Update(emitPos, GetDirectionVect(angle + ADJACENT_ANGLE), 1700f, tiles, angle + ADJACENT_ANGLE);
                 rays[i + 11 + (i * 12)].Update(emitPos, GetDirectionVect(angle - ADJACENT_ANGLE), 1700f, tiles, angle - ADJACENT_ANGLE);
             }
+            */
 
         }
 

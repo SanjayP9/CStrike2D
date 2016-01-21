@@ -257,6 +257,16 @@ namespace CStrike2D
             client.SendMessage(outMsg, NetDeliveryMethod.ReliableSequenced);
         }
 
+        /// <summary>
+        /// Asks the server if the player can respawn
+        /// </summary>
+        public void RequestRespawn()
+        {
+            outMsg = client.CreateMessage();
+            outMsg.Write(ServerClientInterface.REQUEST_RESPAWN);
+            client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
+        }
+
         public void SyncWorld()
         {
             // TODO: Sends a snapshot of the world to all players to ensure

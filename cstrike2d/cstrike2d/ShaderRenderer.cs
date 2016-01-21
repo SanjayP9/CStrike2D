@@ -110,7 +110,7 @@ namespace CStrike2D
         /// Computes sample weightings and texture coordinate offsets
         /// for one pass of a separable gaussian blur filter.
         /// </summary>
-        void SetBlurEffectParameters(float dx, float dy)
+        private void SetBlurEffectParameters(float dx, float dy)
         {
             // Look up the sample weight and offset effect parameters.
             EffectParameter weightsParameter, offsetsParameter;
