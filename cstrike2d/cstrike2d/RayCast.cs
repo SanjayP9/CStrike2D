@@ -145,12 +145,11 @@ namespace CStrike2D
                             break;
                         }
                     }
-                    else // If the firtindex is at the emitter position incriment the index
+                    else // If the first index is at the emitter position incriment the index
                     {
-                        // 
                         index++;
 
-
+                        // Prevents the index from going out of bounds
                         if (index >= pointsOnRay.Length)
                         {
                             break;
