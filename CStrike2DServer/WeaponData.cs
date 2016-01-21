@@ -23,7 +23,6 @@ namespace CStrike2DServer
 
         public static readonly string[] WeaponStrings = Enum.GetNames(typeof(Weapon));
         public static readonly Weapon[] WeaponEnums = (Weapon[])Enum.GetValues(typeof(Weapon));
-        
 
         /// <summary>
         /// Different types of weapons
@@ -39,6 +38,11 @@ namespace CStrike2DServer
             None
         }
 
+        /// <summary>
+        /// Returns the fire rate of a weapon
+        /// </summary>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
         public static float FireRate(Weapon weapon)
         {
             switch (weapon)

@@ -1,8 +1,9 @@
 ﻿// Author: Mark Voong
 // Class Name: NetworkManager.cs
-// Project Name: CStrike2D
+// Project Name: Global Offensive
 // Creation Date: Dec 31st, 2015
 // Modified Date: Jan 21st, 2016
+// Description: Handles all network logic with the servers
 using CStrike2DServer;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
@@ -86,8 +87,13 @@ namespace CStrike2D
             }
         }
 
+        /// <summary>
+        /// Update loop for network logic
+        /// </summary>
+        /// <param name="gameTime"></param>
         public void Update(float gameTime)
         {
+            // If there is a message to be processed
             while ((msg = client.ReadMessage()) != null)
             {
                 byte code;
@@ -99,6 +105,7 @@ namespace CStrike2D
                         switch (CurState)
                         {
                             case NetState.Handshake:
+                                // If the client was able to connect successfully
                                 if (client.ConnectionStatus == NetConnectionStatus.Connected)
                                 {
                                     code = msg.ReadByte();
@@ -148,11 +155,13 @@ namespace CStrike2D
                                     short id;
                                     switch (code)
                                     {
+                                            // Synchronizing players given from the server
                                         case ServerClientInterface.SYNC_CHUNK:
                                             engine.SyncPlayer(msg.ReadInt16(), msg.ReadString(),
                                              msg.ReadByte(), msg.ReadFloat(), msg.ReadFloat(),
                                              msg.ReadFloat(), msg.ReadByte(), msg.ReadByte());
                                             break;
+                                            // Movement
                                         case ServerClientInterface.MOVE_UP:
                                         case ServerClientInterface.MOVE_DOWN:
                                         case ServerClientInterface.MOVE_LEFT:
@@ -163,42 +172,52 @@ namespace CStrike2D
                                         case ServerClientInterface.MOVE_DOWNLEFT:
                                             engine.MovePlayer(msg.ReadInt16(), code);
                                             break;
+                                            // Change teams
                                         case ServerClientInterface.CHANGE_TEAM:
                                             engine.ChangeTeam(msg.ReadInt16(), msg.ReadByte());
                                             break;
+                                            // Synchronize movement
                                         case ServerClientInterface.SYNC_MOVEMENT:
                                             id = msg.ReadInt16();
                                             player = engine.Players.Find(ply => ply.Identifier == id);
                                             player.SetPosition(new Vector2(msg.ReadFloat(), msg.ReadFloat()));
                                             player.SetRotation(msg.ReadFloat());
                                             break;
+                                            // Respawns a player
                                         case ServerClientInterface.RESPAWN_PLAYER:
                                             id = msg.ReadInt16();
                                             player = engine.Players.Find(ply => ply.Identifier == id);
                                             player.Respawn(new Vector2(msg.ReadFloat(), msg.ReadFloat()));
                                             engine.PlaySound(player, "pickup");
                                             break;
+                                            // Removes a player that disconnected
                                         case ServerClientInterface.PLAYER_DISCONNECTED:
                                             id = msg.ReadInt16();
                                             engine.Players.Remove(engine.Players.Find(ply => ply.Identifier == id));
                                             break;
+                                            // Rotates a player
                                         case ServerClientInterface.ROTATE_PLAYER:
                                             id = msg.ReadInt16();
                                             engine.Players.Find(ply => ply.Identifier == id)
                                                 .SetRotation(msg.ReadFloat());
                                             break;
+                                            // Buys a weapon
                                         case ServerClientInterface.BUY_WEAPON:
                                             engine.SetWeapon(msg.ReadInt16(), msg.ReadByte());
                                             break;
+                                            // Fires a weapon
                                         case ServerClientInterface.FIRE_WEAPON:
                                             engine.FireWeapon(msg.ReadInt16());
                                             break;
+                                            // Explodes a flashbang
                                         case ServerClientInterface.EXPLODE_FLASHBANG:
                                             engine.FlashPlayer();
                                             break;
+                                            // Damages a player
                                         case ServerClientInterface.DAMAGE:
                                             engine.Damage(msg.ReadInt16(), msg.ReadInt32(), msg.ReadInt32());
                                             break;
+                                            // Spawns a player
                                         case ServerClientInterface.SPAWN_PLAYER:
                                             engine.SpawnPlayer(msg.ReadInt16());
                                             break;
@@ -246,6 +265,9 @@ namespace CStrike2D
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
+        /// <summary>
+        /// Tells the server that the client wishes to fire their weapon
+        /// </summary>
         public void FireWeapon()
         {
             outMsg = client.CreateMessage();
@@ -253,6 +275,10 @@ namespace CStrike2D
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
+        /// <summary>
+        /// Tells the server that the client wishes to buy a weapon
+        /// </summary>
+        /// <param name="weapon"></param>
         public void BuyWeapon(WeaponData.Weapon weapon)
         {
             outMsg = client.CreateMessage();
@@ -270,6 +296,8 @@ namespace CStrike2D
             outMsg.Write(ServerClientInterface.REQUEST_RESPAWN);
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
+
+        /* UNFINISHED
 
         public void SyncWorld()
         {
@@ -303,191 +331,21 @@ namespace CStrike2D
 
         }
 
+        */
+
+        /// <summary>
+        /// Flashes the player
+        /// </summary>
         public void Flash()
         {
             outMsg = client.CreateMessage();
             outMsg.Write(ServerClientInterface.EXPLODE_FLASHBANG);
             client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
-        /*
-        public void Update()
-        {
-            counter++;
 
-            if (counter == 60)
-            {
-                counter = 0;
-                Debug.WriteLine("Kb/s: " + ((double)byteCount / 1024d));
-                byteCount = 0;
-            }
-            while ((msg = client.ReadMessage()) != null)
-            {
-                switch (msg.MessageType)
-                {
-                    case NetIncomingMessageType.Data:
-                        
-                        switch (CurState)
-                        {
-                            case NetState.Disconnected:
-                                break;
-                            case NetState.Handshake:
-                                Thread.Sleep(250);
-                                byte acknowledge = msg.ReadByte();
-                                if (acknowledge == NetInterface.HANDSHAKE)
-                                {
-                                    PlayerID = msg.ReadInt16();
-                                    NetOutgoingMessage outgoing = client.CreateMessage();
-                                    outgoing.Write(NetInterface.HANDSHAKE);
-                                    outgoing.Write(ClientName);
-                                    client.SendMessage(outgoing, NetDeliveryMethod.ReliableOrdered);
-                                    CurState = NetState.Connected;
-                                }
-                                break;
-                            case NetState.Connected:
-                                if (engine.CurState == GameEngine.GameEngineState.Active)
-                                {
-                                    byte message = msg.ReadByte();
-                                    byte playerNum;
-                                    short playerID;
-                                    float playerX;
-                                    float playerY;
-                                    switch (message)
-                                    {
-                                        case NetInterface.SYNC_NEW_PLAYER:
-                                            string name = msg.ReadString();
-                                            playerID = msg.ReadInt16();
-                                            playerX = msg.ReadFloat();
-                                            playerY = msg.ReadFloat();
-                                            float rotation = msg.ReadFloat();
-                                            byte team = msg.ReadByte();
-                                            short entID = msg.ReadInt16();
-                                            short wepID = msg.ReadInt16();
-                                            if (!engine.Exists(playerID))
-                                            {
-                                                engine.AddPlayer(name, new Vector2(playerX, playerY), playerID, rotation, team, entID, wepID);
-                                            }
-                                            if (PlayerID == playerID)
-                                            {
-                                                engine.SetClientPlayer(
-                                                    engine.Players.Find(ply => ply.PlayerID == PlayerID));
-                                            }
-                                            break;
-                                        case NetInterface.MOVE_UP:
-                                        case NetInterface.MOVE_DOWN:
-                                        case NetInterface.MOVE_LEFT:
-                                        case NetInterface.MOVE_RIGHT:
-                                        case NetInterface.MOVE_UPRIGHT:
-                                        case NetInterface.MOVE_DOWNRIGHT:
-                                        case NetInterface.MOVE_DOWNLEFT:
-                                        case NetInterface.MOVE_UPLEFT:
-                                            engine.MovePlayer(msg.ReadInt16(), message);
-                                            break;
-                                        case NetInterface.PLAY_SOUND:
-                                            playerNum = msg.ReadByte();
-                                            engine.PlaySound(playerNum, msg.ReadInt16());
-                                            break;
-                                        case NetInterface.SYNC_MOVEMENT:
-
-                                            playerID = msg.ReadInt16();
-                                            playerX = msg.ReadFloat();
-                                            playerY = msg.ReadFloat();
-
-                                            if (engine.Players.Count > 0)
-                                            {
-                                                engine.Players.Find(ply => ply.PlayerID == playerID)
-                                                    .SetPosition(new Vector2(playerX, playerY));
-                                            }
-                                            break;
-                                        case NetInterface.ROTATE:
-                                            playerID = msg.ReadInt16();
-
-                                            if (engine.Players.Count > 0)
-                                            {
-                                                engine.Players.Find(ply => ply.PlayerID == playerID)
-                                                    .SetRot(msg.ReadFloat());
-                                            }
-                                            break;
-                                        case NetInterface.PLAYER_DC:
-                                            playerID = msg.ReadInt16();
-                                            if (engine.Players.Count > 0)
-                                            {
-                                                engine.Players.Remove(
-                                                    engine.Players.Find(ply => ply.PlayerID == playerID));
-                                            }
-                                            break;
-                                        case NetInterface.PLY_CHANGE_TEAM:
-                                            playerID = msg.ReadInt16();
-
-                                            if (engine.Players.Count > 0)
-                                            {
-                                                engine.Players.Find(ply => ply.PlayerID == playerID)
-                                                    .SetTeam(NetInterface.GetTeam(msg.ReadByte()));
-                                            }
-                                            break;
-                                        case NetInterface.SPAWN_WEAPON:
-                                            playerID = msg.ReadInt16();
-                                            short entityID = msg.ReadInt16();
-                                            short weaponID = msg.ReadInt16();
-                                            if (engine.Players.Count > 0)
-                                            {
-                                                Player player = engine.Players.Find(ply => ply.PlayerID == playerID);
-
-                                                if (player.PlayerID == PlayerID)
-                                                {
-                                                    switch (WeaponInfo.GetWeaponType(WeaponInfo.GetWeapon(weaponID)))
-                                                    {
-                                                        case WeaponInfo.WeaponType.Primary:
-                                                            player.SetPrimaryWeapon(entityID, weaponID);
-                                                            break;
-                                                        case WeaponInfo.WeaponType.Secondary:
-                                                            player.SetSecondaryWeapon(entityID, weaponID);
-                                                            break;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    player.SetWeapon(entityID, weaponID);
-                                                }
-                                            }
-                                            break;
-                                        case NetInterface.SWITCH_WEAPON:
-                                            playerID = msg.ReadInt16();
-                                            weaponID = msg.ReadInt16();
-                                            entityID = msg.ReadInt16();
-                                            if (engine.Players.Count > 0)
-                                            {
-                                                Player player = engine.Players.Find(ply => ply.PlayerID == playerID);
-
-                                                if (player.PlayerID == PlayerID)
-                                                {
-                                                    switch (WeaponInfo.GetWeaponType(WeaponInfo.GetWeapon(weaponID)))
-                                                    {
-                                                        case WeaponInfo.WeaponType.Primary:
-                                                            player.SetPrimaryWeapon(entityID, weaponID);
-                                                            break;
-                                                        case WeaponInfo.WeaponType.Secondary:
-                                                            player.SetSecondaryWeapon(entityID, weaponID);
-                                                            break;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    player.SetWeapon(entityID, weaponID);
-                                                }
-                                            }
-                                            break;
-                                    }
-                                }
-                                break;
-                        }
-                        break;
-                }
-            }
-            
-            client.Recycle(msg);
-        }
-        */
-
+        /// <summary>
+        /// Shuts down the client
+        /// </summary>
         public void ShutDown()
         {
             client.Shutdown("bye");

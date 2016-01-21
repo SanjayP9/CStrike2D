@@ -31,7 +31,7 @@ namespace CStrike2D
         private float animTime;                         // Time the button takes to move from one point to another
         private EasingFunctions.AnimationType animType; // Type of animation the button should use
 
-        private bool debug = true;
+        private bool debug = false;                     // Shows borders of buttons if true
 
         /// <summary>
         /// Creates a button

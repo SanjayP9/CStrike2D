@@ -551,6 +551,10 @@ namespace CStrike2DServer
                 }
             }
 
+            // Let everyone know the round started
+            outMsg = server.CreateMessage();
+            outMsg.Write(ServerClientInterface.BEGIN_ROUND);
+            server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
             state = RoundState.Buytime;
         }
 

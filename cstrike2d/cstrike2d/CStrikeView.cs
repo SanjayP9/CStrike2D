@@ -78,23 +78,24 @@ namespace CStrike2D
             switch (model.CurState)
             {
                 case CStrikeModel.State.Menu:
+                    // Begin shader render
                     model.Shader.BeginRender();
                     sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null,
                         null);
+                    
                     // Show counter-terrorist background if true, terrorist background if false
                     sb.Draw(model.MenuBackgroundType ? assets.CTMenuBackground : assets.TMenuBackground, Vector2.Zero,
                         Color.White);
 
                     // Draw Background UI elements
-
-                    //sb.Draw(assets.PixelTexture, new Rectangle(0, 20, (int)model.Dimensions.X, 80), Color.Black * 0.8f);
-
                     foreach (GUIPage page in model.InterfaceManager.GUIPages)
                     {
                         switch (page.Identifier)
                         {
                             case "optionsMenu":
                                 sb.End();
+
+                                // Draw gui components which are clipped at the edges
                                 sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp,
                                     null,
                                     cullableRasterizer, null);
@@ -150,6 +151,7 @@ namespace CStrike2D
                     }
 
                     sb.End();
+                    // Draws the shader
                     model.Shader.Draw(sb);
                     sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
 
@@ -157,11 +159,13 @@ namespace CStrike2D
                 case CStrikeModel.State.Options:
                     break;
                 case CStrikeModel.State.Lobby:
+                    // Draws the lobby connection
                     sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
 
 
                     sb.DrawString(assets.DefaultFont, "Connect to Server: " + model.Address, Vector2.Zero, Color.White);
 
+                    sb.DrawString(assets.DefaultFont, "Username: " + model.Username, new Vector2(0, 40), Color.White );
                     break;
                 case CStrikeModel.State.LevelEditor:
                     sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, cullableRasterizer, null,
@@ -209,7 +213,6 @@ namespace CStrike2D
 
             // FPS
             sb.DrawString(assets.DefaultFont, "FPS: " + model.DriverInstance.FPS, new Vector2(model.Dimensions.X - (assets.DefaultFont.MeasureString("FPS: " + model.DriverInstance.FPS).X), 0), Color.White);
-            sb.DrawString(assets.DefaultFont, model.Input.ScreenToWorld(model.Input.MousePosition, model.Camera, model.Center).ToString(), new Vector2(1150, 40), Color.White);
             sb.End();
         }
     }

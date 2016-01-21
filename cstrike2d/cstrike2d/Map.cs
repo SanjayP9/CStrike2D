@@ -14,30 +14,56 @@ namespace CStrike2D
 {
     public class Map
     {
-        
+        /// <summary>
+        /// Stores the tile data
+        /// </summary>
         public Tile[,] TileMap { get; private set; }
-        public int MaxTiles { get; private set; }
+
+        /// <summary>
+        /// The maximum row
+        /// </summary>
         public int MaxRow { get; private set; }
+
+        /// <summary>
+        /// The maximum column
+        /// </summary>
         public int MaxCol { get; private set; }
 
+        /// <summary>
+        /// The rectangle dimensions of the map
+        /// </summary>
         public Rectangle MapArea { get; private set; }
 
-        public const int TILE_SIZE = 32;
+        /// <summary>
+        /// Width/Height of one tile
+        /// </summary>
+        public const int TILE_SIZE = 32;       
 
+        // Assets
         private Assets assets;
 
+        /// <summary>
+        /// Has the map been loaded
+        /// </summary>
         public bool Loaded { get; private set; }
 
+        /// <summary>
+        /// Loads the map
+        /// </summary>
+        /// <param name="mapName"></param>
+        /// <param name="assets"></param>
         public void Load(string mapName, Assets assets)
         {
             this.assets = assets;
 
+            // Check if the map exists before trying to load it
             if (!File.Exists(mapName))
             {
                 Loaded = false;
                 return;
             }
 
+            // File compression
             FileStream decompressedFile = new FileStream(mapName, FileMode.Open, FileAccess.Read);
             GZipStream gZip = new GZipStream(decompressedFile, CompressionMode.Decompress);
             StreamReader inFile = new StreamReader(gZip);
@@ -87,6 +113,10 @@ namespace CStrike2D
             Loaded = true;
         }
 
+        /// <summary>
+        /// Draws the tiles
+        /// </summary>
+        /// <param name="sb"></param>
         public void Draw(SpriteBatch sb)
         {
 
@@ -97,46 +127,6 @@ namespace CStrike2D
                     tile.Draw(sb, assets.TileSet);
                 }
             }
-
-            /*
-            Rectangle destRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
-            Rectangle srcRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
-
-            // Draws all tiles placed and the properties highlighted overthem
-            for (int col = 0; col < MaxCol; col++)
-            {
-                for (int row = 0; row < MaxRow; row++)
-                {
-                    if (TileMap[col, row] != null)
-                    {
-                        srcRect.X = (TileMap[col, row].TileType % 8 * TILE_SIZE);
-                        srcRect.Y = (TileMap[col, row].TileType / 8 * TILE_SIZE);
-                        destRect.X = col * TILE_SIZE + MapArea.X;
-                        destRect.Y = row * TILE_SIZE + MapArea.Y;
-
-                        sb.Draw(assets.TileSet, destRect, srcRect, Color.White);
-                    }
-                }
-            }
-            */
-        }
-    }
-
-    static class TileFunctions
-    {
-        public static int ToTile(int col, int row, int maxCol)
-        {
-            return (row * maxCol) + col;
-        }
-
-        public static int ToTile(float col, float row, int maxCol)
-        {
-            return (int)((row * maxCol) + col);
-        }
-
-        public static int[] FromTile(int tileNumber, int maxCol)
-        {
-            return new[] { tileNumber % maxCol, tileNumber / maxCol };
         }
     }
 }

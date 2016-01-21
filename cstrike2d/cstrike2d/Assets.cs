@@ -2,7 +2,7 @@
 // File Name: Assets.cs
 // Project Name: Global Offensive
 // Creation Date: Dec 23rd, 2015
-// Modified Date: Jan 20th, 2016
+// Modified Date: Jan 21st, 2016
 // Description: Stores all assets required in the game and is globally accessible
 using System;
 using CStrike2DServer;
@@ -25,20 +25,22 @@ namespace CStrike2D
         public Texture2D CTMenuBackground { get; private set; } // Counter-Terrorist Menu Background
         public Texture2D TMenuBackground { get; private set; }  // Terrorist Menu Background
 
-        public Texture2D CTTexture { get; private set; }
+        public Texture2D CTTexture { get; private set; }        // Counter-Terrorist player model
+        public Texture2D TTexture { get; private set; }         // Terrorist player model
 
-        public Texture2D TileSet { get; private set; }
+        public Texture2D TileSet { get; private set; }          // Tileset texture
 
-        // Textures
+        // Particles
         public Texture2D ParticleTexture { get; private set; }
         public Texture2D SmokeParticle { get; private set; }
         public Texture2D DebrisParticle { get; private set; }
         public Texture2D ShellTexture { get; private set; }
 
+        // Blur shader
         public Effect BlurEffect { get; private set; }
 
+        // Map data
         public Map MapData { get; private set; }
-
 
         /// <summary>
         /// Loads assets that are required at the start of the application (fonts, UI)
@@ -55,6 +57,9 @@ namespace CStrike2D
         /// </summary>
         private ContentManager gameContentLoader;
 
+        /// <summary>
+        /// Is the main game content loaded
+        /// </summary>
         public bool GameContentLoaded { get; private set; }
 
         private Texture2D[,] weaponTextures;
@@ -82,25 +87,29 @@ namespace CStrike2D
             PixelTexture = new Texture2D(instance.GraphicsDevice, 1, 1);
             PixelTexture.SetData(new [] {Color.White});
 
+            // Load font
             DefaultFont = coreContentLoader.Load<SpriteFont>("font/defFont");
+            
+            // Load textures
             CTMenuBackground = coreContentLoader.Load<Texture2D>("texture/bg/ctmenu");
             TMenuBackground = coreContentLoader.Load<Texture2D>("texture/bg/tmenu");
+
             CTTexture = coreContentLoader.Load<Texture2D>("texture/player/ct1");
+            TTexture = coreContentLoader.Load<Texture2D>("texture/player/t1");
             TileSet = coreContentLoader.Load<Texture2D>("texture/map/dustTileSet");
 
+            // Loads all sounds
             instance.Model.AudioManager.AddSound(new SoundContainer("menuMusic", coreContentLoader.Load<SoundEffect>("sound/music/mainmenu")));
+
             instance.Model.AudioManager.AddSound(new SoundContainer("ak47shot", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/ak47")));
             instance.Model.AudioManager.AddSound(new SoundContainer("ak47shotdistant", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/ak47d")));
-
-
             instance.Model.AudioManager.AddSound(new SoundContainer("m4a1shot", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/m4a1")));
 
-            
             instance.Model.AudioManager.AddSound(new SoundContainer("buttonclick", coreContentLoader.Load<SoundEffect>("sound/sfx/ui/buttonclick")));
             instance.Model.AudioManager.AddSound(new SoundContainer("awpshot", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/awp")));
             instance.Model.AudioManager.AddSound(new SoundContainer("flashbang1", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/flashbang_explode1")));
             instance.Model.AudioManager.AddSound(new SoundContainer("flashbang2", coreContentLoader.Load<SoundEffect>("sound/sfx/weapon/flashbang_explode2")));
-            
+
             instance.Model.AudioManager.AddSound(new SoundContainer("bombdef", coreContentLoader.Load<SoundEffect>("sound/sfx/radio/bombdef")));
             instance.Model.AudioManager.AddSound(new SoundContainer("bombpl", coreContentLoader.Load<SoundEffect>("sound/sfx/radio/bombpl")));
             instance.Model.AudioManager.AddSound(new SoundContainer("ctwin", coreContentLoader.Load<SoundEffect>("sound/sfx/radio/ctwin")));
@@ -112,6 +121,8 @@ namespace CStrike2D
 
             instance.Model.AudioManager.AddSound(new SoundContainer("footstep1", coreContentLoader.Load<SoundEffect>("sound/sfx/player/dirt1")));
             instance.Model.AudioManager.AddSound(new SoundContainer("footstep2", coreContentLoader.Load<SoundEffect>("sound/sfx/player/dirt2")));
+
+            instance.Model.AudioManager.AddSound(new SoundContainer("hit2", coreContentLoader.Load<SoundEffect>("sound/sfx/player/kevlar2")));
 
             BlurEffect = coreContentLoader.Load<Effect>("fx/blur");
         }
@@ -130,6 +141,7 @@ namespace CStrike2D
         /// </summary>
         public void LoadGameContent()
         {
+            // Load weapon textures
             string[] weaponNames = Enum.GetNames(typeof (WeaponData.Weapon));
             weaponTextures = new Texture2D[weaponNames.Length, 3];
 
@@ -151,6 +163,7 @@ namespace CStrike2D
                 }
             }
 
+            // Load particles
             ParticleTexture = gameContentLoader.Load<Texture2D>("texture/Textures/particle");
             SmokeParticle = gameContentLoader.Load<Texture2D>("texture/Textures/newparticle");
             DebrisParticle = gameContentLoader.Load<Texture2D>("texture/Textures/rocks");
@@ -186,6 +199,11 @@ namespace CStrike2D
             gameContentLoader.Unload();
         }
 
+        /// <summary>
+        /// Returns the correct weapon texture based on the weapon
+        /// </summary>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
         public Texture2D GetWeaponTexture(WeaponData.Weapon weapon)
         {
             int index = Array.FindIndex((WeaponData.WeaponEnums), wepEnum => wepEnum == weapon);

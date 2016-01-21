@@ -2,7 +2,7 @@
 // File Name: ServerClientInterface.cs
 // Project Name: Global Offensive
 // Creation Date: Jan 15th, 2016
-// Modified Date: Jan 19th, 2016
+// Modified Date: Jan 21st, 2016
 // Description: Global reference of common data between the client and server.
 //              Sharing this class between both projects ensures both ends follow a
 //              common protocol
@@ -13,13 +13,14 @@ namespace CStrike2DServer
 {
     public static class ServerClientInterface
     {
+        // Colours of each team
+        public static readonly Color CT_Colour = new Color(0, 81, 200);
 
-        public static readonly Color CT_Color = new Color(0, 81, 200);
+        public static readonly Color T_Colour = new Color(255, 0, 25);
 
-        public static readonly Color T_Color = new Color(255, 0, 25);
+        public static readonly Color S_Colour = new Color(40, 40, 40);
 
-        public static readonly Color S_Color = new Color(40, 40, 40);
-
+        // Movement speed
         public static float MOVEMENT_SPEED = 2.5f;
 
         /// <summary>
@@ -37,19 +38,22 @@ namespace CStrike2DServer
 
         public const byte PLAYER_DISCONNECTED = 18;
 
-
+        // Teams
         public const byte CHANGE_TEAM = 2;
         public const byte TEAM_COUNTER_TERRORIST = 3;
         public const byte TEAM_TERRORIST = 4;
         public const byte TEAM_SPECTATOR = 5;
 
+        // Start/End round
         public const byte BEGIN_ROUND = 6;
         public const byte END_ROUND = 7;
                 
+        // Who won the round
         public const byte CT_WIN = 26;
         public const byte T_WIN = 27;
         public const byte DRAW = 28;
 
+        // Movement
         public const byte MOVE_UP = 10;
         public const byte MOVE_DOWN = 11;
         public const byte MOVE_LEFT = 12;
@@ -61,22 +65,28 @@ namespace CStrike2DServer
         public const byte ROTATE_PLAYER = 25;
         public const byte SYNC_MOVEMENT = 29;
 
+        // Sync 
         public const byte REQUEST_SYNC = 19;
         public const byte SYNC_BEGIN = 20;
         public const byte SYNC_CHUNK = 21;
         public const byte SYNC_COMPLETE = 22;
         public const byte SYNC_NEW_PLAYER = 23;
 
+        // Denied team change
         public const byte CHANGE_TEAM_DENIED = 24;
 
+        // Player spawning
         public const byte SPAWN_PLAYER = 30;
         public const byte RESPAWN_PLAYER = 31;
 
+        // Player buying
         public const byte BUY_WEAPON = 32;
 
+        // Player state
         public const byte ALIVE = 33;
         public const byte DEAD = 34;
 
+        // In-Gmae logic
         public const byte FIRE_WEAPON = 35;
         public const byte EXPLODE_FLASHBANG = 36;
         public const byte DAMAGE = 37;
@@ -84,6 +94,9 @@ namespace CStrike2DServer
         public const byte EXPLODE_GRENADE = 39;
         public const byte PLANT_BOMB = 40;
 
+        /// <summary>
+        /// Possible teams a player could be on
+        /// </summary>
         public enum Team
         {
             CounterTerrorist,
@@ -91,6 +104,9 @@ namespace CStrike2DServer
             Spectator
         }
 
+        /// <summary>
+        /// Possible states a player could be in
+        /// </summary>
         public enum PlayerState
         {
             Alive,
@@ -139,6 +155,11 @@ namespace CStrike2DServer
             }
         }
 
+        /// <summary>
+        /// Returns the state of a player in the form of a byte
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
         public static byte StateToByte(PlayerState state)
         {
             switch (state)
@@ -152,6 +173,11 @@ namespace CStrike2DServer
             }
         }
 
+        /// <summary>
+        /// Returns the state of a player in the form of an enum
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
         public static PlayerState ByteToState(byte state)
         {
             switch (state)

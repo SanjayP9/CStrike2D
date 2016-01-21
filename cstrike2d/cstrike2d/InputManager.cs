@@ -18,7 +18,6 @@ namespace CStrike2D
         private KeyboardState prevKeyboardState;
         private KeyboardState keyboardState;
         private float prevMouseScroll;
-        private bool textInput;
         private bool capslock;
 
         /// <summary>
@@ -153,19 +152,32 @@ namespace CStrike2D
                    mouseState.RightButton == ButtonState.Pressed;
         }
 
-
+        /// <summary>
+        /// Checks if the user pressed the middle mouse button
+        /// </summary>
+        /// <returns></returns>
         public bool MiddleClick()
         {
             return prevMouseState.MiddleButton == ButtonState.Pressed &&
                    mouseState.MiddleButton == ButtonState.Released;
         }
 
+        /// <summary>
+        /// Checks if the user pressed the middle mouse button. Returns true
+        /// the moment the user presses the button
+        /// </summary>
+        /// <returns></returns>
         public bool MiddleClickImmediate()
         {
             return prevMouseState.MiddleButton == ButtonState.Released &&
                    mouseState.MiddleButton == ButtonState.Pressed;
         }
 
+        /// <summary>
+        /// Gets the mouse rotation relative to the world
+        /// </summary>
+        /// <param name="origin"></param>
+        /// <returns></returns>
         public float MouseRotation(Camera2D origin)
         {
             Vector2 delta = MousePosition - Vector2.Transform(origin.Position, origin.Transform);
@@ -173,39 +185,43 @@ namespace CStrike2D
             return (float)Math.Round(Math.Atan2(delta.Y, delta.X), 2);
         }
 
+        /// <summary>
+        /// Gets the delta between the camera and the mouse
+        /// </summary>
+        /// <param name="origin"></param>
+        /// <returns></returns>
         public Vector2 Delta(Camera2D origin)
         {
             Vector2 delta = Vector2.Transform(MousePosition, origin.Transform) - origin.Position;
             return delta;
         }
 
-        public Vector2 MouseLocal(Matrix transform)
-        {
-            return new Vector2(Vector2.Transform(MousePosition, transform).X, Vector2.Transform(MousePosition, transform).Y);
-        }
-
+        /// <summary>
+        /// Converts the mouse coordinates from screen to world coordinates
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="origin"></param>
+        /// <param name="center"></param>
+        /// <returns></returns>
         public Vector2 ScreenToWorld(Vector2 vector, Camera2D origin, Vector2 center)
         {
             return (((vector - center) / origin.ZoomFactor) + origin.Position);
         }
 
-        public int GetRow(Camera2D origin, Vector2 center)
-        {
-            return (int)(ScreenToWorld(MousePosition, origin, center).Y/64f);
-        }
 
-        public int GetColumn(Camera2D origin, Vector2 center)
-        {
-            return (int)(ScreenToWorld(MousePosition, origin, center).X/64f);
-        }
-
+        /// <summary>
+        /// Converts the mouse coordinates from the world to the screen
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="origin"></param>
+        /// <returns></returns>
         public Vector2 WorldToScreen(Vector2 vector, Camera2D origin)
         {
             return (vector - origin.Position);
         }
 
         /// <summary>
-        /// 
+        /// Gets text input
         /// </summary>
         /// <returns></returns>
         public string GetText(string text)
@@ -439,22 +455,6 @@ namespace CStrike2D
                 }
             }
             return text;
-        }
-
-        /// <summary>
-        /// Enables text input
-        /// </summary>
-        public void EnableTextInput()
-        {
-            textInput = true;
-        }
-
-        /// <summary>
-        /// Disables text input 
-        /// </summary>
-        public void DisableTextInput()
-        {
-            textInput = false;
         }
     }
 }

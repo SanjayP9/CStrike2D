@@ -2,7 +2,7 @@
 // File Name: Collision.cs
 // Project Name: Global Offensive
 // Creation Date: Dec 31st, 2015
-// Modified Date: Jan 20th, 2016
+// Modified Date: Jan 21st, 2016
 // Description: Handles all collision detections including: circle to circle, line to circle, circle to rectangle, 
 //              and line to non-aa rectangle.
 using Microsoft.Xna.Framework;

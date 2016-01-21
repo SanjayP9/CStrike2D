@@ -10,10 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CStrike2D;
 using Microsoft.Xna.Framework;
 
 namespace CStrike2DServer
@@ -32,24 +28,43 @@ namespace CStrike2DServer
         /// </summary>
         public List<CStrike2D.Tile> TTile { get; private set; }
 
-        public int MaxTiles { get; private set; }
+        /// <summary>
+        /// Maximum row
+        /// </summary>
         public int MaxRow { get; private set; }
+
+        /// <summary>
+        /// Maximum column
+        /// </summary>
         public int MaxCol { get; private set; }
 
+        /// <summary>
+        /// Area of the map
+        /// </summary>
         public Rectangle MapArea { get; private set; }
 
+        /// <summary>
+        /// Tile size
+        /// </summary>
         public const int TILE_SIZE = 32;
 
+        /// <summary>
+        /// Loads a map
+        /// </summary>
+        /// <param name="mapName"></param>
+        /// <returns></returns>
         public bool Load(string mapName)
         {
+            // Intialize lists for CT and T spawn points
             CTTile = new List<CStrike2D.Tile>();
             TTile = new List<CStrike2D.Tile>();
+
+            // Check if the map exists
             if (!File.Exists(mapName))
             {
                 Console.WriteLine("Missing map: " + mapName + ". Server cannot start.");
                 return false;
             }
-
 
             // Creates a instance of file stream, g zip stream and stream reader
             FileStream decompressedFile = new FileStream(mapName, FileMode.Open, FileAccess.Read);
@@ -88,10 +103,12 @@ namespace CStrike2DServer
                     // If the data in the column is not blank
                     if (rowData[cols] != "")
                     {
+                        // Initialize the tile
                         tile = new CStrike2D.Tile((byte)Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 1)),
                                 (byte)Convert.ToInt32(rowData[cols].Substring(rowData[cols].Length - 1, 1)),
                                 cols, rows, MapArea);
 
+                        // Add the tile to the spawn list if it is a spawn tile
                         if (tile.Property == CStrike2D.Tile.CT_SPAWN_POINT)
                         {
                             CTTile.Add(tile);
@@ -108,6 +125,7 @@ namespace CStrike2DServer
 
             // Close the file
             inFile.Close();
+
             Console.WriteLine("Map: " + mapName + " successfully loaded");
             return true;
         }
