@@ -101,6 +101,10 @@ namespace CStrike2D
             //{
             //    return false;
             //}
+            if (shotAngle == Math.PI * 0.5f || shotAngle == Math.PI * -0.5f)
+            {
+
+            }
             // Find the linear equation of the shot bullet
             float mPlayer = (float)Math.Tan(shotAngle);
             float bPlayer = shootingPlayer.Y - mPlayer * shootingPlayer.X;

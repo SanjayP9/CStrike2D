@@ -10,6 +10,7 @@ using System;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using System.Windows.Forms;
+using System.IO.Compression;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 
 namespace CStrike2D
@@ -534,7 +535,9 @@ namespace CStrike2D
         public void LoadFile(string filePath)
         {
             // Creates a stream reader instance of the text file
-            StreamReader inFile = File.OpenText(filePath);
+            FileStream decompressedFile = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            GZipStream gZip = new GZipStream(decompressedFile, CompressionMode.Decompress);
+            StreamReader inFile = new StreamReader(gZip);
 
             // Stores the data for a single line as a time
             string[] rowData;
@@ -581,7 +584,9 @@ namespace CStrike2D
         private void SaveFile(string fileName)
         {
             // Creates a stream writer instance of the text file
-            StreamWriter outFile = File.CreateText(fileName);
+            FileStream compressedFile = new FileStream(fileName, FileMode.Create, FileAccess.Write);
+            GZipStream gZip = new GZipStream(compressedFile, CompressionMode.Compress);
+            StreamWriter outFile = new StreamWriter(gZip);
 
             // Write the number of columns in a line
             outFile.WriteLine(numCols);
@@ -611,6 +616,7 @@ namespace CStrike2D
 
             // Close the file
             outFile.Close();
+
         }
         private void AddColumn()
         {
