@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,23 +50,32 @@ namespace CStrike2DServer
                 return false;
             }
 
-            // Creates a stream reader instance of the text file
-            StreamReader inFile = File.OpenText(mapName);
+
+            // Creates a instance of file stream, g zip stream and stream reader
+            FileStream decompressedFile = new FileStream(mapName, FileMode.Open, FileAccess.Read);
+            GZipStream gZip = new GZipStream(decompressedFile, CompressionMode.Decompress);
+            StreamReader inFile = new StreamReader(gZip);
 
             // Stores the data for a single line as a time
             string[] rowData;
 
-            // Checks the first and second line of the text to set the number of columns and the number of rows
+            // Reads the author name and description
+            inFile.ReadLine();
+            inFile.ReadLine();
+
+            // Reads the number of columns and the number of rows
             MaxCol = Convert.ToInt32(inFile.ReadLine());
             MaxRow = Convert.ToInt32(inFile.ReadLine());
 
             // Changes the map area according to the number of columns and rows
-            MapArea = new Rectangle(0, 0, TILE_SIZE*MaxCol, TILE_SIZE*MaxRow);
+            MapArea = new Rectangle(0, 0,
+                CStrike2D.Tile.TILE_SIZE * MaxCol,
+                CStrike2D.Tile.TILE_SIZE * MaxRow);
 
             // Initialize the number of tiles to be according the the number of columns and rows
             TileMap = new CStrike2D.Tile[MaxCol, MaxRow];
 
-            CStrike2D.Tile newTile;
+            CStrike2D.Tile tile;
             // Goes through every line in the text past the first two
             for (int rows = 0; rows < MaxRow; rows++)
             {
@@ -78,23 +88,20 @@ namespace CStrike2DServer
                     // If the data in the column is not blank
                     if (rowData[cols] != "")
                     {
-                        newTile = new CStrike2D.Tile((byte) Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 1)),
-                            (byte) Convert.ToInt32(rowData[cols].Substring(rowData[cols].Length - 1, 1)),
-                            cols, rows, MapArea);
+                        tile = new CStrike2D.Tile((byte)Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 1)),
+                                (byte)Convert.ToInt32(rowData[cols].Substring(rowData[cols].Length - 1, 1)),
+                                cols, rows, MapArea);
 
-                        switch (newTile.Property)
+                        if (tile.Property == CStrike2D.Tile.CT_SPAWN_POINT)
                         {
-                            case CStrike2D.Tile.CT_SPAWN_POINT:
-                                CTTile.Add(newTile);
-                                break;
-                            case CStrike2D.Tile.T_SPAWN_POINT:
-                                TTile.Add(newTile);
-                                break;
+                            CTTile.Add(tile);
+                        }
+                        else if (tile.Property == CStrike2D.Tile.T_SPAWN_POINT)
+                        {
+                            TTile.Add(tile);
                         }
 
-                        // Initialize each property of the tile
-                        TileMap[cols, rows] = newTile;
-
+                        TileMap[cols, rows] = tile;
                     }
                 }
             }

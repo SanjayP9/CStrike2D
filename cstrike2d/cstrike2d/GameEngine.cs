@@ -151,8 +151,6 @@ namespace CStrike2D
         {
             ClientPlayer player = Players.Find(ply => ply.Identifier == identifier);
             player.Move(direction);
-
-            PlaySound(player, CStrike2D.Rand.Next(0, 2) != 1 ? "footstep2" : "footstep1");
         }
 
         public void ChangeTeam(short identifier, byte team)
@@ -164,8 +162,12 @@ namespace CStrike2D
         public void FireWeapon(short identifier)
         {
             ClientPlayer shooter = Players.Find(ply => ply.Identifier == identifier);
-            PlaySound(shooter);
-            shooter.Fire();
+
+            if (!shooter.CurrentWeapon.Fired)
+            {
+                PlaySound(shooter);
+                shooter.Fire();
+            }
         }
 
         public void SpawnPlayer(short identifier)

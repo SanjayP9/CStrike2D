@@ -6,6 +6,7 @@
 // Description: Stores the map data including tile types and what texture to draw for the client
 using System;
 using System.IO;
+using System.IO.Compression;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -37,18 +38,25 @@ namespace CStrike2D
                 return;
             }
 
-            // Creates a stream reader instance of the text file
-            StreamReader inFile = File.OpenText(mapName);
+            FileStream decompressedFile = new FileStream(mapName, FileMode.Open, FileAccess.Read);
+            GZipStream gZip = new GZipStream(decompressedFile, CompressionMode.Decompress);
+            StreamReader inFile = new StreamReader(gZip);
 
             // Stores the data for a single line as a time
             string[] rowData;
 
-            // Checks the first and second line of the text to set the number of columns and the number of rows
+            // Reads the author name and description
+            inFile.ReadLine();
+            inFile.ReadLine();
+
+            // Reads the number of columns and the number of rows
             MaxCol = Convert.ToInt32(inFile.ReadLine());
             MaxRow = Convert.ToInt32(inFile.ReadLine());
 
             // Changes the map area according to the number of columns and rows
-            MapArea = new Rectangle(0, 0, TILE_SIZE*MaxCol, TILE_SIZE*MaxRow);
+            MapArea = new Rectangle(0, 0,
+                Tile.TILE_SIZE * MaxCol,
+                Tile.TILE_SIZE * MaxRow);
 
             // Initialize the number of tiles to be according the the number of columns and rows
             TileMap = new Tile[MaxCol, MaxRow];
@@ -67,8 +75,8 @@ namespace CStrike2D
                     {
                         // Initialize each property of the tile
                         TileMap[cols, rows] =
-                            new Tile((byte) Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 1)),
-                                (byte) Convert.ToInt32(rowData[cols].Substring(rowData[cols].Length - 1, 1)),
+                            new Tile((byte)Convert.ToInt32(rowData[cols].Substring(0, rowData[cols].Length - 1)),
+                                (byte)Convert.ToInt32(rowData[cols].Substring(rowData[cols].Length - 1, 1)),
                                 cols, rows, MapArea);
                     }
                 }

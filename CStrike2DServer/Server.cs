@@ -591,7 +591,6 @@ namespace CStrike2DServer
                 {
                     // Get distance between the player and the enemy
                     Vector2 delta = player.Position - shooter.Position;
-                    float distance = delta.Length();
 
                     float angle = shooter.Rotation < 0 ? (float) (shooter.Rotation + (2*Math.PI)) : shooter.Rotation;
                     Vector2 direction =  new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
@@ -599,55 +598,64 @@ namespace CStrike2DServer
 
                     // Get distance between the player and any possible obstacles in between the
                     // player and the enemy
-                    raycaster.RayCastMethod(shooter.Position, direction, 1280, MapData.TileMap, MapData.MapArea, angle);
+                    RayCastResult result = raycaster.RayCastMethod(shooter.Position, direction, 1280,
+                        MapData.TileMap, MapData.MapArea, angle);
 
 
-                    // If the shot passes through the player 
-                    if (Collision.BulletToPlayer(shooter.Position, player.Position,
-                        shooter.Rotation, 24f, new Rectangle(
-                            (int)player.Position.X -16, (int)player.Position.Y +16,
-                            32, 32), player.Rotation) && player.State == ServerClientInterface.PlayerState.Alive)
+                    Vector2 raycastDistance = result.CollisionPos - shooter.Position;
+
+                    // If the raycast had collided with an object in between two players
+                    // the distance of the raycast would be shorter, therefore, the player
+                    // has no direct line of sight with the other player
+                    if (raycastDistance.Length() > delta.Length())
                     {
-                        // Deal the correct amount of damage depending on the
-                        // weapon
-                        switch (shooter.CurrentWeapon.Weapon)
+                        // If the shot passes through the player 
+                        if (Collision.BulletToPlayer(shooter.Position, player.Position,
+                            shooter.Rotation, 24f, new Rectangle(
+                                (int) player.Position.X - 16, (int) player.Position.Y + 16,
+                                32, 32), player.Rotation) && player.State == ServerClientInterface.PlayerState.Alive)
                         {
-                            case WeaponData.Weapon.Knife:
-                                break;
-                            case WeaponData.Weapon.Ak47:
-                                player.Damage(20, 0);
-                                break;
-                            case WeaponData.Weapon.Glock:
-                                break;
-                            case WeaponData.Weapon.Awp:
-                                break;
-                            case WeaponData.Weapon.Usp:
-                                break;
-                            case WeaponData.Weapon.M4A1:
-                                player.Damage(20, 0);
-                                break;
+                            // Deal the correct amount of damage depending on the
+                            // weapon
+                            switch (shooter.CurrentWeapon.Weapon)
+                            {
+                                case WeaponData.Weapon.Knife:
+                                    break;
+                                case WeaponData.Weapon.Ak47:
+                                    player.Damage(20, 0);
+                                    break;
+                                case WeaponData.Weapon.Glock:
+                                    break;
+                                case WeaponData.Weapon.Awp:
+                                    break;
+                                case WeaponData.Weapon.Usp:
+                                    break;
+                                case WeaponData.Weapon.M4A1:
+                                    player.Damage(20, 0);
+                                    break;
+                            }
+
+                            Console.WriteLine("\"" + shooter.UserName + "\" shot \"" + player.UserName + " with " +
+                                              shooter.CurrentWeapon.Weapon);
+
+                            // If the player's health is less than zero, they died let everyone know.
+                            if (player.Health <= 0)
+                            {
+                                player.SetHealth(0);
+                                player.SetArmor(0);
+                                player.SetState(ServerClientInterface.PlayerState.Dead);
+                                Console.WriteLine(shooter.UserName + " killed " + player.UserName +
+                                                  " with " + shooter.CurrentWeapon.Weapon);
+                            }
+
+                            // Send data to all players
+                            outMsg = server.CreateMessage();
+                            outMsg.Write(ServerClientInterface.DAMAGE);
+                            outMsg.Write(player.Identifier);
+                            outMsg.Write(player.Health);
+                            outMsg.Write(player.Armor);
+                            server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                         }
-
-                        Console.WriteLine("\"" + shooter.UserName + "\" shot \"" + player.UserName + " with " +
-                            shooter.CurrentWeapon.Weapon);
-
-                        // If the player's health is less than zero, they died let everyone know.
-                        if (player.Health <= 0)
-                        {
-                            player.SetHealth(0);
-                            player.SetArmor(0);
-                            player.SetState(ServerClientInterface.PlayerState.Dead);
-                            Console.WriteLine(shooter.UserName + " killed " + player.UserName +
-                                " with " + shooter.CurrentWeapon.Weapon);
-                        }
-
-                        // Send data to all players
-                        outMsg = server.CreateMessage();
-                        outMsg.Write(ServerClientInterface.DAMAGE);
-                        outMsg.Write(player.Identifier);
-                        outMsg.Write(player.Health);
-                        outMsg.Write(player.Armor);
-                        server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                     }
                 }
             }

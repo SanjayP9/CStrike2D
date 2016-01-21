@@ -40,11 +40,11 @@ namespace CStrike2D
         /// </summary>
         public AudioManager()
         {
-            MusicVolume = 1.0f;
+            MusicVolume = 0.4f;
             UiVolume = 1.0f;
             VoiceVolume = 1.0f;
             SoundEffectVolume = 1.0f;
-            MasterVolume = 0.2f;
+            MasterVolume = 1.0f;
             SoundEffect.DistanceScale = 100f;
         }
 
