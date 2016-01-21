@@ -43,7 +43,6 @@ namespace CStrike2D
         private int numFlash = 0;
         private int numSmoke = 0;
 
-        private RayEmitter rayEmitter;
         private RayCast shootCast;
 
         public enum GameEngineState

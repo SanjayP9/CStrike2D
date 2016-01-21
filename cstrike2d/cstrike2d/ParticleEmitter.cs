@@ -58,7 +58,6 @@ namespace CStrike2D
                     systemLifeTime = 30.0f;
                     break;
 
-
                 case Particle.ParticleTypes.Smoke:
                     Particles = new List<Particle>(50);
                     systemLifeTime = SMOKE_GRENADE_LIFETIME;
@@ -82,33 +81,40 @@ namespace CStrike2D
         /// <summary>
         /// Runs update logic for the particle emitter
         /// </summary>
-        /// <param name="gameTime"></param>
+        /// <param name="gameTime"> Passes through elasped gametime </param>
         public void Update(float gameTime)
         {
             systemUpTime += gameTime;
 
             // add update time for smoke grenade
 
+            // Cycles through every particle and runs update logic
             for (int i = 0; i < Particles.Count; i++)
             {
+
+                // If the particle is not null update it 
                 if (Particles[i] != null)
                 {
                     Particles[i].Update(gameTime);
 
+                    // rEspawns smoke particles if its invisible
                     if ((particleType == Particle.ParticleTypes.Smoke) &&
                         (Particles[i].ParticleTransparency <= 0.0f) && (systemLifeTime > systemUpTime))
                     {
                         Particles[i].Respawn();
                     }
 
+                    // Remove the instance when the transpareny is less than 0
                     if (Particles[i].ParticleTransparency <= 0.0f)
                     {
                         Particles.RemoveAt(i);
                     }
                 }
+
+                // If the particle is null create a new instance of it
                 else if ((Particles[i] == null) && (particleType == Particle.ParticleTypes.Smoke))
                 {
-                    Particles[i] = new Particle(emitVect, particleType,0f);
+                    Particles[i] = new Particle(emitVect, particleType, 0f);
                 }
             }
 
