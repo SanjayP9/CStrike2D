@@ -65,14 +65,12 @@ namespace CStrike2D
         /// Checks if the bullet emitted from a player at a specified angle intersects an enemy player(checks line to circle)
         /// if that is true check non-axis aligned rectangle
         /// </summary>
-        /// <param name="shootingPlayer"></param>
-        /// <param name="enemyPlayer"></param>
-        /// <param name="shotAngle"></param>
-        /// <param name="playerRadius"></param>
-        /// <param name="rect"></param>
-        /// <param name="enemyRot"></param>
-        /// <returns></returns>
-        public static bool BulletToPlayer(Vector2 shootingPlayer, Vector2 enemyPlayer, float shotAngle, float playerRadius)
+        /// <param name="shootingPlayer">The shooting player centre</param>
+        /// <param name="enemyPlayer">The enemy player centre</param>
+        /// <param name="shotAngle">the shot angle</param>
+        /// <param name="playerRadius"> the player radius</param>
+        /// <returns>if the bullet collid</returns>
+        public static bool BulletToPlayer(Vector2 shootingPlayer, Vector2 enemyPlayer, float shotAngle, float playerRadius, Rectangle enemyPart, float enemyRoatation)
         {
             // Find the linear equation of the shot bullet
             float mPlayer = (float)Math.Tan(shotAngle);
@@ -87,7 +85,11 @@ namespace CStrike2D
             float poiY = mPlayer * poiX + bPlayer;
 
             // Returns if the poi is less than or equal to the radius
-            return Vector2.Distance(new Vector2(poiX, poiY), enemyPlayer) <= playerRadius;
+            if(Vector2.Distance(new Vector2(poiX, poiY), enemyPlayer) <= playerRadius)
+            {
+                NonAACollision(enemyPart, enemyRoatation, mPlayer, bPlayer);
+            }
+            return false;
         }
 
         /// <summary>
@@ -98,15 +100,15 @@ namespace CStrike2D
         /// <param name="enemyPart"></param>
         /// <param name="enemyRotation"></param>
         /// <returns></returns>
-        public static bool NonAACollision(Vector2 shootingPlayer, float shotAngle, Rectangle enemyPart, float enemyRotation)
+        public static bool NonAACollision(Rectangle enemyPart, float enemyRotation, float mPlayer, float bPlayer)
         {
             // Find centre and distance from centre to top left corner
             Vector2 centre = new Vector2(enemyPart.X + enemyPart.Width * 0.5f, enemyPart.Y - enemyPart.Height * 0.5f);
             float distance = Vector2.Distance(new Vector2(enemyPart.X, enemyPart.Y), centre);
 
             // Find the linear equation of the shot bullet
-            float mPlayer = (float)Math.Tan(shotAngle);
-            float bPlayer = shootingPlayer.Y - mPlayer * shootingPlayer.X;
+            //float mPlayer = (float)Math.Tan(shotAngle);
+            //float bPlayer = shootingPlayer.Y - mPlayer * shootingPlayer.X;
 
             // Holds the points of the rectangle before being rotated
             float x = enemyPart.X - centre.X;
