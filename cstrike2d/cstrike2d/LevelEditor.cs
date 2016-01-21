@@ -4,7 +4,7 @@
 // Creation Date: Dec 31st, 2015
 // Modified Date: Jan 19th, 2016
 // Description: Allows ability to edit and view maps using various features including: undo, place/remove, pan, zoom, place nodes,
-//              save file, load file, set all tiles, delete all tiles etc.
+//              save a compressed file, load a compressed file, set all tiles, delete all tiles etc.
 using Microsoft.Xna.Framework;
 using System;
 using Microsoft.Xna.Framework.Graphics;
@@ -41,16 +41,18 @@ namespace CStrike2D
         // Variables used to store the number of columns and rows
         int numCols = 75;
         int numRows = 50;
-        
-        // Stores the position of the mouse according to the map
-        Vector2 mouseMap;
-
-        //  Stores the position of the tile on the map
-        Vector2 mapTilePos;
 
         // Bool to show or not show the edit view
         bool showEditView = true;
 
+        // Bool to check if the user is entering author name
+        bool enteringAuthor = true;
+
+        // Stores the author name an description
+        string author = "";
+        string description = "";
+
+        // Instances of input and driver class
         private InputManager input;
         private CStrike2D driver;
 
@@ -60,7 +62,17 @@ namespace CStrike2D
         // Stores the map area
         Rectangle mapArea = new Rectangle(0, 0, 2400, 1600);
 
+        // Destination rectangle
         Rectangle destRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
+
+        // Stores the position of the mouse according to the map
+        Vector2 mouseMap;
+
+        //  Stores the position of the tile on the map
+        Vector2 mapTilePos;
+
+        // Stores the result of the dialog
+        DialogResult result;
 
         /// <summary>
         /// Represents states of the level editor
@@ -69,6 +81,7 @@ namespace CStrike2D
         {
             Edit,
             ShowHotkeys,
+            Save,
             Exit
         };
 
@@ -83,6 +96,10 @@ namespace CStrike2D
             driver.Model.Camera.Position = new Vector2(225, 250);
         }
         
+        /// <summary>
+        /// Updates the logic for level editor
+        /// </summary>
+        /// <param name="gameTime">the game time</param>
         public void Update(float gameTime)
         {
             // Updates logic according to the state
@@ -236,15 +253,7 @@ namespace CStrike2D
                         // When the S key is pressed
                         if (input.Tapped(Keys.S))
                         {
-                            SaveFileDialog saveDialog = new SaveFileDialog();
-                            saveDialog.Filter = "Map Files (.txt)|*.txt";
-                            saveDialog.FilterIndex = 1;
-
-                            DialogResult result = saveDialog.ShowDialog();
-                            if (result == DialogResult.OK)
-                            {
-                                SaveFile(saveDialog.FileName);
-                            }
+                            CurrentState = EditorStates.Save;
                         }
                         // Prompts the user to open a file using a dialog promt for the location
                         // When the O key is pressed
@@ -255,7 +264,7 @@ namespace CStrike2D
                             openDialog.FilterIndex = 1;
                             openDialog.Multiselect = false;
 
-                            DialogResult result = openDialog.ShowDialog();
+                            result = openDialog.ShowDialog();
                             if (result == DialogResult.OK)
                             {
                                 LoadFile(openDialog.FileName);
@@ -340,9 +349,60 @@ namespace CStrike2D
                     }
                     break;
 
+                // If the state is show hot keys
                 case EditorStates.ShowHotkeys:
+
                     // If the F2 key is pressed change the state to the edit state
                     if (input.Tapped(Keys.F12))
+                    {
+                        CurrentState = EditorStates.Edit;
+                    }
+                    break;
+
+                // If the state is save
+                case EditorStates.Save:
+
+                    if (enteringAuthor)
+                    {
+                        // Gets the user input for author name
+                        author = input.GetText(author);
+
+                        // If they hit enter they are dont typing the author name
+                        if(input.Tapped(Keys.Enter))
+                        {
+                            enteringAuthor = false;
+                        }
+                    }
+                    else
+                    {
+                        // Gets the user input for the author name
+                        description = input.GetText(description);
+
+                        // If the user hits enter 
+                        if (input.Tapped(Keys.Enter))
+                        {
+                            // Reset entering author variable
+                            enteringAuthor = true;
+
+                            // Prompts the user to select the save location with the filter being a .txt file
+                            SaveFileDialog saveDialog = new SaveFileDialog();
+                            saveDialog.Filter = "Map Files (.txt)|*.txt";
+                            saveDialog.FilterIndex = 1;
+                            result = saveDialog.ShowDialog();
+
+                            // If the uer hits save run the save method
+                            if (result == DialogResult.OK)
+                            {
+                                SaveFile(author, description, saveDialog.FileName);
+                            }
+
+                            // Sets the state to edit
+                            CurrentState = EditorStates.Edit;
+                        }
+                    }
+
+                    // If the user his escape go back to level editor
+                    if (input.Tapped(Keys.Escape))
                     {
                         CurrentState = EditorStates.Edit;
                     }
@@ -351,7 +411,7 @@ namespace CStrike2D
         }
 
         /// <summary>
-        /// Temporary saves the map
+        /// Temporary saves the map by setting a backup of the tiles array to equal the tile array
         /// </summary>
         public void TempSave()
         {
@@ -365,7 +425,7 @@ namespace CStrike2D
         }
 
         /// <summary>
-        /// Undoes the last action
+        /// Undoes the last action by setting the backup tile array to the current tile array
         /// </summary>
         public void Undo()
         {
@@ -459,11 +519,12 @@ namespace CStrike2D
                     }
                     */
 
-                    
+                    // For each tile that is not null
                     foreach (Tile tile in tiles)
                     {
                         if (tile != null)
                         {
+                            // Draws the tile and includes the property color if show edit view is true
                             tile.Draw(sb, driver.Assets.TileSet, showEditView);
                         }
                     }
@@ -482,9 +543,6 @@ namespace CStrike2D
                             sb.Draw(driver.Assets.PixelTexture, new Rectangle((int)mapArea.X, (int)(mapArea.Y + row * TILE_SIZE), (int)mapArea.Width, 1), Color.Black);
                         }
                     }
-                    break;
-                case EditorStates.ShowHotkeys:
-                    
                     break;
             }
         }
@@ -523,18 +581,31 @@ namespace CStrike2D
                     }
                     break;
 
-                    // 
+                // If the state is show hot keys 
                 case EditorStates.ShowHotkeys:
-                    sb.DrawString(driver.Assets.DefaultFont, "MOUSE1 -> SELECT/PLACE TILE\n\nMOUSE2-> REMOVE TILE\n\nCTRL + S -> SAVE FILE\n\nCTRL + O -> OPEN FILE\n\nCTRL + A -> SET ALL TILES\n\nCTRL + DEL -> DELETE ALL TILES\n\nCTRL + Z -> Undo\n\nSCROLL WHEEL -> ZOOM\n\nWASD -> MOVE CAMERA\n\nTAB -> TOGGLE EDIT VIEW", new Vector2(250, 75), Color.White);
-                    sb.DrawString(driver.Assets.DefaultFont, "1 -> COLLIDABLE\n\n2-> A SITE PLANT SPOT\n\n3 -> B SITE PLANT SPOT\n\n4 -> SAVE SPOT\n\n5 - > CT SPAWN POINT\n\n6 -> T SPAWN POINT\n\n7 -> A SITE DEFENCE POINT\n\n8 -> B SITE DEFENCE POINT\n\n\n\n0 -> RESET PROPERTY", new Vector2(825, 75), Color.White);
+
+                    // Draws all the hot keys
+                    sb.DrawString(driver.Assets.DefaultFont, "Hot Keys\n\nMOUSE1 -> SELECT/PLACE TILE\n\nMOUSE2-> REMOVE TILE\n\nCTRL + S -> SAVE FILE\n\nCTRL + O -> OPEN FILE\n\nCTRL + A -> SET ALL TILES\n\nCTRL + DEL -> DELETE ALL TILES\n\nCTRL + Z -> Undo\n\nSCROLL WHEEL -> ZOOM\n\nWASD -> MOVE CAMERA\n\nTAB -> TOGGLE EDIT VIEW", new Vector2(250, 75), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Properties\n\n1 -> COLLIDABLE\n\n2-> A SITE PLANT SPOT\n\n3 -> B SITE PLANT SPOT\n\n4 -> SAVE SPOT\n\n5 - > CT SPAWN POINT\n\n6 -> T SPAWN POINT\n\n7 -> A SITE DEFENCE POINT\n\n8 -> B SITE DEFENCE POINT\n\n\n\n0 -> RESET PROPERTY", new Vector2(825, 75), Color.White);
                     sb.DrawString(driver.Assets.DefaultFont, "Press 'F12' to return to editor", new Vector2(515, 675), Color.White);
-                    //sb.Draw(driver.Assets.PixelTexture, new Rectangle(700, 75, 50, 50), Color.White);
+
+                    break;
+                case EditorStates.Save:
+
+                    // Draws the author name and the description according to the user input
+                    sb.DrawString(driver.Assets.DefaultFont, "Author Name:  " + author, new Vector2(0, 0), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Description:  " + description, new Vector2(0, 50), Color.White);
                     break;
             }
         }
+
+        /// <summary>
+        /// Decompresses the save file containing the author, description, tile type, and the properties
+        /// </summary>
+        /// <param name="filePath">the file path of the file you are loading</param>
         public void LoadFile(string filePath)
         {
-            // Creates a stream reader instance of the text file
+            // Creates a instance of file stream, g zip stream and stream reader
             FileStream decompressedFile = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             GZipStream gZip = new GZipStream(decompressedFile, CompressionMode.Decompress);
             StreamReader inFile = new StreamReader(gZip);
@@ -542,7 +613,11 @@ namespace CStrike2D
             // Stores the data for a single line as a time
             string[] rowData;
 
-            // Checks the first and second line of the text to set the number of columns and the number of rows
+            // Reads the author name and description
+            author = inFile.ReadLine();
+            description = inFile.ReadLine();
+
+            // Reads the number of columns and the number of rows
             numCols = Convert.ToInt32(inFile.ReadLine());
             numRows = Convert.ToInt32(inFile.ReadLine());
 
@@ -550,8 +625,10 @@ namespace CStrike2D
             mapArea.Width = TILE_SIZE * numCols;
             mapArea.Height = TILE_SIZE * numRows;
 
-            // Sets the max indexes of the number of columns and rows
+            // Sets the max indexes of the number of columns and rows to the undo tile set
             undoTiles = new Tile[numCols, numRows];
+
+            // Temporary saves the tile set
             TempSave();
             
             // Initialize the number of tiles to be according the the number of columns and rows
@@ -581,12 +658,25 @@ namespace CStrike2D
             // Close the file
             inFile.Close();
         }
-        private void SaveFile(string fileName)
+
+        /// <summary>
+        /// Saves the author name, description, tile type, properties, and compresses it
+        /// </summary>
+        /// <param name="author">the name of the author</param>
+        /// <param name="description">the description of the map</param>
+        /// <param name="filePath">the name of the filePath</param>
+        private void SaveFile(string author, string description, string filePath)
         {
             // Creates a stream writer instance of the text file
-            FileStream compressedFile = new FileStream(fileName, FileMode.Create, FileAccess.Write);
+            FileStream compressedFile = new FileStream(filePath, FileMode.Create, FileAccess.Write);
             GZipStream gZip = new GZipStream(compressedFile, CompressionMode.Compress);
             StreamWriter outFile = new StreamWriter(gZip);
+
+            // Write the author name in a line
+            outFile.WriteLine(author);
+
+            // Write the description in a line
+            outFile.WriteLine(description);
 
             // Write the number of columns in a line
             outFile.WriteLine(numCols);
@@ -616,16 +706,6 @@ namespace CStrike2D
 
             // Close the file
             outFile.Close();
-
-        }
-        private void AddColumn()
-        {
-            TempSave();
-            numCols++;
-            tiles = new Tile[numCols, numRows];
-            mapArea.Width = TILE_SIZE * numCols;
-            //mapArea.Height = TILE_SIZE * numRows;
-            Undo();
         }
     }
 }

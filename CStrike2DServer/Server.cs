@@ -55,6 +55,8 @@ namespace CStrike2DServer
 
         public static ServerMap MapData { get; private set; }
 
+        private static RayCast raycaster = new RayCast();
+
         enum RoundState
         {
             Empty,
@@ -576,10 +578,10 @@ namespace CStrike2DServer
             outMsg.Write(ServerClientInterface.FIRE_WEAPON);
             outMsg.Write(player.Identifier);
             server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-            PlayerToPlayer(player);
+            BulletToPlayer(player);
         }
 
-        static bool PlayerToPlayer(ServerPlayer shooter)
+        static bool BulletToPlayer(ServerPlayer shooter)
         {
             // Get the distance between the player and the shooter
             foreach (ServerPlayer player in players)
@@ -587,6 +589,18 @@ namespace CStrike2DServer
                 // The shooter can't shoot themself, obviously.
                 if (player != shooter)
                 {
+                    // Get distance between the player and the enemy
+                    Vector2 delta = player.Position - shooter.Position;
+                    float distance = delta.Length();
+
+                    float angle = shooter.Rotation < 0 ? (float) (shooter.Rotation + (2*Math.PI)) : shooter.Rotation;
+                    Vector2 direction =  new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+
+
+                    // Get distance between the player and any possible obstacles in between the
+                    // player and the enemy
+                    raycaster.RayCastMethod(shooter.Position, direction, 1280, MapData.TileMap, MapData.MapArea, angle);
+
 
                     // If the shot passes through the player 
                     if (Collision.BulletToPlayer(shooter.Position, player.Position,
@@ -594,12 +608,14 @@ namespace CStrike2DServer
                             (int)player.Position.X -16, (int)player.Position.Y +16,
                             32, 32), player.Rotation) && player.State == ServerClientInterface.PlayerState.Alive)
                     {
+                        // Deal the correct amount of damage depending on the
+                        // weapon
                         switch (shooter.CurrentWeapon.Weapon)
                         {
                             case WeaponData.Weapon.Knife:
                                 break;
                             case WeaponData.Weapon.Ak47:
-                                player.Damage(25, 0);
+                                player.Damage(20, 0);
                                 break;
                             case WeaponData.Weapon.Glock:
                                 break;
@@ -608,13 +624,14 @@ namespace CStrike2DServer
                             case WeaponData.Weapon.Usp:
                                 break;
                             case WeaponData.Weapon.M4A1:
-                                player.Damage(15, 0);
+                                player.Damage(20, 0);
                                 break;
                         }
 
                         Console.WriteLine("\"" + shooter.UserName + "\" shot \"" + player.UserName + " with " +
                             shooter.CurrentWeapon.Weapon);
 
+                        // If the player's health is less than zero, they died let everyone know.
                         if (player.Health <= 0)
                         {
                             player.SetHealth(0);
@@ -624,6 +641,7 @@ namespace CStrike2DServer
                                 " with " + shooter.CurrentWeapon.Weapon);
                         }
 
+                        // Send data to all players
                         outMsg = server.CreateMessage();
                         outMsg.Write(ServerClientInterface.DAMAGE);
                         outMsg.Write(player.Identifier);
@@ -906,12 +924,12 @@ namespace CStrike2DServer
 
                 // Player to wall collision
                 // Gets the tiles that need to be checked
-                Tile[] tiles = GetTiles(player.Position, direction);
+                CStrike2D.Tile[] tiles = GetTiles(player.Position, direction);
 
                 // Check each tile that is not null and is a solid
                 // Circle to Rectangle collision. Returns false
                 // if a collision is found
-                foreach (Tile tile in tiles)
+                foreach (CStrike2D.Tile tile in tiles)
                 {
                     if (tile != null && tile.Property == Tile.SOLID)
                     {
@@ -937,7 +955,7 @@ namespace CStrike2DServer
                     {
                         if (ply.PlayerID != player.PlayerID)
                         {
-                            if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X,
+                            if (Collision.BulletToPlayer(new Vector2(player.GetPosition().X,
                                 player.GetPosition().Y - 5f), ply.GetPosition(), 23f))
                             {
                                 return false;
@@ -950,7 +968,7 @@ namespace CStrike2DServer
                     {
                         if (ply.PlayerID != player.PlayerID)
                         {
-                            if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X,
+                            if (Collision.BulletToPlayer(new Vector2(player.GetPosition().X,
                                 player.GetPosition().Y + 5f), ply.GetPosition(), 23f))
                             {
                                 return false;
@@ -963,7 +981,7 @@ namespace CStrike2DServer
                     {
                         if (ply.PlayerID != player.PlayerID)
                         {
-                            if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X - 5f,
+                            if (Collision.BulletToPlayer(new Vector2(player.GetPosition().X - 5f,
                                 player.GetPosition().Y), ply.GetPosition(), 23f))
                             {
                                 return false;
@@ -976,7 +994,7 @@ namespace CStrike2DServer
                     {
                         if (ply.PlayerID != player.PlayerID)
                         {
-                            if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X + 5f,
+                            if (Collision.BulletToPlayer(new Vector2(player.GetPosition().X + 5f,
                                 player.GetPosition().Y), ply.GetPosition(), 23f))
                             {
                                 return false;
@@ -989,7 +1007,7 @@ namespace CStrike2DServer
                     {
                         if (ply.PlayerID != player.PlayerID)
                         {
-                            if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X + 5f,
+                            if (Collision.BulletToPlayer(new Vector2(player.GetPosition().X + 5f,
                                 player.GetPosition().Y), ply.GetPosition(), 23f))
                             {
                                 return false;
@@ -1002,7 +1020,7 @@ namespace CStrike2DServer
                     {
                         if (ply.PlayerID != player.PlayerID)
                         {
-                            if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X + 5f,
+                            if (Collision.BulletToPlayer(new Vector2(player.GetPosition().X + 5f,
                                 player.GetPosition().Y), ply.GetPosition(), 23f))
                             {
                                 return false;
@@ -1015,7 +1033,7 @@ namespace CStrike2DServer
                     {
                         if (ply.PlayerID != player.PlayerID)
                         {
-                            if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X + 5f,
+                            if (Collision.BulletToPlayer(new Vector2(player.GetPosition().X + 5f,
                                 player.GetPosition().Y), ply.GetPosition(), 23f))
                             {
                                 return false;
@@ -1028,7 +1046,7 @@ namespace CStrike2DServer
                     {
                         if (ply.PlayerID != player.PlayerID)
                         {
-                            if (Collision.PlayerToPlayer(new Vector2(player.GetPosition().X - 5f,
+                            if (Collision.BulletToPlayer(new Vector2(player.GetPosition().X - 5f,
                                 player.GetPosition().Y - 5f), ply.GetPosition(), 23f))
                             {
                                 return false;
@@ -1043,9 +1061,9 @@ namespace CStrike2DServer
             #endregion
         }
 
-        public static Tile[] GetTiles(Vector2 position, byte direction)
+        public static CStrike2D.Tile[] GetTiles(Vector2 position, byte direction)
         {
-            List<Tile> tiles = new List<Tile>();
+            List<CStrike2D.Tile> tiles = new List<CStrike2D.Tile>();
             Point location = new Point((int)(position.X) / ServerMap.TILE_SIZE, (int)(position.Y) / ServerMap.TILE_SIZE);
 
             // Gets the points that need to be checked

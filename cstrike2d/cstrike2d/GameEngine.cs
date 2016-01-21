@@ -445,7 +445,6 @@ namespace CStrike2D
                         {
                             if (!Client.CurrentWeapon.Fired)
                             {
-                                Client.CurrentWeapon.FireWeapon();
                                 network.FireWeapon();
                             }
                         }

@@ -52,6 +52,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\cstrike2d\cstrike2d\RayCast.cs">
+      <Link>RayCast.cs</Link>
+    </Compile>
+    <Compile Include="..\cstrike2d\cstrike2d\Tile.cs">
+      <Link>Tile.cs</Link>
+    </Compile>
     <Compile Include="Collision.cs" />
     <Compile Include="DemoRecorder.cs" />
     <Compile Include="Server.cs" />
@@ -62,7 +68,7 @@
     <Compile Include="ServerMap.cs" />
     <Compile Include="ServerPlayer.cs" />
     <Compile Include="ServerWeapon.cs" />
-    <Compile Include="Tile.cs" />
+    <Compile Include="tilebackup.cs" />
     <Compile Include="WeaponData.cs" />
   </ItemGroup>
   <ItemGroup>
