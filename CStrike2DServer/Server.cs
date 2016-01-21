@@ -594,7 +594,26 @@ namespace CStrike2DServer
                             (int)player.Position.X -16, (int)player.Position.Y +16,
                             32, 32), player.Rotation) && player.State == ServerClientInterface.PlayerState.Alive)
                     {
-                        player.Damage(15, 0);
+                        switch (shooter.CurrentWeapon.Weapon)
+                        {
+                            case WeaponData.Weapon.Knife:
+                                break;
+                            case WeaponData.Weapon.Ak47:
+                                player.Damage(25, 0);
+                                break;
+                            case WeaponData.Weapon.Glock:
+                                break;
+                            case WeaponData.Weapon.Awp:
+                                break;
+                            case WeaponData.Weapon.Usp:
+                                break;
+                            case WeaponData.Weapon.M4A1:
+                                player.Damage(15, 0);
+                                break;
+                        }
+
+                        Console.WriteLine("\"" + shooter.UserName + "\" shot \"" + player.UserName + " with " +
+                            shooter.CurrentWeapon.Weapon);
 
                         if (player.Health <= 0)
                         {
@@ -611,9 +630,6 @@ namespace CStrike2DServer
                         outMsg.Write(player.Health);
                         outMsg.Write(player.Armor);
                         server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                        // Check if there are any obstacles in between the player and
-                        // the shooter
-                        Console.WriteLine("lit for 99 with weapon_ak47. csgo logic");
                     }
                 }
             }
