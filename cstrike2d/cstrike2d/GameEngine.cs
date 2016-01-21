@@ -34,7 +34,6 @@ namespace CStrike2D
 
         public GameEngineState CurState { get; set; }
 
-        private RayEmitter rayEmitter;
         private RayCast shootCast;
 
         public enum GameEngineState

@@ -27,7 +27,6 @@ namespace CStrike2D
         public ClientWeapon SecondaryWeapon { get; private set; }
         public ClientWeapon Knife { get; private set; }
 
-        private RayEmitter rayEmitter;
 
         // State
 
