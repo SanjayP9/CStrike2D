@@ -86,7 +86,7 @@ namespace CStrike2D
             {
                 case AIStates.Defuse:
 
-                    if (currentTeam == ServerClientInterface.Team.CT)
+                    if (currentTeam == ServerClientInterface.Team.CounterTerrorist)
                     {
                         // Get path to active bombsite and defuse if bomb is not being defused
                         path = PathFinder(currentPos, destinationLocal);
@@ -111,7 +111,7 @@ namespace CStrike2D
 
                 case AIStates.Plant:
                     // Get path to the bombsite and plant if bomb is not being planted
-                    if (currentTeam == ServerClientInterface.Team.T)
+                    if (currentTeam == ServerClientInterface.Team.Terrorist)
                     {
                         path = PathFinder(currentPos, destinationLocal);
 
