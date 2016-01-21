@@ -20,7 +20,7 @@ namespace CStrike2DServer
 
         public static readonly Color S_Color = new Color(40, 40, 40);
 
-        public static float MOVEMENT_SPEED = 3f;
+        public static float MOVEMENT_SPEED = 2.5f;
 
         /// <summary>
         /// Request sent by the server for the client to 
@@ -35,6 +35,9 @@ namespace CStrike2DServer
         /// </summary>
         public const byte HANDSHAKE_COMPLETE = 1;
 
+        public const byte PLAYER_DISCONNECTED = 18;
+
+
         public const byte CHANGE_TEAM = 2;
         public const byte TEAM_COUNTER_TERRORIST = 3;
         public const byte TEAM_TERRORIST = 4;
@@ -42,6 +45,10 @@ namespace CStrike2DServer
 
         public const byte BEGIN_ROUND = 6;
         public const byte END_ROUND = 7;
+                
+        public const byte CT_WIN = 26;
+        public const byte T_WIN = 27;
+        public const byte DRAW = 28;
 
         public const byte MOVE_UP = 10;
         public const byte MOVE_DOWN = 11;
@@ -51,14 +58,9 @@ namespace CStrike2DServer
         public const byte MOVE_DOWNRIGHT = 15;
         public const byte MOVE_DOWNLEFT = 16;
         public const byte MOVE_UPLEFT = 17;
+        public const byte ROTATE_PLAYER = 25;
+        public const byte SYNC_MOVEMENT = 29;
 
-        public const byte PLAYER_DISCONNECTED = 18;
-
-        /// <summary>
-        /// Used after HANDSHAKE is recieved by the server by the client
-        /// to request the server to send all data including players and
-        /// entities
-        /// </summary>
         public const byte REQUEST_SYNC = 19;
         public const byte SYNC_BEGIN = 20;
         public const byte SYNC_CHUNK = 21;
@@ -67,29 +69,20 @@ namespace CStrike2DServer
 
         public const byte CHANGE_TEAM_DENIED = 24;
 
-        public const byte ROTATE_PLAYER = 25;
-
-        public const byte CT_WIN = 26;
-        public const byte T_WIN = 27;
-        public const byte DRAW = 28;
-
-        public const byte SYNC_MOVEMENT = 29;
-
         public const byte SPAWN_PLAYER = 30;
         public const byte RESPAWN_PLAYER = 31;
 
         public const byte BUY_WEAPON = 32;
 
         public const byte ALIVE = 33;
-        public const byte DEAD = 44;
+        public const byte DEAD = 34;
 
-        public const byte FIRE_WEAPON = 45;
-
-        public const byte EXPLODE_FLASHBANG = 46;
-
-        public const byte DAMAGE = 47;
-
-        public const byte REQUEST_RESPAWN = 48;
+        public const byte FIRE_WEAPON = 35;
+        public const byte EXPLODE_FLASHBANG = 36;
+        public const byte DAMAGE = 37;
+        public const byte REQUEST_RESPAWN = 38;
+        public const byte EXPLODE_GRENADE = 39;
+        public const byte PLANT_BOMB = 40;
 
         public enum Team
         {

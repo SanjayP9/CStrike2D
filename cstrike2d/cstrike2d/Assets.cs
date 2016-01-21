@@ -110,6 +110,9 @@ namespace CStrike2D
             instance.Model.AudioManager.AddSound(new SoundContainer("pickup", coreContentLoader.Load<SoundEffect>("sound/sfx/player/pickup")));
             instance.Model.AudioManager.AddSound(new SoundContainer("death4", coreContentLoader.Load<SoundEffect>("sound/sfx/player/death4")));
 
+            instance.Model.AudioManager.AddSound(new SoundContainer("footstep1", coreContentLoader.Load<SoundEffect>("sound/sfx/player/dirt1")));
+            instance.Model.AudioManager.AddSound(new SoundContainer("footstep2", coreContentLoader.Load<SoundEffect>("sound/sfx/player/dirt2")));
+
             BlurEffect = coreContentLoader.Load<Effect>("fx/blur");
         }
 

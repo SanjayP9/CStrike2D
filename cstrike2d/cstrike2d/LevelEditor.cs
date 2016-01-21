@@ -51,7 +51,6 @@ namespace CStrike2D
         bool showEditView = true;
 
         private InputManager input;
-        private AudioManager audio;
         private CStrike2D driver;
 
         // Stores the tile set of set position
@@ -79,7 +78,6 @@ namespace CStrike2D
         {
             driver = model.DriverInstance;
             input = model.Input;
-            audio = model.AudioManager;
             CurrentState = EditorStates.Edit;
             driver.Model.Camera.Position = new Vector2(225, 250);
         }

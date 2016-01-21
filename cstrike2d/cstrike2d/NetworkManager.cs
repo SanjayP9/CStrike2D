@@ -198,6 +198,9 @@ namespace CStrike2D
                                         case ServerClientInterface.DAMAGE:
                                             engine.Damage(msg.ReadInt16(), msg.ReadInt32(), msg.ReadInt32());
                                             break;
+                                        case ServerClientInterface.SPAWN_PLAYER:
+                                            engine.SpawnPlayer(msg.ReadInt16());
+                                            break;
                                     }
                                 }
                                 break;

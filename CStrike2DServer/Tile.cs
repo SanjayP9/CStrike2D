@@ -12,8 +12,6 @@ namespace CStrike2DServer
 {
     public class Tile
     {
-        private const int BORDER_THICKNESS = 1;
-
         public Rectangle TileRect
         {
             get
@@ -28,10 +26,7 @@ namespace CStrike2DServer
         }
 
         private Rectangle destRect;
-        private Rectangle srcRect;
-        private Color tileColor;
 
-        public Rectangle Bounds { get; private set; }
         public byte Property { get; private set; }
 
         public const byte NO_PROPERTY = 0;
@@ -57,10 +52,6 @@ namespace CStrike2DServer
             destRect.Y = row*ServerMap.TILE_SIZE + mapArea.Y;
             destRect.Width = ServerMap.TILE_SIZE;
             destRect.Height = ServerMap.TILE_SIZE;
-            srcRect.X = (TileType%8*ServerMap.TILE_SIZE);
-            srcRect.Y = (TileType/8*ServerMap.TILE_SIZE);
-            srcRect.Width = ServerMap.TILE_SIZE;
-            srcRect.Height = ServerMap.TILE_SIZE;
         }
 
         public void SetProperty(byte property)
@@ -71,8 +62,6 @@ namespace CStrike2DServer
         public void SetTileType(byte tileType)
         {
             TileType = tileType;
-            srcRect.X = (TileType%8*ServerMap.TILE_SIZE);
-            srcRect.Y = (TileType/8*ServerMap.TILE_SIZE);
         }
     }
 }

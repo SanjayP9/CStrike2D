@@ -17,21 +17,16 @@ namespace CStrike2DServer
         private static NetIncomingMessage msg;
 
         private static List<ServerPlayer> players = new List<ServerPlayer>();
-        private static List<ServerWeapon> weapons = new List<ServerWeapon>();
         private static List<ServerGrenade> grenades = new List<ServerGrenade>();
 
         private static short playerIdentifier;
-        private static string serverVersion = "0.4.0a";            // Server Version
+        private static string serverVersion = "0.6.0a";            // Server Version
         private static int maxPlayers = 32;
         private static int port = 27015;
         private static string buffer = "";
         private static string serverName = "Global Offensive Server - " + serverVersion;
         private static bool forceConfigRewrite = true;
         private static NetOutgoingMessage outMsg;
-        static int curRow = 3;
-        private static int tickCount;
-        private static int bytesIn;
-        private static int bytesOut;
         private static int maxCTs = 16;
         private static int maxTs = 16;
         private static int numTs = 0;
@@ -41,22 +36,22 @@ namespace CStrike2DServer
         private static bool enableCollision = true;
         private static short entityCounter;
         
-        private static double updateTimer;
         public const double UPDATE_RATE = 7d;
         public const double NET_UPDATE_RATE = 16.66d;
         public const double SYNC_RATE = 20d;
 
-        private const float FREEZE_TIME = 5f;
-        private float freezeTime;
+        private const float AFTER_ROUND_TIME = 5f;          // Time between switching the round state
+        private const float FREEZE_TIME = 10f;              // Time at the start of a round to allow users to buy
+        private static Stopwatch timer = new Stopwatch();   // Used to time the after round timer and freeze time
 
-        private static int tsAlive;
-        private static int ctsAlive;
-        private static string mapName = "de_cache";
+        private static int tsAlive;                 // Number of Terrorists alive
+        private static int ctsAlive;                // Number of Counter-Terrorists alive
+        private static string mapName = "de_cache"; // Current map
 
-        private static RoundState state = RoundState.Empty;
-        private static DemoRecorder recorder;
+        private static RoundState state = RoundState.Empty; // Default the current round state to an empty server
+        private static DemoRecorder recorder;               // Used to record the game state
 
-        private static Random rand = new Random();
+        private static Random rand = new Random();          // Random number generator
 
         public static ServerMap MapData { get; private set; }
 
@@ -177,51 +172,13 @@ namespace CStrike2DServer
                     syncTimer.Restart();
                 }
             }
-
-            /*
-            int tick = 0;
-            while (server.Status == NetPeerStatus.Running)
-            {
-                if (Console.KeyAvailable)
-                {
-                    buffer += Console.ReadKey();
-                }
-
-                if (sw.Elapsed.TotalMilliseconds >= 15.625)
-                {
-                    tick++;
-                    Update();
-                    bytesIn += server.Statistics.ReceivedBytes;
-                    bytesOut += server.Statistics.SentBytes;
-
-                    sw.Restart();
-
-                    if (tick == 60)
-                    {
-                        Console.Clear();
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("==================================");
-                        Console.WriteLine("Global Offensive - Version " + serverVersion);
-                        Console.WriteLine("==================================");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine("Players: " + players.Count + "/" + maxPlayers);
-
-                        foreach (Player ply in players)
-                        {
-                            Console.WriteLine("Client: " + ply.PlayerName + " Ping: " + Math.Round(ply.Client.AverageRoundtripTime, 2) + "ms");
-                        }
-                        Console.WriteLine("KB In: " + bytesIn / 1024d + " KB Out: " + bytesOut / 1024d);
-                        bytesIn = 0;
-                        bytesOut = 0;
-                        Console.WriteLine(buffer);
-                        SyncServer();
-                        tick = 0;
-                    }
-                }
-            }
-            */
         }
 
+        /// <summary>
+        /// Loads the map from file
+        /// </summary>
+        /// <param name="mapName"></param>
+        /// <returns></returns>
         static bool LoadMap(string mapName)
         {
             return MapData.Load(mapName);
@@ -399,6 +356,26 @@ namespace CStrike2DServer
             switch (state)
             {
                 case RoundState.Empty:
+                    // If someone joined a team, begin a new game
+                    if (numCts > 0 || numTs > 0)
+                    {
+
+                        // If the timer has not started yet
+                        if (!timer.IsRunning)
+                        {
+                            // start the timer
+                            timer.Start();
+                            Console.WriteLine("GAME STARTING");
+                        }
+
+                        // Give users a few seconds to join teams
+                        // before reseting the round
+                        if (timer.Elapsed.TotalSeconds >= AFTER_ROUND_TIME)
+                        {
+                            StartRound();
+                            timer.Reset();
+                        }
+                    }
                     break;
                 case RoundState.Buytime:
                     break;
@@ -409,6 +386,9 @@ namespace CStrike2DServer
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static void UpdateNetwork()
         {
             // TODO : Updates the network, recieves input.
@@ -501,22 +481,6 @@ namespace CStrike2DServer
                                 outMsg.Write(ServerClientInterface.TeamToByte(player.CurrentTeam));
                                 server.SendToAll(outMsg,NetDeliveryMethod.ReliableSequenced);
 
-                                Vector2 spawnLocation = Vector2.Zero;
-                                int spawnPoint;
-                                switch (player.CurrentTeam)
-                                {
-                                    case ServerClientInterface.Team.CounterTerrorist:
-                                        spawnPoint = rand.Next(0, MapData.CTTile.Count);
-                                        spawnLocation = new Vector2(MapData.CTTile[spawnPoint].TileRect.X + 16,
-                                            MapData.CTTile[spawnPoint].TileRect.Y + 16);
-                                        break;
-                                    case ServerClientInterface.Team.Terrorist:
-                                        spawnPoint = rand.Next(0, MapData.TTile.Count);
-                                        spawnLocation = new Vector2(MapData.TTile[spawnPoint].TileRect.X + 16,
-                                            MapData.TTile[spawnPoint].TileRect.Y + 16);
-                                        break;
-                                }
-                                RespawnPlayer(player);
                                 break;
                             case ServerClientInterface.MOVE_UP:
                             case ServerClientInterface.MOVE_DOWN:
@@ -710,14 +674,15 @@ namespace CStrike2DServer
         {
             // TODO: Spawns all players, sets up all timers, etc
             // Reset everyone's health
-            foreach (ServerPlayer ply in players)
-            {
-                ply.SetHealth(100);
-                ply.SetArmor(0);
+            Console.WriteLine("FREEZE TIME START");
+            // Spawn all players
 
-                if (ply.State == ServerClientInterface.PlayerState.Dead)
+            foreach (ServerPlayer player in players)
+            {
+                if (player.CurrentTeam != ServerClientInterface.Team.Spectator)
                 {
-                    ply.SetState(ServerClientInterface.PlayerState.Alive);
+                    player.Respawn(player.Position);
+                    Console.WriteLine("Spawned \"" + player.UserName + "\"");
                 }
             }
         }
@@ -732,7 +697,7 @@ namespace CStrike2DServer
                 foreach (ServerPlayer player in players)
                 {
                     player.SetCash(800);
-                    SpawnPlayer(player, 
+                    SpawnPlayer(player.Identifier, 
                         new Vector2(0 + (100*player.Identifier), 0 + (100*player.Identifier)));
                 }
             }
@@ -762,10 +727,15 @@ namespace CStrike2DServer
         /// </summary>
         /// <param name="player"></param>
         /// <param name="location"></param>
-        static void SpawnPlayer(ServerPlayer player, Vector2 location)
+        static void SpawnPlayer(ServerPlayer player)
         {
-            // TODO: Spawns a player onto the map
-            player.SetPosition(location);
+            player.SetState(ServerClientInterface.PlayerState.Alive);
+            player.SetHealth(100);
+            player.SetArmor(0);
+
+            outMsg = server.CreateMessage();
+            outMsg.Write(ServerClientInterface.SPAWN_PLAYER);
+            outMsg.Write(player.Identifier);
         }
 
         static void RespawnPlayer(ServerPlayer player)
@@ -853,12 +823,19 @@ namespace CStrike2DServer
             Console.WriteLine("Configuration written to disk.");
         }
 
+        /// <summary>
+        /// Checks the collision for a player and their direction
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="direction"></param>
+        /// <returns></returns>
         static bool CheckPlayerCollision(ServerPlayer player, byte direction)
         {
             if (player.CurrentTeam != ServerClientInterface.Team.Spectator)
             {
                 if (enableCollision)
                 {
+                    // Get the direection
                     float vectorX = 0f;
                     float vectorY = 0f;
                     switch (direction)
@@ -893,6 +870,9 @@ namespace CStrike2DServer
                             break;
                     }
 
+                    // Cirlce to Circle collision with the player wishing to move
+                    // and every other player on the map. Returning false
+                    // prevents the movement byte being sent to the player
                     foreach (ServerPlayer ply in players)
                     {
                         if (ply.Identifier != player.Identifier)
@@ -910,6 +890,9 @@ namespace CStrike2DServer
                 // Gets the tiles that need to be checked
                 Tile[] tiles = GetTiles(player.Position, direction);
 
+                // Check each tile that is not null and is a solid
+                // Circle to Rectangle collision. Returns false
+                // if a collision is found
                 foreach (Tile tile in tiles)
                 {
                     if (tile != null && tile.Property == Tile.SOLID)
@@ -921,6 +904,7 @@ namespace CStrike2DServer
                     }
                 }
 
+                // If no collisions occur, allow the player to move
                 return true;
             }
             return true;

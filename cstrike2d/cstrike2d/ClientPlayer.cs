@@ -221,6 +221,11 @@ namespace CStrike2D
             State = ServerClientInterface.ByteToState(state);
         }
 
+        public void SetState(ServerClientInterface.PlayerState state)
+        {
+            State = state;
+        }
+
         public void Respawn(Vector2 location)
         {
             position = location;

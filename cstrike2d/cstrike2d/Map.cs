@@ -81,6 +81,16 @@ namespace CStrike2D
 
         public void Draw(SpriteBatch sb)
         {
+
+            foreach (Tile tile in TileMap)
+            {
+                if (tile != null)
+                {
+                    tile.Draw(sb, assets.TileSet);
+                }
+            }
+
+            /*
             Rectangle destRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
             Rectangle srcRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
 
@@ -100,6 +110,7 @@ namespace CStrike2D
                     }
                 }
             }
+            */
         }
     }
 

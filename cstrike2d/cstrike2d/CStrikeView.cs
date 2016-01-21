@@ -79,7 +79,7 @@ namespace CStrike2D
             {
                 case CStrikeModel.State.Menu:
                     model.Shader.BeginRender();
-                    sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null,
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null,
                         null);
                     // Show counter-terrorist background if true, terrorist background if false
                     sb.Draw(model.MenuBackgroundType ? assets.CTMenuBackground : assets.TMenuBackground, Vector2.Zero,
@@ -95,7 +95,7 @@ namespace CStrike2D
                         {
                             case "optionsMenu":
                                 sb.End();
-                                sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp,
+                                sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp,
                                     null,
                                     cullableRasterizer, null);
                                 sb.GraphicsDevice.ScissorRectangle = new Rectangle(0, 100, 1280, 620);
@@ -129,18 +129,18 @@ namespace CStrike2D
                                     }
                                 }
                                 sb.End();
-                                sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp,
+                                sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp,
                                     null, null, null);
                                 break;
                             case "defaultMenu":
                                 sb.End();
-                                sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp,
+                                sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp,
                                     null,
                                     cullableRasterizer, null);
                                 sb.GraphicsDevice.ScissorRectangle = new Rectangle(0, 19, 1280, 82);
                                 page.Draw(sb);
                                 sb.End();
-                                sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp,
+                                sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp,
                                     null, null, null);
                                 break;
                             default:
@@ -151,32 +151,32 @@ namespace CStrike2D
 
                     sb.End();
                     model.Shader.Draw(sb);
-                    sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
 
                     break;
                 case CStrikeModel.State.Options:
                     break;
                 case CStrikeModel.State.Lobby:
-                    sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
 
 
                     sb.DrawString(assets.DefaultFont, "Connect to Server: " + model.Address, Vector2.Zero, Color.White);
 
                     break;
                 case CStrikeModel.State.LevelEditor:
-                    sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, cullableRasterizer, null,
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, cullableRasterizer, null,
                         model.Camera.GetTransform(model.DriverInstance.GraphicsDevice));
                     sb.GraphicsDevice.ScissorRectangle = new Rectangle(0, 0, 1280, 720);
                     model.Editor.DrawWorld(sb);
                     sb.End();
 
-                    sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null,
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null,
                         null, null);
                     model.Editor.DrawUI(sb);
                     break;
                 case CStrikeModel.State.InGame:
                     model.Shader.BeginRender();
-                    sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, null,
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null,
                         model.Camera.GetTransform(model.DriverInstance.GraphicsDevice));
                     model.GameEngine.DrawWorld(sb);
                     sb.End();
@@ -185,7 +185,7 @@ namespace CStrike2D
 
                     model.Shader.Draw(sb);
 
-                    sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null,
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null,
                         cullableRasterizer, null);
 
                     sb.GraphicsDevice.ScissorRectangle = new Rectangle(90, 20, 1100, 650);
@@ -195,7 +195,7 @@ namespace CStrike2D
                     model.GameEngine.DrawUI(sb);
                     sb.End();
 
-                    sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
 
                     if (model.GameEngine.Client != null)
                     {
@@ -209,7 +209,7 @@ namespace CStrike2D
 
             // FPS
             sb.DrawString(assets.DefaultFont, "FPS: " + model.DriverInstance.FPS, new Vector2(model.Dimensions.X - (assets.DefaultFont.MeasureString("FPS: " + model.DriverInstance.FPS).X), 0), Color.White);
-
+            sb.DrawString(assets.DefaultFont, model.Input.ScreenToWorld(model.Input.MousePosition, model.Camera, model.Center).ToString(), new Vector2(1150, 40), Color.White);
             sb.End();
         }
     }

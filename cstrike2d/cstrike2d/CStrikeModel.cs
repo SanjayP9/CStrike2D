@@ -520,6 +520,9 @@ namespace CStrike2D
                             {
                                 DriverInstance.Assets.LoadGameContent();
                                 DriverInstance.Assets.LoadMapContent();
+                                Camera.ResetZoom();
+                                Camera.Position = new Vector2(DriverInstance.Assets.MapData.MapArea.Width / 2f,
+                                    DriverInstance.Assets.MapData.MapArea.Height / 2f);
                             }
                             break;
                     }
