@@ -26,6 +26,8 @@ namespace CStrike2D
         // Stores the path for the pathfinding
         List<Point> pointsOnPath = new List<Point>();
 
+        // current AI position on map
+        Point currentPos;
 
         /// <summary>
         /// Used to specify the current state of the AI
@@ -36,8 +38,6 @@ namespace CStrike2D
             Plant,
             KillEnemy,
             Hide,
-            DefendSite,
-            Buy,
             Idle
         }
 
@@ -50,8 +50,16 @@ namespace CStrike2D
         // Stores an instance of player in order to use player functionality
         private ClientPlayer player;
 
+        // Records elasped time
+        private float timeElasped = 0f;
+
+        // List of nodes for paths
+        List<Point> path = new List<Point>();
+        int index = 0;
+
+
         /// <summary>
-        /// 
+        /// Initializes AI and passes through team
         /// </summary>
         /// <param name="team"></param>
         public AI(ServerClientInterface.Team team)
@@ -69,21 +77,60 @@ namespace CStrike2D
             this.map = map;
         }
 
-        public void Update()
+        /// <summary>
+        /// Runs update logic for the AI Bots
+        /// </summary>
+        public void Update(float gameTime, Point destinationLocal)
         {
             switch (currentState)
             {
                 case AIStates.Defuse:
 
-                    //if (currentTeam == ServerClientInterface.Team.CT)
+                    if (currentTeam == ServerClientInterface.Team.CT)
                     {
                         // Get path to active bombsite and defuse if bomb is not being defused
+                        path = PathFinder(currentPos, destinationLocal);
+
+                        GotoNextTile(path[index]);
+                        index++;
+                        {
+                            if (index == path.Count - 1)
+                            {
+                                index = 0;
+                            }
+                        }
+
+                        if (currentPos == destinationLocal)
+                        {
+                            player.Defuse();
+                            currentState = AIStates.Idle;
+                        }
                     }
 
                     break;
 
                 case AIStates.Plant:
-                    //
+                    // Get path to the bombsite and plant if bomb is not being planted
+                    if (currentTeam == ServerClientInterface.Team.T)
+                    {
+                        path = PathFinder(currentPos, destinationLocal);
+
+                        GotoNextTile(path[index]);
+                        index++;
+                        {
+                            if (index == path.Count - 1)
+                            {
+                                index = 0;
+                            }
+                        }
+
+                        if (currentPos == destinationLocal)
+                        {
+                            player.Plant();
+                            currentState = AIStates.Idle;
+                        }
+                    }
+                    
 
                     break;
 
@@ -93,11 +140,6 @@ namespace CStrike2D
                 case AIStates.Hide:
                     break;
 
-                case AIStates.DefendSite:
-                    break;
-
-                case AIStates.Buy:
-                    break;
 
                 case AIStates.Idle:
                     break;
@@ -105,9 +147,20 @@ namespace CStrike2D
         }
 
 
+        /// <summary>
+        /// Makes the bot travel to the destination tile
+        /// </summary>
+        /// <param name="destinationTile"></param>
         public void GotoNextTile(Point destinationTile)
         {
-
+            if (currentPos.X != destinationTile.X)
+            {
+                currentPos.X += 1;
+            }
+            if (currentPos.Y != destinationTile.Y)
+            {
+                currentPos.Y += 1;
+            }
         }
 
 
