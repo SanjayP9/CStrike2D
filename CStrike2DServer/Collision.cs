@@ -72,77 +72,8 @@ namespace CStrike2D
         /// <param name="rect"></param>
         /// <param name="enemyRot"></param>
         /// <returns></returns>
-        public static bool BulletToPlayer(Vector2 shootingPlayer, Vector2 enemyPlayer, float shotAngle, float playerRadius, Rectangle rect, float enemyRot)
+        public static bool BulletToPlayer(Vector2 shootingPlayer, Vector2 enemyPlayer, float shotAngle, float playerRadius)
         {
-            /*
-            // Stores the angle from the shooting player to the enemy player
-            float enemyToPlayerA = (float)(Math.Atan2(Math.Abs(enemyPlayer.Y - shootingPlayer.Y), Math.Abs(enemyPlayer.X - shootingPlayer.X)));
-
-            // Convert the shot angle and the enemy to player angle to 0 to 2pi
-            if (enemyRotation < 0f)
-            {
-                enemyRotation = (float)Math.PI * 2f + enemyRotation;
-            }
-            if (enemyToPlayerA < 0f)
-            {
-                enemyToPlayerA = (float)Math.PI * 2f + enemyToPlayerA;
-            }
-
-            // If the enemy is not within a the maximum shot recoil cone (15 degree angle), return false.
-            if (enemyRotation + Math.PI/12f < enemyToPlayerA || enemyRotation - Math.PI/12f > enemyToPlayerA)
-            {
-                return false;
-            }
-            */
-            //int quadrantOfEnemy = 0;
-            //if (enemyPlayer.Y >= shootingPlayer.Y)
-            //{
-            //    if (enemyPlayer.X >= shootingPlayer.X)
-            //    {
-            //        quadrantOfEnemy = 1;
-            //    }
-            //    if (enemyPlayer.X < shootingPlayer.X)
-            //    {
-            //        quadrantOfEnemy = 2;
-            //    }
-            //}
-            //else if (enemyPlayer.Y < shootingPlayer.Y)
-            //{
-            //    if (enemyPlayer.X > shootingPlayer.X)
-            //    {
-            //        quadrantOfEnemy = 4;
-            //    }
-            //    if (enemyPlayer.X <= shootingPlayer.X)
-            //    {
-            //        quadrantOfEnemy = 3;
-            //    }
-            //}
-            //int angleQuad = 0;
-            //if (shotAngle > 0 || shotAngle <= Math.PI * 0.5f)
-            //{
-            //    angleQuad = 1;
-            //}
-            //else if (shotAngle > Math.PI * 0.5f || shotAngle <= Math.PI)
-            //{
-            //    angleQuad = 2;
-            //}
-            //else if (shotAngle < Math.PI * -0.5f || shotAngle >= Math.PI * -1f)
-            //{
-            //    angleQuad = 3;
-            //}
-            //else if (shotAngle <= 0 || shotAngle > Math.PI * -0.5f)
-            //{
-            //    angleQuad = 4;
-            //}
-
-            //if (angleQuad != quadrantOfEnemy)
-            //{
-            //    return false;
-            //}
-            if (shotAngle == Math.PI * 0.5f || shotAngle == Math.PI * -0.5f)
-            {
-
-            }
             // Find the linear equation of the shot bullet
             float mPlayer = (float)Math.Tan(shotAngle);
             float bPlayer = shootingPlayer.Y - mPlayer * shootingPlayer.X;
@@ -156,31 +87,30 @@ namespace CStrike2D
             float poiY = mPlayer * poiX + bPlayer;
 
             // Returns if the poi is less than or equal to the radius
-            //return Vector2.Distance(new Vector2(poiX, poiY), enemyPlayer) <= playerRadius;
-            if (Vector2.Distance(new Vector2(poiX, poiY), enemyPlayer) <= playerRadius)
-            {
-                return LineRectangle(rect, enemyRot, mPlayer, bPlayer);
-            }
-            return false;
+            return Vector2.Distance(new Vector2(poiX, poiY), enemyPlayer) <= playerRadius;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="enemyPlayer"></param>
+        /// <param name="shootingPlayer"></param>
+        /// <param name="shotAngle"></param>
+        /// <param name="enemyPart"></param>
         /// <param name="enemyRotation"></param>
-        /// <param name="mPlayer"></param>
-        /// <param name="bPlayer"></param>
         /// <returns></returns>
-        public static bool LineRectangle(Rectangle enemyPlayer, float enemyRotation, float mPlayer, float bPlayer)
+        public static bool NonAACollision(Vector2 shootingPlayer, float shotAngle, Rectangle enemyPart, float enemyRotation)
         {
             // Find centre and distance from centre to top left corner
-            Vector2 centre = new Vector2(enemyPlayer.X + enemyPlayer.Width * 0.5f, enemyPlayer.Y - enemyPlayer.Height * 0.5f);
-            float distance = Vector2.Distance(new Vector2(enemyPlayer.X, enemyPlayer.Y), centre);
+            Vector2 centre = new Vector2(enemyPart.X + enemyPart.Width * 0.5f, enemyPart.Y - enemyPart.Height * 0.5f);
+            float distance = Vector2.Distance(new Vector2(enemyPart.X, enemyPart.Y), centre);
+
+            // Find the linear equation of the shot bullet
+            float mPlayer = (float)Math.Tan(shotAngle);
+            float bPlayer = shootingPlayer.Y - mPlayer * shootingPlayer.X;
 
             // Holds the points of the rectangle before being rotated
-            float x = enemyPlayer.X - centre.X;
-            float y = enemyPlayer.Y - centre.Y;
+            float x = enemyPart.X - centre.X;
+            float y = enemyPart.Y - centre.Y;
 
             /////////////////////////////////////////////
             // FIND ROTATED COORDINATES OF EACH CORNER //
@@ -188,18 +118,18 @@ namespace CStrike2D
             Vector2 topLeft = new Vector2((float)(x * Math.Cos(enemyRotation) - y * Math.Sin(enemyRotation)) + centre.X,
                                           (float)(y * Math.Cos(enemyRotation) + x * Math.Sin(enemyRotation)) + centre.Y);
 
-            x = enemyPlayer.X + enemyPlayer.Width - centre.X;
-            y = enemyPlayer.Y - centre.Y;
+            x = enemyPart.X + enemyPart.Width - centre.X;
+            y = enemyPart.Y - centre.Y;
             Vector2 topRight = new Vector2((float)(x * Math.Cos(enemyRotation) - y * Math.Sin(enemyRotation)) + centre.X,
                                            (float)(y * Math.Cos(enemyRotation) + x * Math.Sin(enemyRotation)) + centre.Y);
 
-            x = enemyPlayer.X - centre.X;
-            y = enemyPlayer.Y + enemyPlayer.Height - centre.Y;
+            x = enemyPart.X - centre.X;
+            y = enemyPart.Y + enemyPart.Height - centre.Y;
             Vector2 bottomLeft = new Vector2((float)(x * Math.Cos(enemyRotation) - y * Math.Sin(enemyRotation)) + centre.X,
                                              (float)(y * Math.Cos(enemyRotation) + x * Math.Sin(enemyRotation)) + centre.Y);
 
-            x = enemyPlayer.X + enemyPlayer.Width - centre.X;
-            y = enemyPlayer.Y + enemyPlayer.Height - centre.Y;
+            x = enemyPart.X + enemyPart.Width - centre.X;
+            y = enemyPart.Y + enemyPart.Height - centre.Y;
             Vector2 bottomRight = new Vector2((float)(x * Math.Cos(enemyRotation) - y * Math.Sin(enemyRotation)) + centre.X,
                                               (float)(y * Math.Cos(enemyRotation) + x * Math.Sin(enemyRotation)) + centre.Y);
 
