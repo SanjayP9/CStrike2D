@@ -604,9 +604,6 @@ namespace CStrike2DServer
 
                     // If the angle of the shooter is within 0.2 radians of the
                     // angle between the shooter and the player.
-                    if (angle > shooterToPlayerAngle - 0.2f &&
-                        angle < shooterToPlayerAngle + 0.2f)
-                    {
                         Vector2 direction = new Vector2((float) Math.Cos(angle), (float) Math.Sin(angle));
 
 
@@ -621,66 +618,57 @@ namespace CStrike2DServer
                         // If the raycast had collided with an object in between two players
                         // the distance of the raycast would be shorter, therefore, the player
                         // has no direct line of sight with the other player
-                        if (raycastDistance.Length() > delta.Length())
+                    if (raycastDistance.Length() > delta.Length())
+                    {
+                        // If the shot passes through the player 
+                        if (Collision.NonAACollision(shooter.Position, player.Position,
+                            shooter.Rotation, 24f, new Rectangle(
+                                (int) player.Position.X - 16, (int) player.Position.Y + 16,
+                                32, 32), player.Rotation) && player.State == ServerClientInterface.PlayerState.Alive)
                         {
-                            // If the shot passes through the player's radius
-                            if (Collision.BulletToPlayer(shooter.Position, player.Position,
-                                shooter.Rotation, 24f) && player.State == ServerClientInterface.PlayerState.Alive)
+
+                            // Deal the correct amount of damage depending on the
+                            // weapon
+                            switch (shooter.CurrentWeapon.Weapon)
                             {
-                                float playerRotPi = player.Rotation < 0 ? (float)(player.Rotation + (2 * Math.PI)) : player.Rotation;
-                                // Do Non-Axis Aligned CD with the player's arm
-                                if (Collision.NonAACollision(shooter.Position, angle,
-                                    new Rectangle(
-                                        (int) player.Position.X,
-
-                                        (int) player.Position.Y,
-                                        16, 16), player.Rotation))
-                                {
-
-                                    // Deal the correct amount of damage depending on the
-                                    // weapon
-                                    switch (shooter.CurrentWeapon.Weapon)
-                                    {
-                                        case WeaponData.Weapon.Knife:
-                                            break;
-                                        case WeaponData.Weapon.Ak47:
-                                            player.Damage(20, 0);
-                                            break;
-                                        case WeaponData.Weapon.Glock:
-                                            break;
-                                        case WeaponData.Weapon.Awp:
-                                            break;
-                                        case WeaponData.Weapon.Usp:
-                                            break;
-                                        case WeaponData.Weapon.M4A1:
-                                            player.Damage(20, 0);
-                                            break;
-                                    }
-
-                                    Console.WriteLine("\"" + shooter.UserName + "\" shot \"" + player.UserName +
-                                                      " with " +
-                                                      shooter.CurrentWeapon.Weapon);
-
-                                    // If the player's health is less than zero, they died let everyone know.
-                                    if (player.Health <= 0)
-                                    {
-                                        player.SetHealth(0);
-                                        player.SetArmor(0);
-                                        player.SetState(ServerClientInterface.PlayerState.Dead);
-                                        Console.WriteLine(shooter.UserName + " killed " + player.UserName +
-                                                          " with " + shooter.CurrentWeapon.Weapon);
-                                    }
-
-                                    // Send data to all players
-                                    outMsg = server.CreateMessage();
-                                    outMsg.Write(ServerClientInterface.DAMAGE);
-                                    outMsg.Write(player.Identifier);
-                                    outMsg.Write(player.Health);
-                                    outMsg.Write(player.Armor);
-                                    server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
-                                }
+                                case WeaponData.Weapon.Knife:
+                                    break;
+                                case WeaponData.Weapon.Ak47:
+                                    player.Damage(20, 0);
+                                    break;
+                                case WeaponData.Weapon.Glock:
+                                    break;
+                                case WeaponData.Weapon.Awp:
+                                    break;
+                                case WeaponData.Weapon.Usp:
+                                    break;
+                                case WeaponData.Weapon.M4A1:
+                                    player.Damage(20, 0);
+                                    break;
                             }
+
+                            Console.WriteLine("\"" + shooter.UserName + "\" shot \"" + player.UserName + " with " +
+                                              shooter.CurrentWeapon.Weapon);
+
+                            // If the player's health is less than zero, they died let everyone know.
+                            if (player.Health <= 0)
+                            {
+                                player.SetHealth(0);
+                                player.SetArmor(0);
+                                player.SetState(ServerClientInterface.PlayerState.Dead);
+                                Console.WriteLine(shooter.UserName + " killed " + player.UserName +
+                                                  " with " + shooter.CurrentWeapon.Weapon);
+                            }
+
+                            // Send data to all players
+                            outMsg = server.CreateMessage();
+                            outMsg.Write(ServerClientInterface.DAMAGE);
+                            outMsg.Write(player.Identifier);
+                            outMsg.Write(player.Health);
+                            outMsg.Write(player.Armor);
+                            server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                         }
+
                     }
                 }
             }
@@ -944,7 +932,7 @@ namespace CStrike2DServer
                     // prevents the movement byte being sent to the player
                     foreach (ServerPlayer ply in players)
                     {
-                        if (ply.Identifier != player.Identifier)
+                        if (ply.Identifier != player.Identifier && ply.State != ServerClientInterface.PlayerState.Dead)
                         {
                             if (Collision.PlayerToPlayer(new Vector2(player.Position.X + vectorX,
                                 player.Position.Y + vectorY), ply.Position, 23f))
