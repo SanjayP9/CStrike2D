@@ -149,10 +149,9 @@ namespace CStrike2D
                     }
                     else // If the firtindex is at the emitter position incriment the index
                     {
-                        // 
                         index++;
 
-
+                        // Break if out of bounds
                         if (index >= pointsOnRay.Length)
                         {
                             break;
@@ -161,6 +160,8 @@ namespace CStrike2D
                 }
 
             }
+
+            // Returns the RayCAstResult
             return RayCastLine;
         }
 
@@ -268,7 +269,7 @@ namespace CStrike2D
         }
 
         /// <summary>
-        /// 
+        /// REt
         /// </summary>
         /// <returns></returns>
         public float GetRayLength()
