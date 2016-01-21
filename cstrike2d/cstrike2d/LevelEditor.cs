@@ -455,70 +455,6 @@ namespace CStrike2D
 
                     Rectangle srcRect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
 
-                   /* 
-                    // Draws all tiles placed on the map and colors the tile according to the property
-                    for (int col = 0; col < numCols; col++)
-                    {
-                        for (int row = 0; row < numRows; row++)
-                        {
-                            if (tiles[col, row] != null &&
-                                col * TILE_SIZE < screenDimensions.X - mapArea.X &&
-                                col * (TILE_SIZE * 2) > screenStart.X - mapArea.X &&
-                                row * TILE_SIZE < screenDimensions.Y - mapArea.Y &&
-                                row * (TILE_SIZE * 2) > screenStart.Y - mapArea.Y)
-                            {
-                                // If show edit view is true change the color of the tile according to the property
-                                if (showEditView)
-                                {
-                                    switch (tiles[col, row].Property)
-                                    {
-                                        case Tile.NO_PROPERTY:
-                                            tileColor = Color.White;
-                                            break;
-                                        case Tile.SOLID:
-                                            tileColor = Color.Red;
-                                            break;
-                                        case Tile.A_PLANT_SPOT:
-                                            tileColor = Color.Yellow;
-                                            break;
-                                        case Tile.B_PLANT_SPOT:
-                                            tileColor = Color.Yellow;
-                                            break;
-                                        case Tile.SAVE_SPOT:
-                                            tileColor = Color.Green;
-                                            break;
-                                        case Tile.CT_SPAWN_POINT:
-                                            tileColor = Color.Blue;
-                                            break;
-                                        case Tile.T_SPAWN_POINT:
-                                            tileColor = Color.Orange;
-                                            break;
-                                        case Tile.A_SITE_DEFENCE_POINT:
-                                            tileColor = Color.Purple;
-                                            break;
-                                        case Tile.B_SITE_DEFENCE_POINT:
-                                            tileColor = Color.Purple;
-                                            break;
-                                    }
-                                }
-                                else
-                                {
-                                    tileColor = Color.White;
-                                }
-
-                                // Find the source rectangle and the destination retangle
-                                srcRect.X = (tiles[col, row].TileType % 8 * TILE_SIZE);
-                                srcRect.Y = (tiles[col, row].TileType / 8 * TILE_SIZE);
-                                destRect.X = col * TILE_SIZE + mapArea.X;
-                                destRect.Y = row * TILE_SIZE + mapArea.Y;
-
-                                // Draw the tile
-                                sb.Draw(driver.Assets.TileSet, destRect, srcRect, tileColor);
-                            }
-                        }
-                    }
-                    */
-
                     // For each tile that is not null
                     foreach (Tile tile in tiles)
                     {
@@ -593,8 +529,11 @@ namespace CStrike2D
                 case EditorStates.Save:
 
                     // Draws the author name and the description according to the user input
-                    sb.DrawString(driver.Assets.DefaultFont, "Author Name:  " + author, new Vector2(0, 0), Color.White);
-                    sb.DrawString(driver.Assets.DefaultFont, "Description:  " + description, new Vector2(0, 50), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Author Name:  " + author, new Vector2(10, 0), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Description:  " + description, new Vector2(10, 50), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Use your keyboard to add characters", new Vector2(10, 500), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Press 'Enter' to continue", new Vector2(10, 550), Color.White);
+                    sb.DrawString(driver.Assets.DefaultFont, "Press 'Escape' to cancel", new Vector2(10, 600), Color.White);
                     break;
             }
         }
