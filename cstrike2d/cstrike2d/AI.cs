@@ -104,10 +104,6 @@ namespace CStrike2D
             }
         }
 
-        public void SpawnBot(Vector2 spawnVect)
-        {
-            // Spawn bot at spawn location
-        }
 
         public void GotoNextTile(Point destinationTile)
         {
@@ -175,17 +171,24 @@ namespace CStrike2D
                     checkPoint.X += curCol;
                     checkPoint.Y += curRow;
 
-                    //
+                    // If the path exists
                     if (!path.Exists(p => p == checkPoint))
                     {
+
+                        // Checks if the check point tile is on the map
                         if (checkPoint.X > 0 && checkPoint.Y > 0 &&
                             checkPoint.X < map.GetLength(0) &&
                             checkPoint.Y < map.GetLength(1))
                         {
+
+                            // Checks if the next checkpoint tile is solid if not calculates H-Cost
                             if (map[checkPoint.X, checkPoint.Y].TileType != Tile.SOLID)
                             {
+                                // Stores h cost in the int h
                                 h = FindHCost(checkPoint, endingPoint);
                             }
+
+                            // Sets the H-Cost to the max value of the tile is solid
                             else
                             {
                                 h = Int16.MaxValue;
@@ -195,23 +198,25 @@ namespace CStrike2D
                         {
                             h = Int16.MaxValue;
                         }
-
                     }
                     else
                     {
                         h = Int16.MaxValue;
                     }
 
+                    // Calculates H-Cost by adding g and h cost
                     tileScores[i] = g + h;
                 }
 
+                // Stores direction to get to the next node
                 int direction = Array.IndexOf(tileScores, tileScores.Min());
 
+                // Gets the next point from the direction to point method
                 Point nextNode = DirectionToPoint(direction);
                 nextNode.X += curCol;
                 nextNode.Y += curRow;
 
-
+                // Adds the next node to the path list
                 path.Add(nextNode);
                 curCol = nextNode.X;
                 curRow = nextNode.Y;
@@ -221,8 +226,14 @@ namespace CStrike2D
         }
 
 
+        /// <summary>
+        /// Retrives the next point based on the AI's direction
+        /// </summary>
+        /// <param name="direction"> Passes through the current direction </param>
+        /// <returns> Returns new point based on direction </returns>
         public Point DirectionToPoint(int direction)
         {
+            // Generates point based on 8 possible directions
             switch (direction)
             {
                 case 0:
@@ -241,28 +252,53 @@ namespace CStrike2D
                     return new Point(0, 1);
                 case 7:
                     return new Point(1, 1);
+
+                // If none are found an exception is thrown stating that the direction parameter was not valie
                 default:
                     throw new Exception("Direction is not a valid direction");
             }
         }
 
+        /// <summary>
+        /// Calculates the Heuristic cost and returns it
+        /// </summary>
+        /// <param name="current"> Passes through current tile location </param>
+        /// <param name="end"> Passes through destination tile location </param>
+        /// <returns></returns>
         public int FindHCost(Point current, Point end)
         {
-            return ((Math.Abs(end.X - current.X)) + (Math.Abs(end.Y - current.Y)));
+            // Calculates H Cost by getting the difference betweem the x and y and multiplying it by the movement cost of 10
+            return (((Math.Abs(end.X - current.X)) + (Math.Abs(end.Y - current.Y))) * STRAIGHT_G_COST);
         }
 
+        /// <summary>
+        /// Calculates the G Cost of the current tile
+        /// </summary>
+        /// <param name="parent"> Passes through the parent tile </param>
+        /// <param name="current"> Passes through the current tile to check </param>
+        /// <returns></returns>
         public int FindGCost(Point parent, Point current)
         {
+            // If the current tile is above, below to the left or right of the parent there is a straight g cost
             if (parent.X == current.X || parent.Y == current.Y)
             {
                 return STRAIGHT_G_COST;
             }
 
+            // Else it returns the diagonal cost
             return DIAG_G_COST;
         }
 
+        /// <summary>
+        /// Calculates the total cost of moving to another tile
+        /// </summary>
+        /// <param name="current"> Passes through the current tile that the player is on </param>
+        /// <param name="end"> Passes through the destination tile </param>
+        /// <param name="parent"> Specifies the parent tile of the current tile </param>
+        /// <returns></returns>
         public int GetFCost(Point current, Point end, Point parent)
         {
+            // Runs GCost and HCost methods and gets the sum of it
             return (FindGCost(parent, current) + FindHCost(current, end));
         }
 
@@ -270,9 +306,15 @@ namespace CStrike2D
 
     class NodeInfo
     {
+        // Stores the point location and the f cost integer for a node
         public Point Location { get; set; }
         public int FCost { get; set; }
 
+        /// <summary>
+        /// Creates an instance of NodeInfo
+        /// </summary>
+        /// <param name="location"> Passes through location of the tile </param>
+        /// <param name="fCost"> Passes through fcost </param>
         public NodeInfo(Point location, int fCost)
         {
             this.Location = location;
