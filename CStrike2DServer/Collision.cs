@@ -98,10 +98,10 @@ namespace CStrike2D
         /// <param name="enemyPart"></param>
         /// <param name="enemyRotation"></param>
         /// <returns></returns>
-        public static bool NonAACollision(Vector2 shootingPlayer, float shotAngle, Rectangle enemyPart, float enemyRotation)
+        public static bool NonAACollision(Vector2 shootingPlayer, float shotAngle, Rectangle enemyPart, Vector2 centre, float enemyRotation)
         {
             // Find centre and distance from centre to top left corner
-            Vector2 centre = new Vector2(enemyPart.X + enemyPart.Width * 0.5f, enemyPart.Y - enemyPart.Height * 0.5f);
+            //Vector2 centre = new Vector2(enemyPart.X + enemyPart.Width * 0.5f, enemyPart.Y - enemyPart.Height * 0.5f);
             float distance = Vector2.Distance(new Vector2(enemyPart.X, enemyPart.Y), centre);
 
             // Find the linear equation of the shot bullet
