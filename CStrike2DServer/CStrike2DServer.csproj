@@ -68,7 +68,6 @@
     <Compile Include="ServerMap.cs" />
     <Compile Include="ServerPlayer.cs" />
     <Compile Include="ServerWeapon.cs" />
-    <Compile Include="tilebackup.cs" />
     <Compile Include="WeaponData.cs" />
   </ItemGroup>
   <ItemGroup>

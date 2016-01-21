@@ -11,16 +11,44 @@ namespace CStrike2DServer
 {
     public class ServerPlayer
     {
+        /// <summary>
+        /// Username of the player
+        /// </summary>
         public string UserName { get; private set; }
-        public short Identifier { get; private set; }
-        public long ConnectionIdentifier { get; private set; }
-        public short EntityIdentifier { get; private set; }
 
+        /// <summary>
+        /// Unique identifier for each player
+        /// </summary>
+        public short Identifier { get; private set; }
+
+        /// <summary>
+        /// Unique identiifer with the client that is associated to this player
+        /// </summary>
+        public long ConnectionIdentifier { get; private set; }
+
+        /// <summary>
+        /// Current state of the player
+        /// </summary>
         public ServerClientInterface.PlayerState State { get; private set; }
+
+        /// <summary>
+        /// The palyer's current team
+        /// </summary>
         public ServerClientInterface.Team CurrentTeam { get; private set; }
+
+        /// <summary>
+        /// Current health
+        /// </summary>
         public int Health { get; private set; }
+
+        /// <summary>
+        /// Current armor
+        /// </summary>
         public int Armor { get; private set; }
 
+        /// <summary>
+        /// Position of the player
+        /// </summary>
         public Vector2 Position
         {
             get
@@ -29,23 +57,44 @@ namespace CStrike2DServer
             }
         }
 
-        private Vector2 position;
+        private Vector2 position;   // The position of the player
+
+        /// <summary>
+        /// The rotation of the player
+        /// </summary>
         public float Rotation { get; private set; }
 
+        /// <summary>
+        /// The player's current money
+        /// </summary>
         public int Money { get; private set; }
 
+        /// <summary>
+        /// The weapon the player is currently holding
+        /// </summary>
         public ServerWeapon CurrentWeapon { get; private set; }
+
+        /// <summary>
+        /// The player's priamry weapon
+        /// </summary>
         public ServerWeapon PrimaryWeapon { get; private set; }
+
+        /// <summary>
+        /// The player's secondary weapon
+        /// </summary>
         public ServerWeapon SecondaryWeapon { get; private set; }
+
+        /// <summary>
+        /// The player's knife
+        /// </summary>
         public ServerWeapon Knife { get; private set; }
 
-        public enum Team
-        {
-            CounterTerrorist,
-            Terrorist,
-            Spectator
-        }
-
+        /// <summary>
+        /// Creates the server-side version of a player
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="identifier"></param>
+        /// <param name="uniqueIdentifier"></param>
         public ServerPlayer(string username, short identifier, long uniqueIdentifier)
         {
             UserName = username;
@@ -59,16 +108,25 @@ namespace CStrike2DServer
             CurrentWeapon = Knife;
         }
 
+        /// <summary>
+        /// Fires the player's current weapon
+        /// </summary>
         public void FireWeapon()
         {
-            
         }
 
+        /// <summary>
+        /// Switches the player's weapon
+        /// </summary>
         public void SwitchWeapon()
         {
             
         }
 
+        /// <summary>
+        /// Moves the player in a direction
+        /// </summary>
+        /// <param name="direction"></param>
         public void Move(byte direction)
         {
             float moveX = 0;
@@ -105,25 +163,43 @@ namespace CStrike2DServer
                     break;
             }
 
+            // Normalize the vector so the player moves in all directions
+            // in equal amounts
             Vector2 normalized = Vector2.Normalize(new Vector2(moveX, moveY));
             position += normalized * ServerClientInterface.MOVEMENT_SPEED;
         }
 
+        /// <summary>
+        /// Rotates thes the player
+        /// </summary>
+        /// <param name="rotation"></param>
         public void Rotate(float rotation)
         {
             Rotation = rotation;
         }
 
+        /// <summary>
+        /// Changes the health of the player
+        /// </summary>
+        /// <param name="health"></param>
         public void SetHealth(int health)
         {
             Health = health;
         }
-
+        
+        /// <summary>
+        /// Changes the armor of the player
+        /// </summary>
+        /// <param name="armor"></param>
         public void SetArmor(int armor)
         {
             Armor = armor;
         }
 
+        /// <summary>
+        /// Sets the team of the player
+        /// </summary>
+        /// <param name="team"></param>
         public void SetTeam(byte team)
         {
             CurrentTeam = ServerClientInterface.ByteToTeam(team);
@@ -167,16 +243,28 @@ namespace CStrike2DServer
             
         }
 
+        /// <summary>
+        /// Sets the position of the player
+        /// </summary>
+        /// <param name="position"></param>
         public void SetPosition(Vector2 position)
         {
             this.position = position;
         }
 
+        /// <summary>
+        /// Sets the state of the player
+        /// </summary>
+        /// <param name="state"></param>
         public void SetState(ServerClientInterface.PlayerState state)
         {
             State = state;
         }
 
+        /// <summary>
+        /// Sets the weapon of the player
+        /// </summary>
+        /// <param name="weapon"></param>
         public void SetWeapon(WeaponData.Weapon weapon)
         {
             PrimaryWeapon = new ServerWeapon(weapon, this);
@@ -207,6 +295,11 @@ namespace CStrike2DServer
             ResetWeapons();
         }
 
+        /// <summary>
+        /// Damages the player
+        /// </summary>
+        /// <param name="health"></param>
+        /// <param name="armor"></param>
         public void Damage(int health, int armor)
         {
             Health -= health;

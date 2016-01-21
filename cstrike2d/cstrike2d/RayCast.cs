@@ -301,7 +301,7 @@ namespace CStrike2D
             sb.Draw(pixelTexture,
                     new Rectangle((int)emitPos.X, (int)emitPos.Y, (int)GetRayLength(), 2),
                     null,
-                    RayColor,
+                    Color.Yellow,
                     angle,
                     Vector2.Zero,
                     SpriteEffects.None,

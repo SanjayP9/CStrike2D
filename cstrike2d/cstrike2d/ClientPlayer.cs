@@ -12,13 +12,34 @@ namespace CStrike2D
 {
     public class ClientPlayer : Entity
     {
+        /// <summary>
+        /// Player's name
+        /// </summary>
         public string UserName { get; private set; }
-        public short Identifier { get; private set; }
-        public short EntityIdentifier { get; private set; }
 
+        /// <summary>
+        /// Player's unique identifier
+        /// </summary>
+        public short Identifier { get; private set; }
+
+        /// <summary>
+        /// The player's current state
+        /// </summary>
         public ServerClientInterface.PlayerState State { get; private set; }
+
+        /// <summary>
+        /// The player's current team
+        /// </summary>
         public ServerClientInterface.Team CurrentTeam { get; private set; }
+
+        /// <summary>
+        /// The player's health
+        /// </summary>
         public int Health { get; private set; }
+
+        /// <summary>
+        /// The player's armor
+        /// </summary>
         public int Armor { get; private set; }
 
         // Weapons
@@ -28,12 +49,17 @@ namespace CStrike2D
         public ClientWeapon Knife { get; private set; }
 
 
-        // State
-
+        /// <summary>
+        /// Order at which the player is drawn in
+        /// </summary>
         public override int DrawOrder { get; protected set; }
 
+        // Dimensions of the player
         public override Rectangle Dimensions { get; protected set; }
 
+        /// <summary>
+        /// Raycast for drawing bullet lines
+        /// </summary>
         public RayCast Shot { get; private set; }
 
         // Gets the position of the player
@@ -48,6 +74,7 @@ namespace CStrike2D
                 position = value;
             }
         }
+
         /// <summary>
         /// Gets the rotation of the player
         /// </summary>
@@ -63,9 +90,15 @@ namespace CStrike2D
             }
         }
 
-        private Vector2 position;
-        private float rotation;
+        private Vector2 position;   // Position of the player
+        private float rotation;     // Rotation of the player
 
+        /// <summary>
+        /// Creates a client-side version of the player class
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="identifier"></param>
+        /// <param name="assets"></param>
         public ClientPlayer(string username, short identifier, Assets assets)
             : base(assets)
         {
@@ -82,6 +115,10 @@ namespace CStrike2D
             Shot = new RayCast();
         }
 
+        /// <summary>
+        /// Update logic for player
+        /// </summary>
+        /// <param name="gameTime"></param>
         public override void Update(float gameTime)
         {
             CurrentWeapon.Update(gameTime);
@@ -89,19 +126,36 @@ namespace CStrike2D
             //SecondaryWeapon.Update(gameTime);
         }
 
+        /// <summary>
+        /// Draws player and weapons
+        /// </summary>
+        /// <param name="sb"></param>
         public override void Draw(SpriteBatch sb)
         {
+            // If the player is not a spectator and isn't dead
             if (CurrentTeam != ServerClientInterface.Team.Spectator && State != ServerClientInterface.PlayerState.Dead)
             {
-                sb.Draw(Assets.CTTexture, position, new Rectangle(0, 0, 32, 32), Color.White, 1.57f + rotation,
-                    new Vector2(16, 16),
-                    1f, SpriteEffects.None, 0);
+                if (CurrentTeam == ServerClientInterface.Team.CounterTerrorist)
+                {
+                    sb.Draw(Assets.CTTexture, position, new Rectangle(0, 0, 32, 32), Color.White, 1.57f + rotation,
+                        new Vector2(16, 16),
+                        1f, SpriteEffects.None, 0);
+                }
+                else
+                {
+                    sb.Draw(Assets.TTexture, position, new Rectangle(0, 0, 32, 32), Color.White, 1.57f + rotation,
+                        new Vector2(16, 16),
+                        1f, SpriteEffects.None, 0);
+                }
 
+                // Draw their name
                 sb.DrawString(Assets.DefaultFont, UserName, new Vector2(position.X, position.Y - 50),
                     CurrentTeam == ServerClientInterface.Team.CounterTerrorist ? Color.Blue : Color.Red);
 
+                // Draws the weapon
                 CurrentWeapon.Draw(sb);
 
+                // Draws the current weapon
                 if (CurrentWeapon.Fired)
                 {
                     Shot.Draw(sb, Assets.PixelTexture);
@@ -109,8 +163,12 @@ namespace CStrike2D
             }
         }
 
+        /// <summary>
+        /// Fires the current weapon
+        /// </summary>
         public void Fire()
         {
+            // If the weapon has not been fired yet
             if (!CurrentWeapon.Fired)
             {
                 CurrentWeapon.FireWeapon();
@@ -118,6 +176,8 @@ namespace CStrike2D
             }
         }
 
+       
+        // UNFINISHED
         public void SwitchWeapon()
         {
 
@@ -132,6 +192,7 @@ namespace CStrike2D
         {
             
         }
+         
 
         /// <summary>
         /// Used by the server
@@ -162,6 +223,11 @@ namespace CStrike2D
             CurrentWeapon = Knife;
         }
 
+
+        /// <summary>
+        /// Moves the player
+        /// </summary>
+        /// <param name="direction"></param>
         public void Move(byte direction)
         {
             float moveX = 0;
@@ -202,41 +268,73 @@ namespace CStrike2D
             position += normalized * ServerClientInterface.MOVEMENT_SPEED;
         }
 
+        /// <summary>
+        /// Sets the player's health
+        /// </summary>
+        /// <param name="health"></param>
         public void SetHealth(int health)
         {
             Health = health;
         }
 
+        /// <summary>
+        /// Sets the player's armor
+        /// </summary>
+        /// <param name="armor"></param>
         public void SetArmor(int armor)
         {
             Armor = armor;
         }
 
+        /// <summary>
+        /// Sets the position of the player
+        /// </summary>
+        /// <param name="position"></param>
         public void SetPosition(Vector2 position)
         {
             this.position = position;
         }
 
+        /// <summary>
+        /// Sets the rotation of the player
+        /// </summary>
+        /// <param name="rotation"></param>
         public void SetRotation(float rotation)
         {
             this.rotation = rotation;
         }
 
+        /// <summary>
+        /// Sets the team of the player
+        /// </summary>
+        /// <param name="team"></param>
         public void SetTeam(byte team)
         {
             CurrentTeam = ServerClientInterface.ByteToTeam(team);
         }
 
+        /// <summary>
+        /// Sets the state of the player given the byte
+        /// </summary>
+        /// <param name="state"></param>
         public void SetState(byte state)
         {
             State = ServerClientInterface.ByteToState(state);
         }
 
+        /// <summary>
+        /// Sets the state of the player given the enum
+        /// </summary>
+        /// <param name="state"></param>
         public void SetState(ServerClientInterface.PlayerState state)
         {
             State = state;
         }
 
+        /// <summary>
+        /// Respawns the player
+        /// </summary>
+        /// <param name="location"></param>
         public void Respawn(Vector2 location)
         {
             position = location;
@@ -247,6 +345,11 @@ namespace CStrike2D
             ResetWeapons();
         }
 
+        /// <summary>
+        /// Damaages the player
+        /// </summary>
+        /// <param name="health"></param>
+        /// <param name="armor"></param>
         public void Damage(int health, int armor)
         {
             Health -= health;

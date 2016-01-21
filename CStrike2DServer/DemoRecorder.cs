@@ -14,13 +14,16 @@ namespace CStrike2DServer
 {
     class DemoRecorder
     {
-        private int tick;
-        private int flushCount;
-        private int numTicks;
-        private StreamWriter writer;
-        private string fileName;
-        private Random rand = new Random();
+        private int tick;                   // Current tick
+        private int flushCount;             // Ticks before flushing to disk
+        private int numTicks;               // Number of ticks that have passed in total
+        private StreamWriter writer;        // Used to write to disk
+        private string fileName;            // File name to write to disk
+        private Random rand = new Random(); // Random generator
 
+        /// <summary>
+        /// The current state of the recorder
+        /// </summary>
         public State RecorderState { get; private set; }
 
         public enum State
@@ -29,6 +32,9 @@ namespace CStrike2DServer
             Recording,
         }
 
+        /// <summary>
+        /// Initializes a recorder that saves the state of a game
+        /// </summary>
         public DemoRecorder()
         {
             RecorderState = State.InActive;
@@ -37,6 +43,10 @@ namespace CStrike2DServer
         }
 
 
+        /// <summary>
+        /// Starts recording
+        /// </summary>
+        /// <param name="mapName"></param>
         public void StartRecording(string mapName)
         {
             RecorderState = State.Recording;
@@ -50,6 +60,9 @@ namespace CStrike2DServer
             writer = File.CreateText(fileName);
         }
 
+        /// <summary>
+        /// Ends the recording, saves, then closes the file
+        /// </summary>
         public void EndRecording()
         {
             writer.WriteLine(numTicks);
@@ -57,10 +70,14 @@ namespace CStrike2DServer
             writer.Close();
         }
 
+        /// <summary>
+        /// Update logic
+        /// </summary>
         public void Update()
         {
             tick++;
 
+            // Every 8 ticks, take a snapshot of the world
             if (tick == 8)
             {
                 SnapShot();
@@ -69,6 +86,8 @@ namespace CStrike2DServer
                 numTicks++;
             }
 
+            // Every 320 ticks, flush the data to disk to ensure
+            // not as much data is lost if the server crashes
             if (flushCount == 40)
             {
                 writer.Flush();
@@ -76,10 +95,14 @@ namespace CStrike2DServer
             }
         }
 
+        /// <summary>
+        /// Takes a snapshot of the current players in the game
+        /// </summary>
         public void SnapShot()
         {
             List<ServerPlayer> players = Server.RetrievePlayers();
 
+            // Take the number of players and each player's position and rotation
             writer.WriteLine(players.Count);
             foreach (ServerPlayer player in players)
             {

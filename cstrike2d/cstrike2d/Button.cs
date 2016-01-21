@@ -12,6 +12,9 @@ namespace CStrike2D
 {
     public sealed class Button : GUIComponent
     {
+        /// <summary>
+        /// The current state of the button
+        /// </summary>
         public override State CurState { get; protected set; }
 
         /// <summary>

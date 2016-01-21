@@ -12,7 +12,14 @@ namespace CStrike2D
 {
     public sealed class Bar : GUIComponent
     {
+        /// <summary>
+        /// Current state of the bar
+        /// </summary>
         public override State CurState { get; protected set; }
+
+        /// <summary>
+        /// Identifier of this bar
+        /// </summary>
         public override string Identifier { get; protected set; }
 
         private Vector2 startPosition;
