@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CStrike2D;
+﻿// Author: Mark Voong
+// File Name: ServerWeapon.cs
+// Project Name: Global Offensive
+// Creation Date: Jan 15th, 2016
+// Modified Date: Jan 19th, 2016
+// Description: Serverside version of the weapon class.
 using Microsoft.Xna.Framework;
 
 namespace CStrike2DServer

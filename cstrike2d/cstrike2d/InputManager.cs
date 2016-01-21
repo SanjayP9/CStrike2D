@@ -1,8 +1,8 @@
 ﻿// Author: Mark Voong
 // File Name: InputManager.cs
-// Project Name: CStrike2D
+// Project Name: Global Offensive
 // Creation Date: Sept 10th, 2015
-// Modified Date: Dec 31st, 2015
+// Modified Date: Jan 18th, 2016
 // Description: Handles all input from the user
 using System;
 using System.Linq;

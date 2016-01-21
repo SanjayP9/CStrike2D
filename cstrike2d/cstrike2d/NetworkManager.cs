@@ -1,7 +1,8 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO.Ports;
-using System.Threading;
+﻿// Author: Mark Voong
+// Class Name: NetworkManager.cs
+// Project Name: CStrike2D
+// Creation Date: Dec 31st, 2015
+// Modified Date: Jan 10th, 2016
 using CStrike2DServer;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
@@ -10,44 +11,70 @@ namespace CStrike2D
 {
     public class NetworkManager
     {
+        // Address and version
         private string address;
         private string clientVersion = "0.0.1a";
+
+        /// <summary>
+        /// The user's name
+        /// </summary>
         public string ClientName { get; private set; }
+
+        // Lidgren configuration for client
         private NetPeerConfiguration config;
         private NetClient client;
-        private NetBuffer buffer;
+
+        // Messaging
         private NetIncomingMessage msg;
         private NetOutgoingMessage outMsg;
+
+        // Data statistics
         private int counter;
         private int byteCount;
 
+        // The game engine instance
         GameEngine engine;
 
+        /// <summary>
+        /// The current state of the network manager
+        /// </summary>
         public NetState CurState { get; private set; }
 
-        public short PlayerID { get; private set; }
-
-        // Player
+        /// <summary>
+        /// The player's unique identifier assigned by the server
+        /// </summary>
         public short UniqueIdentifier { get; private set; }
 
+        /// <summary>
+        /// States the network manager could be in
+        /// </summary>
         public enum NetState
         {
-            Disconnected,
-            Handshake,
-            Connected
+            Disconnected,   // Not connected
+            Handshake,      // Syncing with a potential server
+            Connected       // Connected
         }
 
+        /// <summary>
+        /// Initializes the network processor class
+        /// </summary>
+        /// <param name="engine"></param>
         public NetworkManager(GameEngine engine)
         {
+            // Initialize config for network and set local copy
+            // of engine instance
             config = new NetPeerConfiguration("cstrike");
             client = new NetClient(config);
             CurState = NetState.Disconnected;
-            buffer = new NetBuffer();
             ClientName = "DevHalo";
             this.engine = engine;
         }
 
 
+        /// <summary>
+        /// Initiates a connection to a server
+        /// </summary>
+        /// <param name="address"></param>
         public void Connect(string address)
         {
             if (CurState != NetState.Connected)
@@ -148,6 +175,7 @@ namespace CStrike2D
                                             id = msg.ReadInt16();
                                             player = engine.Players.Find(ply => ply.Identifier == id);
                                             player.Respawn(new Vector2(msg.ReadFloat(), msg.ReadFloat()));
+                                            engine.PlaySound(player, "pickup");
                                             break;
                                         case ServerClientInterface.PLAYER_DISCONNECTED:
                                             id = msg.ReadInt16();
@@ -166,6 +194,9 @@ namespace CStrike2D
                                             break;
                                         case ServerClientInterface.EXPLODE_FLASHBANG:
                                             engine.FlashPlayer();
+                                            break;
+                                        case ServerClientInterface.DAMAGE:
+                                            engine.Damage(msg.ReadInt16(), msg.ReadInt32(), msg.ReadInt32());
                                             break;
                                     }
                                 }
@@ -224,6 +255,16 @@ namespace CStrike2D
             outMsg.Write(ServerClientInterface.BUY_WEAPON);
             outMsg.Write(WeaponData.WeaponToByte(weapon));
             client.SendMessage(outMsg, NetDeliveryMethod.ReliableSequenced);
+        }
+
+        /// <summary>
+        /// Asks the server if the player can respawn
+        /// </summary>
+        public void RequestRespawn()
+        {
+            outMsg = client.CreateMessage();
+            outMsg.Write(ServerClientInterface.REQUEST_RESPAWN);
+            client.SendMessage(outMsg, NetDeliveryMethod.UnreliableSequenced);
         }
 
         public void SyncWorld()

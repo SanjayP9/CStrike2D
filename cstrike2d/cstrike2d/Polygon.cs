@@ -1,5 +1,7 @@
 ﻿// Author: Rob Stephens
 // File Name: Polygon.cs
+// Project Name: PolygonTriangulation
+// Creation Date: Added to project Jan 16th, 2016
 // Description: Used in polygon triangulation
 // - Edits were made including converting all FloatF types
 // into Vector2s. Everything else is the same

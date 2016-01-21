@@ -1,8 +1,8 @@
 ﻿// Author: Mark Voong
-// File Name: View.cs
-// Project: CStrike2D
-// Date Created: Dec 6th 2015
-// Date Modified: Jan 3rd 2016
+// File Name: Bar.cs
+// Project Name: Global Offensive
+// Creation Date: Jan 2nd, 2016
+// Modified Date: Jan 3rd, 2016
 // Description: Handles all graphical aspects of the game
 using LightEngine;
 using Microsoft.Xna.Framework;

@@ -1,12 +1,10 @@
 ﻿// Author: Mark Voong
 // File Name: TextBox.cs
-// Project Name: CStrike2D
+// Project Name: Global Offensive
 // Creation Date: Jan 2nd, 2016
 // Modified Date: Jan 2nd, 2016
 // Description: Handles all input from the user
 
-using System;
-using System.Net.NetworkInformation;
 using LightEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

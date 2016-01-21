@@ -1,8 +1,8 @@
 ﻿// Author: Mark Voong
 // File Name: Button.cs
-// Project Name: CStrike2D
-// Creation Date: Dec 23rd 2015
-// Modified Date: Jan 3rd 2016
+// Project Name: Global Offensive
+// Creation Date: Dec 23rd, 2015
+// Modified Date: Jan 8th, 2016
 // Description: Creates a button, which can be clicked
 using LightEngine;
 using Microsoft.Xna.Framework;

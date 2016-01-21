@@ -1,12 +1,10 @@
 ﻿// Author: Mark Voong
 // File Name: Assets.cs
-// Project Name: CStrike2D
+// Project Name: Global Offensive
 // Creation Date: Dec 23rd, 2015
-// Modified Date: Jan 3rd, 2016
+// Modified Date: Jan 20th, 2016
 // Description: Stores all assets required in the game and is globally accessible
-
 using System;
-using System.IO;
 using CStrike2DServer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -109,6 +107,9 @@ namespace CStrike2D
             instance.Model.AudioManager.AddSound(new SoundContainer("rounddraw", coreContentLoader.Load<SoundEffect>("sound/sfx/radio/rounddraw")));
             instance.Model.AudioManager.AddSound(new SoundContainer("terwin", coreContentLoader.Load<SoundEffect>("sound/sfx/radio/terwin")));
 
+            instance.Model.AudioManager.AddSound(new SoundContainer("pickup", coreContentLoader.Load<SoundEffect>("sound/sfx/player/pickup")));
+            instance.Model.AudioManager.AddSound(new SoundContainer("death4", coreContentLoader.Load<SoundEffect>("sound/sfx/player/death4")));
+
             BlurEffect = coreContentLoader.Load<Effect>("fx/blur");
         }
 
@@ -198,11 +199,6 @@ namespace CStrike2D
                 default:
                     throw new ArgumentOutOfRangeException("weapon", weapon, null);
             }
-        }
-
-        public Texture2D[] ReturnWeaponTextures(WeaponInfo.Weapon weapon)
-        {
-            throw new NotImplementedException();
         }
     }
 }

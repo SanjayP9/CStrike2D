@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Configuration;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Author: Mark Voong
+// File Name: ServerPlayer.cs
+// Project Name: Global Offensive
+// Creation Date: Jan 15th, 2016
+// Modified Date: Jan 19th, 2016
+// Description: Serverside version of the player class. Handles all
+//              serverside logic of a player
 using Microsoft.Xna.Framework;
 
 namespace CStrike2DServer
@@ -17,8 +18,8 @@ namespace CStrike2DServer
 
         public ServerClientInterface.PlayerState State { get; private set; }
         public ServerClientInterface.Team CurrentTeam { get; private set; }
-        public float Health { get; private set; }
-        public float Armor { get; private set; }
+        public int Health { get; private set; }
+        public int Armor { get; private set; }
 
         public Vector2 Position
         {
@@ -201,10 +202,12 @@ namespace CStrike2DServer
             position = location;
             State = ServerClientInterface.PlayerState.Alive;
             CurrentWeapon = Knife;
+            Health = 100;
+            Armor = 0;
             ResetWeapons();
         }
 
-        public void Damage(float health, float armor)
+        public void Damage(int health, int armor)
         {
             Health -= health;
             Armor -= armor;

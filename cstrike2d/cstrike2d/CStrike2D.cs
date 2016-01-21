@@ -1,10 +1,9 @@
 // Author: Mark Voong
 // File Name: CStrike2D.cs
-// Project Name: CStrike2D
+// Project Name: Global Offensive
 // Creation Date: Sept 28th, 2015
-// Modified Date: Jan 3rd, 2016
+// Modified Date: Jan 18th, 2016
 // Description: Driver class. Holds all MVC components of the game
-
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

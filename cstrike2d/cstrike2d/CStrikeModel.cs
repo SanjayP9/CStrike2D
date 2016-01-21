@@ -2,7 +2,7 @@
 // File Name: CStrikeModel.cs
 // Project Name: Global Offensive
 // Creation Date: Dec 21st, 2015
-// Modified Date: Jan 15th, 2016
+// Modified Date: Jan 20th, 2016
 // Description: Handles all logic processing of the game
 using System;
 using System.Diagnostics;
@@ -121,8 +121,6 @@ namespace CStrike2D
             NetworkManager = new NetworkManager(GameEngine);
 
             Shader = new ShaderRenderer(driver);
-
-            Editor = new LevelEditor(this);
         }
 
         /// <summary>
@@ -429,6 +427,7 @@ namespace CStrike2D
                         InterfaceManager.HideAll();
                         AudioManager.PlaySound("buttonclick", AudioManager.UiVolume);
                         CurState = State.LevelEditor;
+                        Editor = new LevelEditor(this);
                     }
 
                     if (InterfaceManager.Clicked(Input, "playMenu", "connectButton"))
@@ -526,7 +525,15 @@ namespace CStrike2D
                     }
                     break;
                 case State.LevelEditor:
-                    Editor.Update(gameTime);
+                    if (Editor.CurrentState != LevelEditor.EditorStates.Exit)
+                    {
+                        Editor.Update(gameTime);
+                    }
+                    else
+                    {
+                        CurState = State.Menu;
+                        InterfaceManager.ShowPage("defaultMenu");
+                    }
                     break;
                 case State.InGame:
                     GameEngine.Update(gameTime);

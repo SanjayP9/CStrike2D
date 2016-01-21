@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Author: Mark Voong
+// File Name: ClientPlayer.cs
+// Project Name: Global Offensive
+// Creation Date: Jan 15th, 2016
+// Modified Date: Jan 20th, 2016
+// Description: Handles logic for the player.
 using CStrike2DServer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -82,8 +83,8 @@ namespace CStrike2D
         public override void Update(float gameTime)
         {
             CurrentWeapon.Update(gameTime);
-            PrimaryWeapon.Update(gameTime);
-            SecondaryWeapon.Update(gameTime);
+            //PrimaryWeapon.Update(gameTime);
+            //SecondaryWeapon.Update(gameTime);
         }
 
         public override void Draw(SpriteBatch sb)
@@ -225,6 +226,8 @@ namespace CStrike2D
             position = location;
             State = ServerClientInterface.PlayerState.Alive;
             CurrentWeapon = Knife;
+            Health = 100;
+            Armor = 0;
             ResetWeapons();
         }
 

@@ -516,7 +516,7 @@ namespace CStrike2DServer
                                             MapData.TTile[spawnPoint].TileRect.Y + 16);
                                         break;
                                 }
-                                RespawnPlayer(player, spawnLocation);
+                                RespawnPlayer(player);
                                 break;
                             case ServerClientInterface.MOVE_UP:
                             case ServerClientInterface.MOVE_DOWN:
@@ -541,6 +541,17 @@ namespace CStrike2DServer
                             case ServerClientInterface.EXPLODE_FLASHBANG:
                                 outMsg.Write(ServerClientInterface.EXPLODE_FLASHBANG);
                                 server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
+                                break;
+                            case ServerClientInterface.REQUEST_RESPAWN:
+                                // Client requested respawn
+                                player =
+                                    players.Find(
+                                        ply => ply.ConnectionIdentifier == msg.SenderConnection.RemoteUniqueIdentifier);
+
+                                if (player.State == ServerClientInterface.PlayerState.Dead)
+                                {
+                                    RespawnPlayer(player);
+                                }
                                 break;
                         }
                         break;
@@ -612,16 +623,33 @@ namespace CStrike2DServer
                 // The shooter can't shoot themself, obviously.
                 if (player != shooter)
                 {
-                    Vector2 delta = shooter.Position - player.Position;
-                    float angle = (float)Math.Atan2(delta.Y, delta.X);
 
                     // If the shot passes through the player 
                     if (Collision.BulletToPlayer(shooter.Position, player.Position,
-                        angle, 22f))
+                        shooter.Rotation, 24f, new Rectangle(
+                            (int)player.Position.X -16, (int)player.Position.Y +16,
+                            32, 32), player.Rotation) && player.State == ServerClientInterface.PlayerState.Alive)
                     {
+                        player.Damage(15, 0);
+
+                        if (player.Health <= 0)
+                        {
+                            player.SetHealth(0);
+                            player.SetArmor(0);
+                            player.SetState(ServerClientInterface.PlayerState.Dead);
+                            Console.WriteLine(shooter.UserName + " killed " + player.UserName +
+                                " with " + shooter.CurrentWeapon.Weapon);
+                        }
+
+                        outMsg = server.CreateMessage();
+                        outMsg.Write(ServerClientInterface.DAMAGE);
+                        outMsg.Write(player.Identifier);
+                        outMsg.Write(player.Health);
+                        outMsg.Write(player.Armor);
+                        server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                         // Check if there are any obstacles in between the player and
                         // the shooter
-                        Console.WriteLine("fucker got dinked");
+                        Console.WriteLine("lit for 99 with weapon_ak47. csgo logic");
                     }
                 }
             }
@@ -740,8 +768,24 @@ namespace CStrike2DServer
             player.SetPosition(location);
         }
 
-        static void RespawnPlayer(ServerPlayer player, Vector2 location)
+        static void RespawnPlayer(ServerPlayer player)
         {
+            Vector2 location = Vector2.Zero;
+            int spawnPoint;
+            switch (player.CurrentTeam)
+            {
+                case ServerClientInterface.Team.CounterTerrorist:
+                    spawnPoint = rand.Next(0, MapData.CTTile.Count);
+                    location = new Vector2(MapData.CTTile[spawnPoint].TileRect.X + 16,
+                        MapData.CTTile[spawnPoint].TileRect.Y + 16);
+                    break;
+                case ServerClientInterface.Team.Terrorist:
+                    spawnPoint = rand.Next(0, MapData.TTile.Count);
+                    location = new Vector2(MapData.TTile[spawnPoint].TileRect.X + 16,
+                        MapData.TTile[spawnPoint].TileRect.Y + 16);
+                    break;
+            }
+
             outMsg = server.CreateMessage();
             player.Respawn(location);
             outMsg.Write(ServerClientInterface.RESPAWN_PLAYER);

@@ -1,9 +1,14 @@
-﻿using System;
+﻿// Author: Mark Voong
+// File Name: DemoRecorder.cs
+// Project Name: Global Offensive
+// Creation Date: Jan 18th, 2016
+// Modified Date: Jan 18th, 2016
+// Description: Records a snapshot of the game, every few ticks
+//              These snapshots are saved to a file, which is compressed
+//              for distribution and is uncompressed to view the playback
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CStrike2DServer
 {

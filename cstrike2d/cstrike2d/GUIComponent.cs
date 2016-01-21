@@ -1,6 +1,6 @@
 ﻿// Author: Mark Voong
 // File Name: GUIComponent.cs
-// Project Name: CStrike2D
+// Project Name: Global Offensive
 // Creation Date: Dec 21st, 2015
 // Modified Date: Jan 2nd, 2016
 // Description: Base class for a UI component. Has basic functions for

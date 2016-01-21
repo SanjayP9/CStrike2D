@@ -1,19 +1,16 @@
 ﻿// Author: Sanjay Paraboo
 // File Name: AI.cs
-// Project Name: Global Offensive ISU
+// Project Name: Global Offensive
 // Creation Date: Dec 20th, 2015
-// Modified Date: Jan 18th, 2015
+// Modified Date: Jan 20th, 2016
 // Description: This class has all of the update and draw logic for an AI player.
 //              An Ai has the same functinality as a player except they are controlled by the server and they
 //              Get to objectives by using the A star pathfinding algorithm
-
 using CStrike2DServer;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CStrike2D
 {

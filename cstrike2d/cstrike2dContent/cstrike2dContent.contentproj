@@ -64,7 +64,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="sound\sfx\player\" />
     <Folder Include="texture\weapon\aug\" />
     <Folder Include="texture\weapon\famas\" />
     <Folder Include="texture\weapon\mp7\" />
@@ -354,6 +353,27 @@
       <Name>Smoke</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="sound\sfx\player\death4.wav">
+      <Name>death4</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="sound\sfx\player\armorbuy.wav">
+      <Name>armorbuy</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="sound\sfx\player\pickup.wav">
+      <Name>pickup</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

@@ -1,15 +1,10 @@
 ﻿// Author: Sanjay Paraboo
 // File Name: ClientGrenade.cs
-// Project Name: Globabl offensive ISU
+// Project Name: Global Offensive
 // Creation Date: Dec 20th, 2015
 // Modified Date: Jan 18th, 2016
 // Description: Used to create an instance of a grenade in the player class
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
