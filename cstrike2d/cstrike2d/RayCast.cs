@@ -51,10 +51,11 @@ namespace CStrike2D
         /// <param name="rayLineLength"> Passes through the max length of the ray </param>
         /// <param name="tiles"> Passes through the tiles on the map </param>
         /// <param name="angle"> Passes through the angle of the ray </param>
-        public void Update(Vector2 emitPos, Vector2 directionVect, float rayLineLength, Tile[,] tiles, float angle)
+        public void Update(Vector2 emitPos, float rayLineLength, Map map, float angle)
         {
+            directionVect = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
             // Runs raycast method for and stores the returned result in RayCastLine
-            RayCastLine = RayCastMethod(emitPos, directionVect, rayLineLength, tiles, angle);
+            RayCastLine = RayCastMethod(emitPos, directionVect, rayLineLength, map, angle);
 
             // Sets global Collision Pos to the one obtained from RayCastLine
             CollisionPos = RayCastLine.CollisionPos;
@@ -80,10 +81,9 @@ namespace CStrike2D
         /// <param name="emitPos"> Passes through the ray emitter vector </param>
         /// <param name="directionVect"> specifies the direction vector of the ray </param>
         /// <param name="rayLineLength"> Passes through the max ray length </param>
-        /// <param name="tiles"> Passes through the map tiles </param>
         /// <param name="angle"> Passes through the angle of the ray </param>
         /// <returns></returns>
-        public RayCastResult RayCastMethod(Vector2 emitPos, Vector2 directionVect, float rayLineLength, Tile[,] tiles, float angle)
+        public RayCastResult RayCastMethod(Vector2 emitPos, Vector2 directionVect, float rayLineLength, Map map, float angle)
         {
             // Sets global variables values to values btained from local variables
             this.emitPos = emitPos;
@@ -98,7 +98,7 @@ namespace CStrike2D
             if (rayLineLength == 0f)
             {
                 castResult.CollisionPos = emitPos;
-                castResult.IsColliding = (IsVectorAccessible(emitPos, tiles));
+                castResult.IsColliding = (IsVectorAccessible(emitPos, map));
 
                 return castResult;
             }
@@ -127,7 +127,7 @@ namespace CStrike2D
                     Vector2 tempPoint = pointsOnRay[index];
 
                     // If the vector at the point above is not accessible then a collision point is found
-                    if (!(IsVectorAccessible(tempPoint, tiles)))
+                    if (!(IsVectorAccessible(tempPoint, map)))
                     {
                         castResult.CollisionPos = tempPoint;
                         castResult.IsColliding = true;
@@ -173,30 +173,29 @@ namespace CStrike2D
             return new Vector2(point.Y, point.X);
         }
 
-
         /// <summary>
         /// Given a Vector2 point and the tiles that are on the map it will return whether or not the Vector2 is inside or on a wall
         /// </summary>
         /// <param name="point"></param>
-        /// <param name="tiles"></param>
         /// <returns></returns>
-        public bool IsVectorAccessible(Vector2 point, Tile[,] tiles)
+        public bool IsVectorAccessible(Vector2 point, Map map)
         {
             // Gets current tile based on the coordinates of the point. Math.Floor was used to
             // get the tile number because tileX and tileY cannot be decimals.
-            int tileX = (int)Math.Floor(point.X / TileManager.TILE_SIDE_LENGTH);
-            int tileY = (int)Math.Floor(point.Y / TileManager.TILE_SIDE_LENGTH);
+            int tileX = (int)Math.Floor(point.X / Map.TILE_SIZE);
+            int tileY = (int)Math.Floor(point.Y / Map.TILE_SIZE);
 
             // If the tile is ever outside of the 2D tile array then the point will be assumed inaccessable and will be treated
             // like a solid tile
-            if ((tileX < 0) || (tileY < 0) || (tileX >= TileManager.TILE_X) || (tileY >= TileManager.TILE_Y))
+            if ((tileX < 0) || (tileY < 0) || (tileX >= map.MapArea.Width) || (tileY >= map.MapArea.Height) ||
+                map.TileMap[tileX, tileY] == null)
             {
                 return false;
             }
 
             // Using tileX and tileY checks if the tile stored in the 2D tile array at that location is collidable
             // If point is collidable it cannot be accessible
-            return tiles[tileX, tileY].Property != Tile.SOLID;
+            return map.TileMap[tileX, tileY].Property != Tile.SOLID;
 
         }
 

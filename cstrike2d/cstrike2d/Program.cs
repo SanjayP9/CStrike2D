@@ -19,4 +19,3 @@ namespace CStrike2D
     }
 #endif
 }
-
