@@ -179,8 +179,8 @@ namespace CStrike2D
         /// <summary>
         /// Given a Vector2 point and the tiles that are on the map it will return whether or not the Vector2 is inside or on a wall
         /// </summary>
-        /// <param name="point"></param>
-        /// <param name="tiles"></param>
+        /// <param name="point"> Passes through point to check </param>
+        /// <param name="tiles"> Passes though tile set for map </param>
         /// <returns></returns>
         public bool IsVectorAccessible(Vector2 point, Map map)
         {
