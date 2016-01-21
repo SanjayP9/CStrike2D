@@ -150,7 +150,7 @@ namespace CStrike2D
         /// <param name="sb"> Passes through SpriteBatch instance in order to use Draw method </param>
         public void Draw(SpriteBatch sb)
         {
-            // 
+            // Draws the grenade particles based upon the current nade type
             switch (NadeType)
             {
                 case Particle.ParticleTypes.Frag:

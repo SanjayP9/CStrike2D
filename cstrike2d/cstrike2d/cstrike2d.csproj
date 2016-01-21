@@ -109,7 +109,6 @@
     <Compile Include="Particle.cs" />
     <Compile Include="Polygon.cs" />
     <Compile Include="RayCast.cs" />
-    <Compile Include="RayEmitter.cs" />
     <Compile Include="ShaderRenderer.cs" />
     <Compile Include="SoundContainer.cs" />
     <Compile Include="TextBox.cs" />

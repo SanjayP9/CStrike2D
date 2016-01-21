@@ -60,14 +60,14 @@ namespace CStrike2D
         // Stores the current particle type
         public ParticleTypes Type { get; private set; }
 
-        
+
         /// <summary>
         /// Used to create an instance of a particle and based on its particle type it will have certain attributes
         /// </summary>
         /// <param name="emitVect"> Passes through the emitter vector2 </param>
         /// <param name="particleType"> Specifies what particle to create </param>
         /// <param name="playerAngle"> Specifies what angle the player is at </param>
-        public Particle(Vector2 emitVect,ParticleTypes particleType, float playerAngle)
+        public Particle(Vector2 emitVect, ParticleTypes particleType, float playerAngle)
         {
             // Sets class level variables to ones retrieved in parameter
             this.ParticlePosition = emitVect;
@@ -79,11 +79,12 @@ namespace CStrike2D
             {
                 case ParticleTypes.Frag:
 
+                    // Particle color starts off as yellow for a frag grenade
                     particleColor = new Color(250, 250, 0);
-
-
+                    // Direction is randomly genarated in a 360 degree radius
                     particleDirection = CalcDirectionVect(CStrike2D.Rand.Next(0, 361));
 
+                    // 10% chance of having a high velocity particle
                     if (CStrike2D.Rand.Next(0, 101) < 10)
                     {
                         particleVelocity = 5.0f;
@@ -93,51 +94,62 @@ namespace CStrike2D
                         particleVelocity = 3.0f;
                     }
 
+                    // Scales the intial size to 20% and sets the initial transparency to 100%
                     particleScale = 0.2f;
                     ParticleTransparency = 1.0f;
-
-
                     break;
 
                 case ParticleTypes.Smoke:
+
+                    // Updates the smoke particle every SMOKE_UPDATE_FREQ
                     updateFreq = SMOKE_UPDATE_FREQ;
 
+                    // Sets initial color to Cray and randomly generates a direciton from a 360 degree radius
                     particleColor = Color.Gray;
                     particleDirection = CalcDirectionVect(CStrike2D.Rand.Next(0, 361));
 
-
+                    // Initial velocity and transparency set to 1
                     particleVelocity = 1.0f;
                     ParticleTransparency = 1.0f;
+                    // Initla particle scale is 150%
                     particleScale = 1.5f;
-
                     break;
 
                 case ParticleTypes.GunSmoke:
+                    // Sets Color to light gray
                     particleColor = new Color(120, 120, 120);
-
+                    // Gets the direction from the direciton of the player barrel
                     particleDirection = CalcDirectionVect(playerAngle);
 
+                    // Has default values for velocity and transparency and scale is set to 1%
                     particleVelocity = 1.0f;
                     ParticleTransparency = 1.0f;
                     particleScale = 0.01f;
 
+                    // Matches the rotation to the players angle
                     rotation = playerAngle;
                     break;
 
                 case ParticleTypes.Debris:
+                    // Sets intial color to transparent
                     particleColor = Color.White;
                     break;
 
                 case ParticleTypes.Shell:
+                    // No overlay color
                     particleColor = Color.White;
 
+                    // randomly gets a direction from a 52 degree radius that perpendicular to the player angle
                     particleDirection = CalcDirectionVect(playerAngle + (((CStrike2D.Rand.Next(0, 52) - 52) / 100f)));
                     ParticleTransparency = 1.0f;
+                    // random velocity from 2.5 to 3.5
                     particleVelocity = CStrike2D.Rand.Next(25, 35) / 10f;
 
+                    // Texture scales to 2%
                     particleScale = 0.02f;
 
-                    rotationChange = 0.6f * (float)(CStrike2D.Rand.NextDouble()*(CStrike2D.Rand.Next(0, 2) - 1f));
+                    // Constant rotation change id randomly generated so each shell has a unique movement
+                    rotationChange = 0.6f * (float)(CStrike2D.Rand.NextDouble() * (CStrike2D.Rand.Next(0, 2) - 1f));
                     break;
 
                 default:
@@ -161,6 +173,7 @@ namespace CStrike2D
 
             if ((ParticleTransparency <= 0.0f) && (Type == ParticleTypes.Smoke))
             {
+                // If the current particle type is a smoke set it to respawn when it dissapears
                 Respawn();
             }
 
@@ -170,7 +183,7 @@ namespace CStrike2D
             {
                 case ParticleTypes.Frag:
 
-                    // Changes RGB colors based on its current values
+                    // Changes RGB colors based on its current values it will go from yellow to orange to red to black
                     if (particleColor.G > 165)
                     {
                         particleColor.G -= 17;
@@ -187,7 +200,7 @@ namespace CStrike2D
                         }
                     }
 
-                    // Decrements the transparency, velocity and scale
+                    // Decrements the transparency, velocity and increases scale
                     ParticleTransparency -= 0.02f;
                     particleVelocity -= 0.025f;
 
@@ -209,16 +222,17 @@ namespace CStrike2D
                     break;
 
                 case ParticleTypes.Debris:
-                    // If the velocity 
+                    // If the velocity is not less than or equal to 0 it wil decrement the velocity
                     if (!(particleVelocity <= 0.0f))
                     {
                         particleVelocity -= 0.25f;
                     }
-                    else
+                    else// if the velocity is under 0 sets it back to zero
                     {
                         particleVelocity = 0.0f;
                     }
-
+                    
+                    // After 3 secodns the debrris dissapears
                     if (particleLifeTime >= 3.0f)
                     {
                         ParticleTransparency -= 0.05f;
@@ -226,21 +240,23 @@ namespace CStrike2D
                     break;
 
                 case ParticleTypes.Shell:
+
+                    // If the velocity is more than zero it derements the velocity and rotates the texture
                     if (!(particleVelocity <= 0.0f))
                     {
                         particleVelocity -= 0.16f;
                         rotation += rotationChange;
                     }
-                    else
+                    else // If the velocity is less than 0 it sets it to 0
                     {
                         particleVelocity = 0.0f;
                     }
+
+                    // If the shell lasts more than 0.35 seconds it will start to disapear
                     if (particleLifeTime >= 0.35f)
                     {
                         ParticleTransparency -= 0.05f;
                     }
-
-                    
                     break;
             }
 
@@ -253,7 +269,7 @@ namespace CStrike2D
         {
             // When the particle respawns it resets the transparency, position and resets the particle lifetime
             ParticleTransparency = 1.0f;
-            ParticlePosition = emitVect; 
+            ParticlePosition = emitVect;
             particleLifeTime = 0.0f;
 
 
