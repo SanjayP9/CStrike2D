@@ -681,10 +681,12 @@ namespace CStrike2DServer
             {
                 if (player.CurrentTeam != ServerClientInterface.Team.Spectator)
                 {
-                    player.Respawn(player.Position);
+                    RespawnPlayer(player);
                     Console.WriteLine("Spawned \"" + player.UserName + "\"");
                 }
             }
+
+            state = RoundState.Buytime;
         }
 
         static void EndRound()
