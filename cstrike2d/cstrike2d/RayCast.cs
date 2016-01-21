@@ -294,7 +294,6 @@ namespace CStrike2D
                     SpriteEffects.None,
                     0);
         }
-
     }
 
     /// <summary>
