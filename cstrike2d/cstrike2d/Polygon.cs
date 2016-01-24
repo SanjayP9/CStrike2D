@@ -30,8 +30,9 @@ namespace PolygonTriangulation
         public Vector2[] Points;
 
         // Find the polygon's centroid.
-        public Vector2 FindCentroid()
+        public Vector2 FindCentroid(Vector2[] points)
         {
+            this.Points = points;
             // Add the first point at the end of the array.
             int num_points = Points.Length;
             Vector2[] pts = new Vector2[num_points + 1];

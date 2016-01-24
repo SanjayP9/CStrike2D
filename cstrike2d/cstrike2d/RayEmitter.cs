@@ -35,7 +35,7 @@ namespace CStrike2D
 
         public void Cast(Vector2 emitPos, Tile[,] tiles, Tile[] solidTiles, Rectangle mapArea)
         {
-            /*
+            
             for (int i = 0; i < solidTiles.Length; i++)
             {
                 angle = GetAngle(emitPos, new Vector2(solidTiles[i].TileRect.X + solidTiles[i].TileRect.Width, solidTiles[i].TileRect.Y + solidTiles[i].TileRect.Height));
@@ -60,7 +60,7 @@ namespace CStrike2D
                 Rays[i + 10 + (i * 12)].Update(emitPos, 1700f, tiles, mapArea, angle + ADJACENT_ANGLE);
                 Rays[i + 11 + (i * 12)].Update(emitPos, 1700f, tiles, mapArea, angle - ADJACENT_ANGLE);
             }
-            */
+            
         }
 
         public float GetAngle(Vector2 vect1, Vector2 vect2)
