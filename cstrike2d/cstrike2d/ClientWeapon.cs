@@ -64,7 +64,6 @@ namespace CStrike2D
             {
                 // Get the texture of the gun 
                 Texture2D gunTexture = assets.GetWeaponTexture(Weapon);
-
               
                 // Set the emit direction to be the rotation of the weapon plus the
                 // weapons width (in front of the gun)
