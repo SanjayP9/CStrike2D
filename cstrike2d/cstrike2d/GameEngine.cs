@@ -4,6 +4,8 @@
 // Creation Date: Jan 4th, 2016
 // Modified Date: Jan 21st, 2016
 // Description: Handles all logic and drawing of the in-game components
+
+using System;
 using System.Collections.Generic;
 using CStrike2DServer;
 using Microsoft.Xna.Framework;
@@ -20,6 +22,7 @@ namespace CStrike2D
         private AudioManager audioManager;  // Audio
         private Assets assets;              // Assets
         private RayEmitter emitter;         // Used for visibility polygon drawing
+        private RayCast raycaster = new RayCast();
 
         /// <summary>
         /// Contains all players connected on the server including the user
@@ -268,6 +271,16 @@ namespace CStrike2D
         }
 
         /// <summary>
+        /// Plays a sound without positional effects
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="sound"></param>
+        public void PlaySoundNonPos(ClientPlayer player, string sound)
+        {
+            audioManager.PlaySound(sound, audioManager.SoundEffectVolume);
+        }
+
+        /// <summary>
         /// Flashes the player and whites their screen
         /// </summary>
         public void FlashPlayer()
@@ -463,10 +476,12 @@ namespace CStrike2D
                                  */
 
                                 // Debug, press K to flash
+                                /*
                                 if (input.Tapped(Keys.K))
                                 {
                                     network.Flash();
                                 }
+                                 */
                             }
 
                             // If the player is flashed, decrease the alpha value and timer
@@ -530,7 +545,7 @@ namespace CStrike2D
 
                             // If the user pressed/held the left mouse button and is currently
                             // not looking at the buy menu
-                            if ((input.LeftClickImmediate()) && !showMenu)
+                            if ((input.LeftClickImmediate()) || input.LeftHold() && !showMenu)
                             {
                                 // If the player has not already fired their weapon
                                 if (!Client.CurrentWeapon.Fired)
@@ -700,7 +715,44 @@ namespace CStrike2D
                 // Draw every player
                 foreach (ClientPlayer ply in Players)
                 {
-                    ply.Draw(sb);
+                    if (ply.Identifier == Client.Identifier)
+                    {
+                        Client.Draw(sb);
+                    }
+                    else
+                    {
+                        if (ply.CurrentTeam == Client.CurrentTeam)
+                        {
+                            ply.Draw(sb);
+                        }
+                        else
+                        {
+
+                            // Get distance between the player and the enemy
+                            Vector2 delta = ply.Position - Client.Position;
+
+                            
+                            // Get -2Pi - 2Pi version of the shooter's angle
+                            float angle = (float)Math.Atan2(delta.Y, delta.X);
+                            
+
+                            // Get the direction of the shooter
+                            Vector2 direction = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+
+                            // Get distance between the player and any possible obstacles in between the
+                            // player and the enemy
+                            RayCastResult result = raycaster.RayCastMethod(Client.Position, direction, 1280,
+                                assets.MapData.TileMap, assets.MapData.MapArea, angle);
+
+                            // Get the delta between the collision point and the shooter
+                            Vector2 raycastDistance = result.CollisionPos - Client.Position;
+
+                            if (raycastDistance.Length() > delta.Length())
+                            {
+                                ply.Draw(sb);
+                            }
+                        }
+                    }
                 }
 
                 // Draw a white background if the player is flashed

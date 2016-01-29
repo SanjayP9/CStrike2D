@@ -59,6 +59,8 @@ namespace CStrike2DServer
 
         private static Random rand = new Random();          // Random number generator
 
+        private static bool teamCollision = false;
+
         /// <summary>
         /// Stores data about the map including tile types such as
         /// spawn points and AI nodes
@@ -232,9 +234,23 @@ namespace CStrike2DServer
 
                     }
 
+                    // If someone joins a team during buytime and they're dead, respawn them
+                    foreach (ServerPlayer player in players)
+                    {
+                        if (player.State == ServerClientInterface.PlayerState.Dead &&
+                            player.CurrentTeam != ServerClientInterface.Team.Spectator)
+                        {
+                            RespawnPlayer(player);
+                        }
+                    }
+
                     // If buytime is over, start the round
                     if (timer.Elapsed.TotalSeconds >= FREEZE_TIME)
                     {
+                        // Let everyone know the round started
+                        outMsg = server.CreateMessage();
+                        outMsg.Write(ServerClientInterface.BEGIN_ROUND);
+                        server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
                         state = RoundState.Play;
                     }
                     break;
@@ -554,10 +570,6 @@ namespace CStrike2DServer
                 }
             }
 
-            // Let everyone know the round started
-            outMsg = server.CreateMessage();
-            outMsg.Write(ServerClientInterface.BEGIN_ROUND);
-            server.SendToAll(outMsg, NetDeliveryMethod.UnreliableSequenced);
             state = RoundState.Buytime;
         }
 
@@ -640,8 +652,8 @@ namespace CStrike2DServer
                         {
                             if (ply.Identifier != player.Identifier)
                             {
-                                if (MapData.CTTile[spawnPoint].TileRect.Contains((int) player.Position.X,
-                                    (int) player.Position.Y))
+                                if (MapData.CTTile[spawnPoint].TileRect.Contains((int) ply.Position.X,
+                                    (int)ply.Position.Y))
                                 {
                                     empty = false;
                                     break;
@@ -669,8 +681,8 @@ namespace CStrike2DServer
                         {
                             if (ply.Identifier != player.Identifier)
                             {
-                                if (MapData.CTTile[spawnPoint].TileRect.Contains((int) player.Position.X,
-                                    (int) player.Position.Y))
+                                if (MapData.CTTile[spawnPoint].TileRect.Contains((int)ply.Position.X,
+                                    (int)ply.Position.Y))
                                 {
                                     empty = false;
                                     break;
@@ -817,7 +829,14 @@ namespace CStrike2DServer
                     // prevents the movement byte being sent to the player
                     foreach (ServerPlayer ply in players)
                     {
-                        if (ply.Identifier != player.Identifier && ply.State != ServerClientInterface.PlayerState.Dead)
+                        // If team collision is enabled, don't check players who are on the same team
+                        if (!teamCollision && ply.CurrentTeam == player.CurrentTeam)
+                        {
+                            continue;
+                        }
+
+                        if (ply.Identifier != player.Identifier &&
+                            ply.State != ServerClientInterface.PlayerState.Dead)
                         {
                             if (Collision.PlayerToPlayer(new Vector2(player.Position.X + vectorX,
                                 player.Position.Y + vectorY), ply.Position, 23f))
@@ -830,12 +849,12 @@ namespace CStrike2DServer
 
                 // Player to wall collision
                 // Gets the tiles that need to be checked
-                CStrike2D.Tile[] tiles = GetTiles(player.Position, direction);
+                Tile[] tiles = GetTiles(player.Position, direction);
 
                 // Check each tile that is not null and is a solid
                 // Circle to Rectangle collision. Returns false
                 // if a collision is found
-                foreach (CStrike2D.Tile tile in tiles)
+                foreach (Tile tile in tiles)
                 {
                     if (tile != null && tile.Property == Tile.SOLID)
                     {
@@ -880,7 +899,6 @@ namespace CStrike2DServer
                     // Get angle between shooter and player
                     float shooterToPlayerAngle = (float)Math.Atan2(delta.Y, delta.X);
 
-
                     // If the angle between the shooter and player is less than 0 radians
                     // add 2 Pi to convert it from -Pi - Pi domain to -2Pi - 2Pi domain
                     shooterToPlayerAngle = shooterToPlayerAngle < 0
@@ -923,7 +941,7 @@ namespace CStrike2DServer
                                     case WeaponData.Weapon.Knife:
                                         break;
                                     case WeaponData.Weapon.Ak47:
-                                        player.Damage(20, 0);
+                                        player.Damage(12, 0);
                                         break;
                                     case WeaponData.Weapon.Glock:
                                         break;
@@ -932,7 +950,7 @@ namespace CStrike2DServer
                                     case WeaponData.Weapon.Usp:
                                         break;
                                     case WeaponData.Weapon.M4A1:
-                                        player.Damage(20, 0);
+                                        player.Damage(12, 0);
                                         break;
                                 }
 

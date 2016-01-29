@@ -221,6 +221,10 @@ namespace CStrike2D
                                         case ServerClientInterface.SPAWN_PLAYER:
                                             engine.SpawnPlayer(msg.ReadInt16());
                                             break;
+                                        case ServerClientInterface.BEGIN_ROUND:
+                                            // Play round begin sound
+                                            engine.PlaySoundNonPos(engine.Client, "roundStart");
+                                            break;
                                     }
                                 }
                                 break;

@@ -124,6 +124,8 @@ namespace CStrike2D
 
             instance.Model.AudioManager.AddSound(new SoundContainer("hit2", coreContentLoader.Load<SoundEffect>("sound/sfx/player/kevlar2")));
 
+            instance.Model.AudioManager.AddSound(new SoundContainer("roundStart", coreContentLoader.Load<SoundEffect>("sound/music/startaction_01")));
+
             BlurEffect = coreContentLoader.Load<Effect>("fx/blur");
         }
 
