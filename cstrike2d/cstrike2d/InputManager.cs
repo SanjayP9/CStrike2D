@@ -46,6 +46,12 @@ namespace CStrike2D
             prevMouseScroll = mouseState.ScrollWheelValue;
         }
 
+        public void Recoil()
+        {
+            mouseState = new MouseState(mouseState.X + (CStrike2D.Rand.Next(0, 3)), mouseState.Y + (CStrike2D.Rand.Next(0, 3)), 0, ButtonState.Released, 
+                ButtonState.Released, ButtonState.Released, ButtonState.Released, ButtonState.Released);
+        }
+
         /// <summary>
         /// Check if a key is up
         /// </summary>

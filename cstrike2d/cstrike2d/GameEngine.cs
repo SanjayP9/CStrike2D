@@ -545,7 +545,7 @@ namespace CStrike2D
 
                             // If the user pressed/held the left mouse button and is currently
                             // not looking at the buy menu
-                            if ((input.LeftClickImmediate()) || input.LeftHold() && !showMenu)
+                            if ((input.LeftClickImmediate() || input.LeftHold()) && !showMenu)
                             {
                                 // If the player has not already fired their weapon
                                 if (!Client.CurrentWeapon.Fired)
@@ -753,6 +753,7 @@ namespace CStrike2D
                             }
                         }
                     }
+                    ply.DrawRay(sb);
                 }
 
                 // Draw a white background if the player is flashed

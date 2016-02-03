@@ -156,17 +156,23 @@ namespace CStrike2D
                 // Draw their name
                 sb.DrawString(Assets.DefaultFont, UserName, new Vector2(position.X, position.Y - 50),
                     CurrentTeam == ServerClientInterface.Team.CounterTerrorist ? Color.Blue : Color.Red);
-
+                
                 // Draws the weapon
                 CurrentWeapon.Draw(sb);
 
-                // Draws the current weapon
-                if (CurrentWeapon.Fired)
-                {
-                    Shot.Draw(sb, Assets.PixelTexture);
-                }
+
+
 
                 debrisEmitter.Draw(sb, Assets.DebrisParticle);
+            }
+        }
+
+        public void DrawRay(SpriteBatch sb)
+        {
+            // Draws the current weapon
+            if (CurrentWeapon.Fired)
+            {
+                Shot.Draw(sb, Assets.PixelTexture);
             }
         }
 
